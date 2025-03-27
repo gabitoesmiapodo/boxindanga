@@ -1,0 +1,16 @@
+{
+  "name": "project",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --minify --outfile=dist/index.js && cp public/index.html dist/index.html",
+    "dev": "tsc --watch & lite-server",
+    "lint": "pnpm biome check .",
+    "lint:fix": "pnpm biome check . --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "esbuild": "^0.25.1",
+    "lite-server": "^2.6.1",
+    "typescript": "^5.8.2"
+  }
+}
