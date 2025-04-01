@@ -2,3 +2,6 @@ node_modules
 dist
 
 dev-files
+
+public/index.js.map
+public/index.js

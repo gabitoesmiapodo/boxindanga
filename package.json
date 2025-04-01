@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "build": "tsc --noEmit && esbuild src/index.ts --bundle --minify --outfile=dist/index.js",
-    "dev": "tsc --noEmit && esbuild src/index.ts --bundle --outfile=public/index.js --watch & lite-server",
+    "dev": "tsc --noEmit && esbuild src/index.ts --bundle --outfile=public/index.js --watch=forever --sourcemap & live-server public",
     "lint": "pnpm biome check .",
     "lint:fix": "pnpm biome check . --write"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "esbuild": "^0.25.1",
-    "lite-server": "^2.6.1",
+    "live-server": "^1.2.2",
     "typescript": "^5.8.2"
   }
 }
