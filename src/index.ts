@@ -1,57 +1,6 @@
-const Colors = {
-  backgroundColor: '#649335',
-  ringColor: '#be8733',
-  playerOneColor: '#d2d2d1',
-  playerTwoColor: '#000',
-}
-
-const initCanvas = (canvas: HTMLCanvasElement) => {
-  canvas.width = 640
-  canvas.height = 480
-  canvas.style.background = Colors.backgroundColor
-}
-
-const drawRing = (ctx: CanvasRenderingContext2D) => {
-  const ringColor = Colors.ringColor
-  const horizontalLineWidth = 14
-  const verticalLineWidth = 18
-
-  ctx.strokeStyle = ringColor
-
-  // Draw the horizontal lines
-  ctx.lineWidth = horizontalLineWidth
-
-  ctx.beginPath()
-  ctx.moveTo(107, 77)
-  ctx.lineTo(533, 77)
-  ctx.stroke()
-
-  ctx.beginPath()
-  ctx.moveTo(107, 421)
-  ctx.lineTo(533, 421)
-  ctx.stroke()
-
-  // Draw the vertical lines
-  ctx.lineWidth = verticalLineWidth
-
-  ctx.beginPath()
-  ctx.moveTo(98, 84)
-  ctx.lineTo(98, 414)
-  ctx.stroke()
-
-  ctx.beginPath()
-  ctx.moveTo(542, 84)
-  ctx.lineTo(542, 414)
-  ctx.stroke()
-
-  // Draw the corners
-  ctx.fillStyle = ringColor
-
-  ctx.fillRect(71, 59, 36, 25)
-  ctx.fillRect(533, 59, 36, 25)
-  ctx.fillRect(71, 414, 36, 25)
-  ctx.fillRect(533, 414, 36, 25)
-}
+import { Player } from './classes'
+import { playerOneInitialState, ringProperties } from './constants'
+import { initCanvas, initKeys, initRing } from './initFunctions'
 
 const init = () => {
   const canvas = document.getElementById('mainCanvas') as HTMLCanvasElement
@@ -64,7 +13,26 @@ const init = () => {
     }
 
     initCanvas(canvas)
-    drawRing(ctx)
+    initRing(ctx)
+    initKeys()
+
+    const player = new Player(playerOneInitialState.x, playerOneInitialState.y)
+
+    let last = performance.now();
+
+    const gameLoop = (now: number) => {
+      const dt = (now - last) / 1000;
+      last = now;
+
+      player.update(dt);
+
+      ctx.clearRect(ringProperties.x, ringProperties.y, ringProperties.width, ringProperties.height);
+      player.draw(ctx);
+      
+      requestAnimationFrame(gameLoop);
+    }
+
+    requestAnimationFrame(gameLoop);
   }
 }
 
