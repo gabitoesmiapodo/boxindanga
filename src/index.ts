@@ -26,6 +26,8 @@ const init = () => {
 
       player.update(dt);
 
+      // ctx.fillStyle = 'rgba(255, 0, 0, 0.2)'
+      // ctx.fillRect(ringProperties.x, ringProperties.y, ringProperties.width, ringProperties.height)
       ctx.clearRect(ringProperties.x, ringProperties.y, ringProperties.width, ringProperties.height);
       player.draw(ctx);
       

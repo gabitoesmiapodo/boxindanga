@@ -30,4 +30,8 @@ export const playerOneInitialState = {
   color: colors.playerOneColor,
 }
 
-export const playerSpeed = 150
+export const playerProperties = {
+  height: 110,
+  width: 66,
+  playerSpeed: 220,
+}
