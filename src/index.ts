@@ -1,41 +1,33 @@
-import { Player } from './classes'
-import { playerOneInitialState, ringProperties } from './constants'
-import { initCanvas, initKeys, initRing } from './initFunctions'
+import { faceLeftIdle, faceRightIdle } from './animations'
+import { Canvas } from './canvas'
+import { initKeys } from './keys'
+import { Player, PlayerCPU, PlayerOne, playerProperties } from './player'
+import { drawRing, ringInnerBounds, ringProperties } from './ring'
 
 const init = () => {
-  const canvas = document.getElementById('mainCanvas') as HTMLCanvasElement
+  const canvas = new Canvas('mainCanvas')
+  const playerOne = new PlayerOne(ringInnerBounds.left, ringInnerBounds.top, '#d2d2d1', faceRightIdle)
+  const playerCPU = new PlayerCPU(ringInnerBounds.right - playerProperties.width, ringInnerBounds.bottom - playerProperties.height, '#000', faceLeftIdle)
 
-  if (canvas?.getContext) {
-    const ctx = canvas.getContext('2d')
+  drawRing()
+  initKeys()
 
-    if (!ctx) {
-      throw new Error('2d context not supported')
-    }
+  let last = performance.now();
 
-    initCanvas(canvas)
-    initRing(ctx)
-    initKeys()
+  const gameLoop = (now: number) => {
+    const dt = (now - last) / 1000;
+    last = now;
 
-    const player = new Player(playerOneInitialState.x, playerOneInitialState.y)
-
-    let last = performance.now();
-
-    const gameLoop = (now: number) => {
-      const dt = (now - last) / 1000;
-      last = now;
-
-      player.update(dt);
-
-      // ctx.fillStyle = 'rgba(255, 0, 0, 0.2)'
-      // ctx.fillRect(ringProperties.x, ringProperties.y, ringProperties.width, ringProperties.height)
-      ctx.clearRect(ringProperties.x, ringProperties.y, ringProperties.width, ringProperties.height);
-      player.draw(ctx);
+    Canvas.ctx.clearRect(0, 0, canvas.getCanvas().width, canvas.getCanvas().height);
+    drawRing()
+    playerOne.update(dt);
+    playerCPU.update(dt);
       
-      requestAnimationFrame(gameLoop);
-    }
-
     requestAnimationFrame(gameLoop);
   }
+
+  requestAnimationFrame(gameLoop);
 }
+
 
 window.addEventListener('load', init)
