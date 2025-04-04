@@ -18,7 +18,7 @@ export const playerProperties = {
   playerSpeedX: 325,
   playerSpeedY: 200,
   fullWidth: 143,       // width when the arm is extended
-  width: 63,            // width when idle (actually a little less to allow some overlap, actual width is 66)
+  width: 62,            // width when idle (actually a little less to allow some overlap, actual width is 66)
 }
 
 type Direction = 'left' | 'right'
@@ -233,7 +233,7 @@ export class PlayerOne extends Player {
     if (keys.a) this.moveLeft(dt)
     if (keys.d) this.moveRight(dt)
 
-    if (this.isCollidingWithEnemy(dt)) {
+    if (this.isCollidingWithEnemy()) {
       this.x = originalPosition.x
       this.y = originalPosition.y
     }
