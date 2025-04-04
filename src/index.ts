@@ -11,14 +11,14 @@ const init = () => {
     ringInnerBounds.left,
     ringInnerBounds.top,
     playerOneColor,
-    'human',
+    'playerOne',
   )
   // const playerCPU = new PlayerCPU(ringInnerBounds.right - playerProperties.width, ringInnerBounds.bottom - playerProperties.height, playerTwoColor, 'left')
   const playerCPU = new PlayerCPU(
     Math.trunc(ringProperties.width / 2),
     Math.trunc(ringProperties.height / 1.5),
     playerTwoColor,
-    'cpu',
+    'playerTwo',
   )
 
   new Overseer(playerOne, playerCPU)

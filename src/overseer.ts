@@ -2,16 +2,14 @@ import type { Player } from './player'
 
 export class Overseer {
   static playerOne: Player
-  static playerCPU: Player
+  static playerTwo: Player
 
-  constructor(playerOne: Player, playerCPU: Player) {
+  constructor(playerOne: Player, playerTwo: Player) {
     Overseer.playerOne = playerOne
-    Overseer.playerCPU = playerCPU
+    Overseer.playerTwo = playerTwo
   }
 
   static getEnemy(player: Player) {
-    return player.playerType === Overseer.playerCPU.playerType
-      ? Overseer.playerOne
-      : Overseer.playerCPU
+    return player.playerType === 'playerOne' ? Overseer.playerTwo : Overseer.playerOne
   }
 }

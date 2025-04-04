@@ -22,7 +22,7 @@ export const playerProperties = {
 }
 
 type Direction = 'left' | 'right'
-type PlayerType = 'human' | 'cpu'
+type PlayerType = 'playerOne' | 'playerTwo'
 
 type MainBoundingBox = {
   left: number
@@ -40,32 +40,33 @@ export class Player {
 
   protected x: number
   protected y: number
+  protected state: 'punching' | 'hit' | 'idle' = 'idle'
 
   public readonly playerType: PlayerType
-  
+
   constructor(x: number, y: number, color: string, playerType: PlayerType) {
     this.x = x
     this.y = y
     this.color = color
     this.playerType = playerType
-    this.facingDirection = this.playerType === 'human' ? 'right' : 'left'
+    this.facingDirection = this.playerType === 'playerOne' ? 'right' : 'left'
     this.currentAnimation = this.facingDirection === 'right' ? faceRightIdle : faceLeftIdle
   }
 
   protected getMainBoundingBox() {
     return this.facingDirection === 'right'
       ? {
-        left: this.x,
-        right: this.x + playerProperties.width,
-        top: this.y,
-        bottom: this.y + playerProperties.height,
-      }
+          left: this.x,
+          right: this.x + playerProperties.width,
+          top: this.y,
+          bottom: this.y + playerProperties.height,
+        }
       : {
-        left: this.x + playerProperties.fullWidth - playerProperties.width,
-        right: this.x + playerProperties.fullWidth,
-        top: this.y,
-        bottom: this.y + playerProperties.height,
-      }
+          left: this.x + playerProperties.fullWidth - playerProperties.width,
+          right: this.x + playerProperties.fullWidth,
+          top: this.y,
+          bottom: this.y + playerProperties.height,
+        }
   }
 
   protected isCollidingWithEnemy() {
@@ -147,15 +148,11 @@ export class Player {
     })
   }
 
-  protected isIdle() {
-    return this.currentAnimation === faceRightIdle || this.currentAnimation === faceLeftIdle
-  }
-
   private updateFacingDirection() {
     const xDisplacement = 10 // hacky but works
 
-    // only turn around when idle
-    if (!this.isIdle()) return
+    // do not turn around if not idle
+    if (this.state !== 'idle') return
 
     if (
       this.getMainBoundingBox().right > Overseer.getEnemy(this).getMainBoundingBox().right &&
@@ -180,6 +177,7 @@ export class Player {
     this.animationTimeElapsed = 0
     this.currentFrameIndex = 0
     this.currentAnimation = this.facingDirection === 'right' ? faceRightIdle : faceLeftIdle
+    this.state = 'idle'
   }
 
   private isAtAnimationEnd() {
@@ -207,13 +205,15 @@ export class Player {
   }
 
   protected handlePunching() {
-    if (this.isIdle()) {
-      if (this.getVerticalCenter() > Overseer.getEnemy(this).getVerticalCenter()) {
-        this.currentAnimation =
-          this.facingDirection === 'right' ? faceRightTopPunch : faceLeftTopPunch
-      } else {
+    if (this.state === 'idle') {
+      this.state = 'punching'
+
+      if (this.getVerticalCenter() < Overseer.getEnemy(this).getVerticalCenter()) {
         this.currentAnimation =
           this.facingDirection === 'right' ? faceRightBottomPunch : faceLeftBottomPunch
+      } else {
+        this.currentAnimation =
+          this.facingDirection === 'right' ? faceRightTopPunch : faceLeftTopPunch
       }
     }
   }
