@@ -1,11 +1,11 @@
 import {
-  type Animation, 
-  type Frame, 
-  faceLeftBottomPunch, 
-  faceLeftIdle, 
-  faceLeftTopPunch, 
-  faceRightBottomPunch, 
-  faceRightIdle, 
+  type Animation,
+  type Frame,
+  faceLeftBottomPunch,
+  faceLeftIdle,
+  faceLeftTopPunch,
+  faceRightBottomPunch,
+  faceRightIdle,
   faceRightTopPunch,
 } from './animations'
 import { Canvas } from './canvas'
@@ -27,12 +27,12 @@ export type Direction = 'left' | 'right'
 export class Player {
   private x: number
   private y: number
+  private fixHorizontalPosition = false
 
   protected currentAnimation: Animation
   protected currentFrameIndex = 0
   protected animationTimeElapsed = 0
   protected facingDirection: Direction
-  protected animationState: 'playing' | 'paused' | 'stopped' = 'playing'
 
   public readonly color: string
   readonly pixelSize = 1
@@ -46,19 +46,20 @@ export class Player {
   }
 
   protected getMainBoundingBox() {
-    return this.facingDirection === 'right' ? { 
-      left: this.x,
-      right: this.x + playerProperties.width,
-      top: this.y,
-      bottom: this.y + playerProperties.height,
-    } : {
-      left: this.x + playerProperties.realWidth - playerProperties.width,
-      right: this.x + playerProperties.realWidth,
-      top: this.y,
-      bottom: this.y + playerProperties.height,
-    }
+    return this.facingDirection === 'right'
+      ? {
+        left: this.x,
+        right: this.x + playerProperties.width,
+        top: this.y,
+        bottom: this.y + playerProperties.height,
+      }
+      : {
+        left: this.x + playerProperties.realWidth - playerProperties.width,
+        right: this.x + playerProperties.realWidth,
+        top: this.y,
+        bottom: this.y + playerProperties.height,
+      }
   }
-
 
   private calculateHorizontalDisplacement(dt: number) {
     return Math.trunc(playerProperties.playerSpeedX * dt)
@@ -69,19 +70,30 @@ export class Player {
   }
 
   private isCollidingWithRingLeft(dt: number) {
-    return this.getMainBoundingBox().left - this.calculateHorizontalDisplacement(dt) < ringInnerBounds.left
+    return (
+      this.getMainBoundingBox().left - this.calculateHorizontalDisplacement(dt) <
+      ringInnerBounds.left
+    )
   }
 
   private isCollidingWithRingRight(dt: number) {
-    return this.getMainBoundingBox().right + this.calculateHorizontalDisplacement(dt) > ringInnerBounds.right
+    return (
+      this.getMainBoundingBox().right + this.calculateHorizontalDisplacement(dt) >
+      ringInnerBounds.right
+    )
   }
 
   private isCollidingWithRingTop(dt: number) {
-    return this.getMainBoundingBox().top - this.calculateVerticalDisplacement(dt) < ringInnerBounds.top
+    return (
+      this.getMainBoundingBox().top - this.calculateVerticalDisplacement(dt) < ringInnerBounds.top
+    )
   }
 
   private isCollidingWithRingBottom(dt: number) {
-    return this.getMainBoundingBox().bottom + this.calculateVerticalDisplacement(dt) > ringInnerBounds.bottom
+    return (
+      this.getMainBoundingBox().bottom + this.calculateVerticalDisplacement(dt) >
+      ringInnerBounds.bottom
+    )
   }
 
   protected moveUp(dt: number) {
@@ -113,15 +125,15 @@ export class Player {
           )
         }
         // debug
-        else {
-          Canvas.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)'
-          Canvas.ctx.fillRect(
-            this.x + x * playerProperties.pixelSize,
-            this.y + y * playerProperties.pixelSize,
-            playerProperties.pixelSize,
-            playerProperties.pixelSize,
-          )
-        }
+        // else {
+        //   Canvas.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)'
+        //   Canvas.ctx.fillRect(
+        //     this.x + x * playerProperties.pixelSize,
+        //     this.y + y * playerProperties.pixelSize,
+        //     playerProperties.pixelSize,
+        //     playerProperties.pixelSize,
+        //   )
+        // }
       })
     })
   }
@@ -133,19 +145,25 @@ export class Player {
   private updateFacingDirection() {
     // only turn around when idle
     if (!this.isIdle()) return
+    const xDisplacement = 10
 
-    if (this.getHorizontalCenter() > Overseer.getEnemy(this).getHorizontalCenter()) {
+    if (this.getMainBoundingBox().right > Overseer.getEnemy(this).getMainBoundingBox().right && this.facingDirection === 'right') {
       this.facingDirection = 'left'
+      this.x = this.x - playerProperties.width - xDisplacement
+      this.currentAnimation = faceLeftIdle
     }
-    if (this.getHorizontalCenter() < Overseer.getEnemy(this).getHorizontalCenter()) {
+
+    if (this.getMainBoundingBox().left < Overseer.getEnemy(this).getMainBoundingBox().left && this.facingDirection === 'left') {
       this.facingDirection = 'right'
+      this.x = this.x + playerProperties.width + xDisplacement
+      this.currentAnimation = faceRightIdle
     }
   }
 
   private resetAnimation() {
     this.animationTimeElapsed = 0
-    this.currentFrameIndex = 0   
-    this.currentAnimation = this.facingDirection === 'right' ? faceRightIdle : faceLeftIdle 
+    this.currentFrameIndex = 0
+    this.currentAnimation = this.facingDirection === 'right' ? faceRightIdle : faceLeftIdle
   }
 
   private isAtAnimationEnd() {
@@ -159,11 +177,10 @@ export class Player {
     if (this.animationTimeElapsed >= this.currentAnimation[this.currentFrameIndex].speed) {
       this.animationTimeElapsed = 0
 
-      if (this.isAtAnimationEnd()) 
+      if (this.isAtAnimationEnd())
         // If the current animation is finished, go back to the idle "animation"
         this.resetAnimation()
-      else 
-        this.currentFrameIndex += 1
+      else this.currentFrameIndex += 1
     }
   }
 
@@ -173,6 +190,18 @@ export class Player {
 
   public getHorizontalCenter() {
     return this.getMainBoundingBox().left + playerProperties.width / 2
+  }
+
+  protected handlePunching() {
+    if (this.isIdle()) {
+      if (this.getMainBoundingBox().top > Overseer.getEnemy(this).getMainBoundingBox().top) {
+        this.currentAnimation =
+          this.facingDirection === 'right' ? faceRightTopPunch : faceLeftTopPunch
+      } else {
+        this.currentAnimation =
+          this.facingDirection === 'right' ? faceRightBottomPunch : faceLeftBottomPunch
+      }
+    }
   }
 
   public update(dt: number) {
@@ -189,27 +218,13 @@ export class PlayerOne extends Player {
     if (keys.d) this.moveRight(dt)
   }
 
-  // this and the next method should decide according to the rival player's position, 
-  // not individual keys
-  private handlePunchingTop() {
-    if (this.isIdle()) 
-      this.currentAnimation = this.facingDirection === 'right' ? faceRightTopPunch : faceLeftTopPunch
-  }
-
-  private handlePunchingBottom() {
-    if (this.isIdle()) 
-      this.currentAnimation = this.facingDirection === 'right' ? faceRightBottomPunch : faceLeftBottomPunch
-  }
-
   private handleInput(dt: number) {
     if (keys.w || keys.s || keys.a || keys.d) {
       this.handleMovement(dt)
     }
 
-    if (keys.o) {
-      this.handlePunchingTop()
-    } else if (keys.p) {
-      this.handlePunchingBottom()
+    if (keys.p) {
+      this.handlePunching()
     }
   }
 
