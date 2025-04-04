@@ -17,8 +17,8 @@ export const playerProperties = {
   pixelSize: 1,
   playerSpeedX: 325,
   playerSpeedY: 200,
-  fullWidth: 143,       // width when the arm is extended
-  width: 62,            // width when idle (actually a little less to allow some overlap, actual width is 66)
+  fullWidth: 143, // width when the arm is extended
+  width: 62, // width when idle (actually a little less to allow some overlap, actual width is 66)
 }
 
 type Direction = 'left' | 'right'
@@ -36,12 +36,13 @@ export class Player {
   private currentFrameIndex = 0
   private animationTimeElapsed = 0
   private facingDirection: Direction
-  private readonly playerType: PlayerType
   private readonly color: string
 
   protected x: number
   protected y: number
 
+  public readonly playerType: PlayerType
+  
   constructor(x: number, y: number, color: string, playerType: PlayerType) {
     this.x = x
     this.y = y
@@ -155,7 +156,7 @@ export class Player {
 
     // only turn around when idle
     if (!this.isIdle()) return
-    
+
     if (
       this.getMainBoundingBox().right > Overseer.getEnemy(this).getMainBoundingBox().right &&
       this.facingDirection === 'right'
@@ -192,8 +193,7 @@ export class Player {
     if (this.animationTimeElapsed >= this.currentAnimation[this.currentFrameIndex].speed) {
       this.animationTimeElapsed = 0
 
-      if (this.isAtAnimationEnd())
-        this.resetAnimation()
+      if (this.isAtAnimationEnd()) this.resetAnimation()
       else this.currentFrameIndex += 1
     }
   }
@@ -227,7 +227,7 @@ export class Player {
 export class PlayerOne extends Player {
   private handleMovement(dt: number) {
     const originalPosition = { x: this.x, y: this.y }
-    
+
     if (keys.w) this.moveUp(dt)
     if (keys.s) this.moveDown(dt)
     if (keys.a) this.moveLeft(dt)
@@ -237,7 +237,6 @@ export class PlayerOne extends Player {
       this.x = originalPosition.x
       this.y = originalPosition.y
     }
-
   }
 
   private handleInput(dt: number) {

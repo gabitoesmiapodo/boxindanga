@@ -10,6 +10,8 @@ export class Overseer {
   }
 
   static getEnemy(player: Player) {
-    return player.color === Overseer.playerCPU.color ? Overseer.playerOne : Overseer.playerCPU
+    return player.playerType === Overseer.playerCPU.playerType
+      ? Overseer.playerOne
+      : Overseer.playerCPU
   }
 }
