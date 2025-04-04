@@ -1,6 +1,5 @@
 import {
   type Animation,
-  type Frame,
   faceLeftBottomPunch,
   faceLeftIdle,
   faceLeftTopPunch,
@@ -11,38 +10,45 @@ import {
 import { Canvas } from './canvas'
 import { keys } from './keys'
 import { Overseer } from './overseer'
-import { ringInnerBounds, ringProperties } from './ring'
+import { ringInnerBounds } from './ring'
 
 export const playerProperties = {
   height: 110,
   pixelSize: 1,
   playerSpeedX: 325,
   playerSpeedY: 200,
-  realWidth: 143,
-  width: 66,
+  fullWidth: 143,       // width when the arm is extended
+  width: 63,            // width when idle (actually a little less to allow some overlap, actual width is 66)
 }
 
-export type Direction = 'left' | 'right'
+type Direction = 'left' | 'right'
+type PlayerType = 'human' | 'cpu'
+
+type MainBoundingBox = {
+  left: number
+  right: number
+  top: number
+  bottom: number
+}
 
 export class Player {
-  private x: number
-  private y: number
-  private fixHorizontalPosition = false
+  private currentAnimation: Animation
+  private currentFrameIndex = 0
+  private animationTimeElapsed = 0
+  private facingDirection: Direction
+  private readonly playerType: PlayerType
+  private readonly color: string
 
-  protected currentAnimation: Animation
-  protected currentFrameIndex = 0
-  protected animationTimeElapsed = 0
-  protected facingDirection: Direction
+  protected x: number
+  protected y: number
 
-  public readonly color: string
-  readonly pixelSize = 1
-
-  constructor(x: number, y: number, color: string, direction: Direction) {
+  constructor(x: number, y: number, color: string, playerType: PlayerType) {
     this.x = x
     this.y = y
     this.color = color
-    this.facingDirection = direction
-    this.currentAnimation = direction === 'right' ? faceRightIdle : faceLeftIdle
+    this.playerType = playerType
+    this.facingDirection = this.playerType === 'human' ? 'right' : 'left'
+    this.currentAnimation = this.facingDirection === 'right' ? faceRightIdle : faceLeftIdle
   }
 
   protected getMainBoundingBox() {
@@ -54,11 +60,23 @@ export class Player {
         bottom: this.y + playerProperties.height,
       }
       : {
-        left: this.x + playerProperties.realWidth - playerProperties.width,
-        right: this.x + playerProperties.realWidth,
+        left: this.x + playerProperties.fullWidth - playerProperties.width,
+        right: this.x + playerProperties.fullWidth,
         top: this.y,
         bottom: this.y + playerProperties.height,
       }
+  }
+
+  protected isCollidingWithEnemy() {
+    const playerBoundingBox = this.getMainBoundingBox()
+    const enemyBoundingBox = Overseer.getEnemy(this).getMainBoundingBox()
+
+    return (
+      playerBoundingBox.right > enemyBoundingBox.left &&
+      playerBoundingBox.left < enemyBoundingBox.right &&
+      playerBoundingBox.bottom > enemyBoundingBox.top &&
+      playerBoundingBox.top < enemyBoundingBox.bottom
+    )
   }
 
   private calculateHorizontalDisplacement(dt: number) {
@@ -124,16 +142,6 @@ export class Player {
             playerProperties.pixelSize,
           )
         }
-        // debug
-        // else {
-        //   Canvas.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)'
-        //   Canvas.ctx.fillRect(
-        //     this.x + x * playerProperties.pixelSize,
-        //     this.y + y * playerProperties.pixelSize,
-        //     playerProperties.pixelSize,
-        //     playerProperties.pixelSize,
-        //   )
-        // }
       })
     })
   }
@@ -143,17 +151,24 @@ export class Player {
   }
 
   private updateFacingDirection() {
+    const xDisplacement = 10 // hacky but works
+
     // only turn around when idle
     if (!this.isIdle()) return
-    const xDisplacement = 10
-
-    if (this.getMainBoundingBox().right > Overseer.getEnemy(this).getMainBoundingBox().right && this.facingDirection === 'right') {
+    
+    if (
+      this.getMainBoundingBox().right > Overseer.getEnemy(this).getMainBoundingBox().right &&
+      this.facingDirection === 'right'
+    ) {
       this.facingDirection = 'left'
       this.x = this.x - playerProperties.width - xDisplacement
       this.currentAnimation = faceLeftIdle
     }
 
-    if (this.getMainBoundingBox().left < Overseer.getEnemy(this).getMainBoundingBox().left && this.facingDirection === 'left') {
+    if (
+      this.getMainBoundingBox().left < Overseer.getEnemy(this).getMainBoundingBox().left &&
+      this.facingDirection === 'left'
+    ) {
       this.facingDirection = 'right'
       this.x = this.x + playerProperties.width + xDisplacement
       this.currentAnimation = faceRightIdle
@@ -178,7 +193,6 @@ export class Player {
       this.animationTimeElapsed = 0
 
       if (this.isAtAnimationEnd())
-        // If the current animation is finished, go back to the idle "animation"
         this.resetAnimation()
       else this.currentFrameIndex += 1
     }
@@ -194,7 +208,7 @@ export class Player {
 
   protected handlePunching() {
     if (this.isIdle()) {
-      if (this.getMainBoundingBox().top > Overseer.getEnemy(this).getMainBoundingBox().top) {
+      if (this.getVerticalCenter() > Overseer.getEnemy(this).getVerticalCenter()) {
         this.currentAnimation =
           this.facingDirection === 'right' ? faceRightTopPunch : faceLeftTopPunch
       } else {
@@ -212,10 +226,18 @@ export class Player {
 
 export class PlayerOne extends Player {
   private handleMovement(dt: number) {
+    const originalPosition = { x: this.x, y: this.y }
+    
     if (keys.w) this.moveUp(dt)
     if (keys.s) this.moveDown(dt)
     if (keys.a) this.moveLeft(dt)
     if (keys.d) this.moveRight(dt)
+
+    if (this.isCollidingWithEnemy(dt)) {
+      this.x = originalPosition.x
+      this.y = originalPosition.y
+    }
+
   }
 
   private handleInput(dt: number) {
