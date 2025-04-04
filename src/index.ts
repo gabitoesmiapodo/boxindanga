@@ -1,13 +1,18 @@
 import { faceLeftIdle, faceRightIdle } from './animations'
 import { Canvas } from './canvas'
+import { playerOneColor, playerTwoColor } from './config'
 import { initKeys } from './keys'
-import { Player, PlayerCPU, PlayerOne, playerProperties } from './player'
+import { Overseer } from './overseer'
+import { PlayerCPU, PlayerOne, playerProperties } from './player'
 import { drawRing, ringInnerBounds, ringProperties } from './ring'
 
 const init = () => {
   const canvas = new Canvas('mainCanvas')
-  const playerOne = new PlayerOne(ringInnerBounds.left, ringInnerBounds.top, '#d2d2d1', faceRightIdle)
-  const playerCPU = new PlayerCPU(ringInnerBounds.right - playerProperties.width, ringInnerBounds.bottom - playerProperties.height, '#000', faceLeftIdle)
+  const playerOne = new PlayerOne(ringInnerBounds.left, ringInnerBounds.top, playerOneColor, 'right')
+  // const playerCPU = new PlayerCPU(ringInnerBounds.right - playerProperties.width, ringInnerBounds.bottom - playerProperties.height, playerTwoColor, 'left')
+  const playerCPU = new PlayerCPU(ringProperties.width / 2, ringProperties.height / 2 + playerProperties.height / 4, playerTwoColor, 'left')
+
+  const culo = new Overseer(playerOne, playerCPU)
 
   drawRing()
   initKeys()

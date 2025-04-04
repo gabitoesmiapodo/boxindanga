@@ -2,7 +2,7 @@
   "name": "project",
   "version": "0.0.0",
   "scripts": {
-    "build": "tsc --noEmit && esbuild src/index.ts --bundle --minify --outfile=dist/index.js",
+    "build": "tsc --noEmit && esbuild src/index.ts --bundle --minify --tree-shaking=true --outfile=dist/index.js",
     "dev": "tsc --noEmit && esbuild src/index.ts --bundle --outfile=public/index.js --watch=forever --sourcemap & live-server public",
     "lint": "pnpm biome check .",
     "lint:fix": "pnpm biome check . --write"
