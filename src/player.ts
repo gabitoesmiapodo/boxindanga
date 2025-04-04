@@ -18,6 +18,7 @@ export const playerProperties = {
   playerSpeedX: 325,
   playerSpeedY: 200,
   fullWidth: 143, // width when the arm is extended
+  actualWidth: 66,
   width: 62, // width when idle (actually a little less to allow some overlap, actual width is 66)
 }
 
@@ -66,6 +67,49 @@ export class Player {
           right: this.x + playerProperties.fullWidth,
           top: this.y,
           bottom: this.y + playerProperties.height,
+        }
+  }
+
+  protected getTopGloveBoundingBox() {
+    const gloveHeight: number = 30
+    const gloveWidth: number = 38
+    const top: number = this.y
+    const bottom: number = this.y + gloveHeight
+
+    return this.facingDirection === 'right'
+      ? {
+          left: this.x + playerProperties.actualWidth - gloveWidth,
+          right: this.x + playerProperties.actualWidth,
+          top: top,
+          bottom: bottom,
+        }
+      : {
+          left: this.x + playerProperties.fullWidth - playerProperties.actualWidth,
+          right: this.x + playerProperties.fullWidth - playerProperties.actualWidth + gloveWidth,
+          top: top,
+          bottom: bottom,
+        }
+  }
+
+  protected getHeadBoundingBox() {
+    const headHeight: number = 30
+    const headWidth: number = 48
+    const top: number = this.y + 40
+    const bottom: number = top + headHeight
+    const horizontalDisplacement: number = 9
+
+    return this.facingDirection === 'right'
+      ? {
+          left: this.x + horizontalDisplacement,
+          right: this.x + horizontalDisplacement + headWidth,
+          top: top,
+          bottom: bottom,
+        }
+      : {
+          left: this.x + playerProperties.fullWidth - horizontalDisplacement - headWidth,
+          right: this.x + playerProperties.fullWidth - horizontalDisplacement,
+          top: top,
+          bottom: bottom,
         }
   }
 
@@ -146,10 +190,26 @@ export class Player {
         }
       })
     })
+
+    // debug
+    Canvas.ctx.fillStyle = 'rgba(0, 0, 256, 0.2)'
+    Canvas.ctx.fillRect(
+      this.getTopGloveBoundingBox().left,
+      this.getTopGloveBoundingBox().top,
+      this.getTopGloveBoundingBox().right - this.getTopGloveBoundingBox().left,
+      this.getTopGloveBoundingBox().bottom - this.getTopGloveBoundingBox().top,
+    )
+
+    Canvas.ctx.fillRect(
+      this.getHeadBoundingBox().left,
+      this.getHeadBoundingBox().top,
+      this.getHeadBoundingBox().right - this.getHeadBoundingBox().left,
+      this.getHeadBoundingBox().bottom - this.getHeadBoundingBox().top,
+    )
   }
 
   private updateFacingDirection() {
-    const xDisplacement = 10 // hacky but works
+    const xDisplacement = 10 // hacky but will do
 
     // do not turn around if not idle
     if (this.state !== 'idle') return
