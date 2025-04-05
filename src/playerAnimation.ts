@@ -1,8 +1,4 @@
-import {
-  type Animation,
-  faceLeftIdle,
-  faceRightIdle,
-} from './animations'
+import { type Animation, faceLeftIdle, faceRightIdle } from './animations'
 import type { Player } from './player'
 import { drawBoundingBoxes, drawSprite } from './utils'
 
@@ -29,7 +25,12 @@ export class PlayerAnimation {
   }
 
   public playAnimation(dt: number) {
-    drawSprite(this.currentAnimation[this.currentFrameIndex].sprite, this.player.getColor(), this.player.getX(), this.player.getY())
+    drawSprite(
+      this.currentAnimation[this.currentFrameIndex].sprite,
+      this.player.getColor(),
+      this.player.getX(),
+      this.player.getY(),
+    )
     drawBoundingBoxes(this.player)
     this.animationTimeElapsed += dt
 
@@ -38,8 +39,7 @@ export class PlayerAnimation {
 
       if (this.isAtAnimationEnd()) {
         this.resetAnimation()
-      }
-      else {
+      } else {
         this.currentFrameIndex += 1
       }
     }

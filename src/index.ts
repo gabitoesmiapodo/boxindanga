@@ -8,13 +8,9 @@ import { drawRing } from './ring'
 
 const init = () => {
   const canvas = new Canvas('mainCanvas')
-  const playerOne = new PlayerOne(
-    'playerOne',
-  )
-  
-  const playerTwo = new PlayerTwo(
-    'playerTwo',
-  )
+  const playerOne = new PlayerOne('playerOne')
+
+  const playerTwo = new PlayerTwo('playerTwo')
 
   new Overseer(playerOne, playerTwo)
 

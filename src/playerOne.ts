@@ -6,7 +6,7 @@ import { ringInnerBounds } from './ring'
 export class PlayerOne extends Player {
   constructor(playerType: 'playerOne') {
     super(playerType)
-    
+
     this.x = ringInnerBounds.left
     this.y = ringInnerBounds.top
     this.color = playerOneColor
