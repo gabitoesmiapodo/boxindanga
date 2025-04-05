@@ -2,26 +2,21 @@ import { Canvas } from './canvas'
 import { playerOneColor, playerTwoColor } from './config'
 import { initKeys } from './keys'
 import { Overseer } from './overseer'
-import { PlayerCPU, PlayerOne, playerProperties } from './player'
-import { drawRing, ringInnerBounds, ringProperties } from './ring'
+import { PlayerOne } from './playerOne'
+import { PlayerTwo } from './playerTwo'
+import { drawRing } from './ring'
 
 const init = () => {
   const canvas = new Canvas('mainCanvas')
   const playerOne = new PlayerOne(
-    ringInnerBounds.left,
-    ringInnerBounds.top,
-    playerOneColor,
     'playerOne',
   )
-  // const playerCPU = new PlayerCPU(ringInnerBounds.right - playerProperties.width, ringInnerBounds.bottom - playerProperties.height, playerTwoColor, 'left')
-  const playerCPU = new PlayerCPU(
-    Math.trunc(ringProperties.width / 2),
-    Math.trunc(ringProperties.height / 1.5),
-    playerTwoColor,
+  
+  const playerTwo = new PlayerTwo(
     'playerTwo',
   )
 
-  new Overseer(playerOne, playerCPU)
+  new Overseer(playerOne, playerTwo)
 
   drawRing()
   initKeys()
@@ -34,7 +29,7 @@ const init = () => {
 
     Canvas.ctx.clearRect(0, 0, canvas.getCanvas().width, canvas.getCanvas().height)
     drawRing()
-    playerCPU.update(dt)
+    playerTwo.update(dt)
     playerOne.update(dt)
 
     requestAnimationFrame(gameLoop)
