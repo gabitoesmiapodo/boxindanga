@@ -15,48 +15,44 @@ type Direction = 'left' | 'right'
 type PlayerState = 'punchingTop' | 'punchingBottom' | 'hit' | 'idle'
 
 export class Player {
-  
   private playerAnimation: PlayerAnimation
-  private facingDirection: Direction = 'right'    // direction is sorted out in the first update
+  private facingDirection: Direction = 'right' // direction is sorted out in the first update
 
   private readonly height = 110
-  private readonly fullWidth = 143                // width when the arm is extended
-  private readonly width = 62                     // width when idle (actually a little less to allow for some overlap, real width is 66)
-  private readonly actualWidth = 66 
+  private readonly fullWidth = 143 // width when the arm is extended
+  private readonly width = 62 // width when idle (actually a little less to allow for some overlap, real width is 66)
+  private readonly actualWidth = 66
   private readonly playerSpeedX = 325
   private readonly playerSpeedY = 200
   private readonly gloveHeight = 30
   private readonly gloveWidth = 38
 
-  protected x = 0                                 // set in the constructor according to player type
-  protected y = 0                                 // set in the constructor according to player type
-  protected color = '#649335'                     // set in the constructor according to player type
+  protected x = 0 // set in the constructor according to player type
+  protected y = 0 // set in the constructor according to player type
+  protected color = '#649335' // set in the constructor according to player type
   protected state: PlayerState = 'idle'
 
   public readonly playerType: PlayerType
 
   constructor(playerType: PlayerType) {
     this.playerType = playerType
-    this.playerAnimation = new PlayerAnimation(
-      this,
-      faceRightIdle
-    )
+    this.playerAnimation = new PlayerAnimation(this, faceRightIdle)
   }
 
   private getMainBoundingBox() {
     return this.isFacingRight()
       ? {
-        left: this.x,
-        right: this.x + this.actualWidth,
-        top: this.y,
-        bottom: this.y + this.height,
-      }
+          left: this.x,
+          right: this.x + this.actualWidth,
+          top: this.y,
+          bottom: this.y + this.height,
+        }
       : {
-        left: this.x + this.fullWidth - this.actualWidth,
-        right: this.x + this.fullWidth,
-        top: this.y,
-        bottom: this.y + this.height,
-      }
+          left: this.x + this.fullWidth - this.actualWidth,
+          right: this.x + this.fullWidth,
+          top: this.y,
+          bottom: this.y + this.height,
+        }
   }
 
   private getGloveDefaultXOffset() {
@@ -67,38 +63,35 @@ export class Player {
   private getGloveXOffset() {
     const middlePunchOffset: number = this.isFacingRight() ? 62 : 43
     const fullPunchOffset: number = this.isFacingRight() ? 105 : 0
-
-    if (this.state === 'idle' || this.state === 'hit') {
-      return this.getGloveDefaultXOffset()
-    }
-
     const currentFrameIndex = this.playerAnimation.getCurrentFrameIndex()
 
-    if (currentFrameIndex === 0) return middlePunchOffset
-    if (currentFrameIndex === 1) return fullPunchOffset
-    if (currentFrameIndex === 2) return middlePunchOffset
-
-    // never should get here but oh well...
-    return this.getGloveDefaultXOffset()
+    return this.state === 'idle' || this.state === 'hit'
+      ? this.getGloveDefaultXOffset()
+      : currentFrameIndex === 0
+        ? middlePunchOffset
+        : currentFrameIndex === 1
+          ? fullPunchOffset
+          : currentFrameIndex === 2
+            ? middlePunchOffset
+            : this.getGloveDefaultXOffset()
   }
 
   private getGloveBoundingBox(top: number, bottom: number, update: boolean) {
     const xOffset = update ? this.getGloveXOffset() : this.getGloveDefaultXOffset()
 
-    if (this.isFacingRight())
-      return {
-        left: this.x + xOffset,
-        right: this.x + xOffset + this.gloveWidth,
-        top: top,
-        bottom: bottom,
-      }
-
-    return { 
-      left: this.x + xOffset,
-      right: this.x + xOffset + this.gloveWidth,
-      top: top,
-      bottom: bottom,
-    }
+    return this.isFacingRight()
+      ? {
+          left: this.x + xOffset,
+          right: this.x + xOffset + this.gloveWidth,
+          top: top,
+          bottom: bottom,
+        }
+      : {
+          left: this.x + xOffset,
+          right: this.x + xOffset + this.gloveWidth,
+          top: top,
+          bottom: bottom,
+        }
   }
 
   public getTopGloveBoundingBox() {
@@ -106,7 +99,11 @@ export class Player {
   }
 
   public getBottomGloveBoundingBox() {
-    return this.getGloveBoundingBox(this.y + this.height - this.gloveHeight, this.y + this.height, this.state === 'punchingBottom')
+    return this.getGloveBoundingBox(
+      this.y + this.height - this.gloveHeight,
+      this.y + this.height,
+      this.state === 'punchingBottom',
+    )
   }
 
   public getHeadBoundingBox() {
@@ -118,28 +115,67 @@ export class Player {
 
     return this.isFacingRight()
       ? {
-        left: this.x + horizontalDisplacement,
-        right: this.x + horizontalDisplacement + headWidth,
-        top: top,
-        bottom: bottom,
-      }
+          left: this.x + horizontalDisplacement,
+          right: this.x + horizontalDisplacement + headWidth,
+          top: top,
+          bottom: bottom,
+        }
       : {
-        left: this.x + this.fullWidth - horizontalDisplacement - headWidth,
-        right: this.x + this.fullWidth - horizontalDisplacement,
-        top: top,
-        bottom: bottom,
-      }
+          left: this.x + this.fullWidth - horizontalDisplacement - headWidth,
+          right: this.x + this.fullWidth - horizontalDisplacement,
+          top: top,
+          bottom: bottom,
+        }
+  }
+
+  private isColliding(
+    a: {
+      left: number
+      right: number
+      top: number
+      bottom: number
+    },
+    b: {
+      left: number
+      right: number
+      top: number
+      bottom: number
+    },
+  ) {
+    return a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
   }
 
   protected isBodyCollidingWithEnemy() {
     const playerBoundingBox = this.getMainBoundingBox()
     const enemyBoundingBox = Overseer.getEnemy(this).getMainBoundingBox()
 
-    return (
-      playerBoundingBox.right > enemyBoundingBox.left &&
-      playerBoundingBox.left < enemyBoundingBox.right &&
-      playerBoundingBox.bottom > enemyBoundingBox.top &&
-      playerBoundingBox.top < enemyBoundingBox.bottom
+    return this.isColliding(playerBoundingBox, enemyBoundingBox)
+  }
+
+  private isHittingEnemyHead() {
+    const playerGlovesBoundingBoxes = [
+      this.getTopGloveBoundingBox(),
+      this.getBottomGloveBoundingBox(),
+    ]
+    const enemyHeadBoundingBox = Overseer.getEnemy(this).getHeadBoundingBox()
+
+    return playerGlovesBoundingBoxes.some((playerGlove) =>
+      this.isColliding(playerGlove, enemyHeadBoundingBox),
+    )
+  }
+
+  private isHittingEnemyGlove() {
+    const playerGlovesBoundingBoxes = [
+      this.getTopGloveBoundingBox(),
+      this.getBottomGloveBoundingBox(),
+    ]
+    const enemyGlovesBoundingBoxes = [
+      Overseer.getEnemy(this).getTopGloveBoundingBox(),
+      Overseer.getEnemy(this).getBottomGloveBoundingBox(),
+    ]
+
+    return playerGlovesBoundingBoxes.some((playerGlove) =>
+      enemyGlovesBoundingBoxes.some((enemyGlove) => this.isColliding(playerGlove, enemyGlove)),
     )
   }
 
@@ -225,19 +261,17 @@ export class Player {
 
   protected handlePunching() {
     if (this.state !== 'idle') return
-    
+
     if (this.isAboveEnemy()) {
       this.state = 'punchingBottom'
       this.playerAnimation.setAnimation(
         this.isFacingRight() ? faceRightBottomPunch : faceLeftBottomPunch,
       )
       return
-    } 
-    
+    }
+
     this.state = 'punchingTop'
-    this.playerAnimation.setAnimation(
-      this.isFacingRight() ? faceRightTopPunch : faceLeftTopPunch,
-    )
+    this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightTopPunch : faceLeftTopPunch)
   }
 
   public getVerticalCenter() {
@@ -271,5 +305,13 @@ export class Player {
   public update(dt: number) {
     this.updateFacingDirection()
     this.playerAnimation.playAnimation(dt)
+
+    if (this.isHittingEnemyHead()) {
+      console.log('head hit')
+    }
+
+    if (this.isHittingEnemyGlove()) {
+      console.log('glove hit')
+    }
   }
 }
