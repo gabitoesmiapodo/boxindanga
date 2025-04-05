@@ -12,7 +12,7 @@ import { ringInnerBounds } from './ring'
 
 export type PlayerType = 'playerOne' | 'playerTwo'
 type Direction = 'left' | 'right'
-type PlayerState = 'punching' | 'hit' | 'idle'
+type PlayerState = 'punchingTop' | 'punchingBottom' | 'hit' | 'idle'
 
 export class Player {
   
@@ -22,13 +22,15 @@ export class Player {
   private readonly height = 110
   private readonly fullWidth = 143                // width when the arm is extended
   private readonly width = 62                     // width when idle (actually a little less to allow for some overlap, real width is 66)
-  private readonly actualWidth = 66
+  private readonly actualWidth = 66 
   private readonly playerSpeedX = 325
   private readonly playerSpeedY = 200
+  private readonly gloveHeight = 30
+  private readonly gloveWidth = 38
 
-  protected x = 0                                 // will be set in the player constructor according to the player type
-  protected y = 0                                 // will be set in the player constructor according to the player type
-  protected color = '#649335'           
+  protected x = 0                                 // set in the constructor according to player type
+  protected y = 0                                 // set in the constructor according to player type
+  protected color = '#649335'                     // set in the constructor according to player type
   protected state: PlayerState = 'idle'
 
   public readonly playerType: PlayerType
@@ -57,26 +59,76 @@ export class Player {
       }
   }
 
+  private getGloveDefaultXOffset() {
+    return this.isFacingRight() ? 28 : 77
+  }
+
   // this is the worst thing ever programmed
-  protected getXOffset() {
-    const defaultOffset: number = this.isFacingRight() ? 28 : 77
+  private getGloveXOffset() {
     const middlePunchOffset: number = this.isFacingRight() ? 62 : 43
     const fullPunchOffset: number = this.isFacingRight() ? 105 : 0
 
     if (this.state === 'idle' || this.state === 'hit') {
-      return defaultOffset
+      return this.getGloveDefaultXOffset()
     }
 
-    if (this.state === 'punching') {
-      const currentFrameIndex = this.playerAnimation.getCurrentFrameIndex()
+    const currentFrameIndex = this.playerAnimation.getCurrentFrameIndex()
 
-      if (currentFrameIndex === 0) return middlePunchOffset
-      if (currentFrameIndex === 1) return fullPunchOffset
-      if (currentFrameIndex === 2) return middlePunchOffset
-    }
+    if (currentFrameIndex === 0) return middlePunchOffset
+    if (currentFrameIndex === 1) return fullPunchOffset
+    if (currentFrameIndex === 2) return middlePunchOffset
 
     // never should get here but oh well...
-    return defaultOffset
+    return this.getGloveDefaultXOffset()
+  }
+
+  private getGloveBoundingBox(top: number, bottom: number, update: boolean) {
+    const xOffset = update ? this.getGloveXOffset() : this.getGloveDefaultXOffset()
+
+    if (this.isFacingRight())
+      return {
+        left: this.x + xOffset,
+        right: this.x + xOffset + this.gloveWidth,
+        top: top,
+        bottom: bottom,
+      }
+
+    return { 
+      left: this.x + xOffset,
+      right: this.x + xOffset + this.gloveWidth,
+      top: top,
+      bottom: bottom,
+    }
+  }
+
+  public getTopGloveBoundingBox() {
+    return this.getGloveBoundingBox(this.y, this.y + this.gloveHeight, this.state === 'punchingTop')
+  }
+
+  public getBottomGloveBoundingBox() {
+    return this.getGloveBoundingBox(this.y + this.height - this.gloveHeight, this.y + this.height, this.state === 'punchingBottom')
+  }
+
+  public getHeadBoundingBox() {
+    const headHeight: number = 30
+    const headWidth: number = 48
+    const top: number = this.y + 40
+    const bottom: number = top + headHeight
+    const horizontalDisplacement: number = 9
+
+    return this.isFacingRight()
+      ? {
+        left: this.x + horizontalDisplacement,
+        right: this.x + horizontalDisplacement + headWidth,
+        top: top,
+        bottom: bottom,
+      }
+      : {
+        left: this.x + this.fullWidth - horizontalDisplacement - headWidth,
+        right: this.x + this.fullWidth - horizontalDisplacement,
+        top: top,
+        bottom: bottom,
+      }
   }
 
   protected isBodyCollidingWithEnemy() {
@@ -158,7 +210,7 @@ export class Player {
     ) {
       this.facingDirection = 'left'
       this.x = this.x - this.width - xOffset
-      this.playerAnimation.setAnimation(faceLeftIdle)
+      this.playerAnimation.resetAnimation()
     }
 
     if (
@@ -167,24 +219,25 @@ export class Player {
     ) {
       this.facingDirection = 'right'
       this.x = this.x + this.width + xOffset
-      this.playerAnimation.setAnimation(faceRightIdle)
+      this.playerAnimation.resetAnimation()
     }
   }
 
   protected handlePunching() {
-    if (this.state === 'idle') {
-      this.state = 'punching'
-
-      if (this.isAboveEnemy()) {
-        this.playerAnimation.setAnimation(
-          this.isFacingRight() ? faceRightBottomPunch : faceLeftBottomPunch,
-        )
-      } else {
-        this.playerAnimation.setAnimation(
-          this.isFacingRight() ? faceRightTopPunch : faceLeftTopPunch,
-        )
-      }
-    }
+    if (this.state !== 'idle') return
+    
+    if (this.isAboveEnemy()) {
+      this.state = 'punchingBottom'
+      this.playerAnimation.setAnimation(
+        this.isFacingRight() ? faceRightBottomPunch : faceLeftBottomPunch,
+      )
+      return
+    } 
+    
+    this.state = 'punchingTop'
+    this.playerAnimation.setAnimation(
+      this.isFacingRight() ? faceRightTopPunch : faceLeftTopPunch,
+    )
   }
 
   public getVerticalCenter() {
@@ -213,68 +266,6 @@ export class Player {
 
   public getY() {
     return this.y
-  }
-
-  public getGloveBoundingBox() {
-    const gloveHeight: number = 30
-    const gloveWidth: number = 38
-    const topTopGlove: number = this.y
-    const bottomTopGlove: number = this.y + gloveHeight
-    const topBottomGlove: number = this.y + this.height - gloveHeight
-    const bottomBottomGlove: number = this.y + this.height
-
-    if (this.isFacingRight())
-      return {
-        topGlove: {
-          left: this.x + this.getXOffset(),
-          right: this.x + this.getXOffset() + gloveWidth,
-          top: topTopGlove,
-          bottom: bottomTopGlove,
-        },
-        bottomGlove: {
-          left: this.x + this.getXOffset(),
-          right: this.x + this.getXOffset() + gloveWidth,
-          top: topBottomGlove,
-          bottom: bottomBottomGlove,
-        },
-      }
-
-    return {
-      topGlove: {
-        left: this.x + this.getXOffset(),
-        right: this.x + this.getXOffset() + gloveWidth,
-        top: topTopGlove,
-        bottom: bottomTopGlove,
-      },
-      bottomGlove: {
-        left: this.x + this.getXOffset(),
-        right: this.x + this.getXOffset() + gloveWidth,
-        top: topBottomGlove,
-        bottom: bottomBottomGlove,
-      },
-    }
-  }
-
-  public getHeadBoundingBox() {
-    const headHeight: number = 30
-    const headWidth: number = 48
-    const top: number = this.y + 40
-    const bottom: number = top + headHeight
-    const horizontalDisplacement: number = 9
-
-    return this.isFacingRight()
-      ? {
-        left: this.x + horizontalDisplacement,
-        right: this.x + horizontalDisplacement + headWidth,
-        top: top,
-        bottom: bottom,
-      }
-      : {
-        left: this.x + this.fullWidth - horizontalDisplacement - headWidth,
-        right: this.x + this.fullWidth - horizontalDisplacement,
-        top: top,
-        bottom: bottom,
-      }
   }
 
   public update(dt: number) {

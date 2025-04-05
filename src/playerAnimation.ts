@@ -17,7 +17,7 @@ export class PlayerAnimation {
     this.player = player
   }
 
-  private resetAnimation() {
+  public resetAnimation() {
     this.animationTimeElapsed = 0
     this.currentFrameIndex = 0
     this.currentAnimation = this.player.isFacingRight() ? faceRightIdle : faceLeftIdle
@@ -36,8 +36,12 @@ export class PlayerAnimation {
     if (this.animationTimeElapsed >= this.currentAnimation[this.currentFrameIndex].speed) {
       this.animationTimeElapsed = 0
 
-      if (this.isAtAnimationEnd()) this.resetAnimation()
-      else this.currentFrameIndex += 1
+      if (this.isAtAnimationEnd()) {
+        this.resetAnimation()
+      }
+      else {
+        this.currentFrameIndex += 1
+      }
     }
   }
 

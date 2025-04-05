@@ -7,7 +7,7 @@ export class PlayerTwo extends Player {
 
     // this.x = ringInnerBounds.right - playerProperties.width
     // this.y = ringInnerBounds.bottom - playerProperties.height
-    this.x = 250
+    this.x = 300
     this.y = 250
     this.color = playerTwoColor
   }

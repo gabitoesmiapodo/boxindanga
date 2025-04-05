@@ -28,19 +28,20 @@ export const drawSprite = (sprite: string, color: string, x: number, y: number) 
 export const drawBoundingBoxes = (player: Player) => {
   // debug
   Canvas.ctx.fillStyle = 'rgba(0, 0, 256, 0.2)'
+
   // top glove
   Canvas.ctx.fillRect(
-    player.getGloveBoundingBox().topGlove.left,
-    player.getGloveBoundingBox().topGlove.top,
-    player.getGloveBoundingBox().topGlove.right - player.getGloveBoundingBox().topGlove.left,
-    player.getGloveBoundingBox().topGlove.bottom - player.getGloveBoundingBox().topGlove.top,
+    player.getTopGloveBoundingBox().left,
+    player.getTopGloveBoundingBox().top,
+    player.getTopGloveBoundingBox().right - player.getTopGloveBoundingBox().left,
+    player.getTopGloveBoundingBox().bottom - player.getTopGloveBoundingBox().top,
   )
   // bottom glove
   Canvas.ctx.fillRect(
-    player.getGloveBoundingBox().bottomGlove.left,
-    player.getGloveBoundingBox().bottomGlove.top,
-    player.getGloveBoundingBox().bottomGlove.right - player.getGloveBoundingBox().bottomGlove.left,
-    player.getGloveBoundingBox().bottomGlove.bottom - player.getGloveBoundingBox().bottomGlove.top,
+    player.getBottomGloveBoundingBox().left,
+    player.getBottomGloveBoundingBox().top,
+    player.getBottomGloveBoundingBox().right - player.getBottomGloveBoundingBox().left,
+    player.getBottomGloveBoundingBox().bottom - player.getBottomGloveBoundingBox().top,
   )
 
   // head
