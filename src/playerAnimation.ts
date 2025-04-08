@@ -1,6 +1,6 @@
 import { type Animation, faceLeftIdle, faceRightIdle } from './animations'
 import type { Player } from './player'
-import { drawBoundingBoxes, drawSprite } from './utils'
+import { drawSprite } from './utils'
 
 export class PlayerAnimation {
   private currentAnimation: Animation
@@ -31,7 +31,7 @@ export class PlayerAnimation {
       this.player.getX(),
       this.player.getY(),
     )
-    drawBoundingBoxes(this.player)
+    // drawBoundingBoxes(this.player)
     this.animationTimeElapsed += dt
 
     if (this.animationTimeElapsed >= this.currentAnimation[this.currentFrameIndex].speed) {
