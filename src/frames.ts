@@ -42,7 +42,7 @@ const bottomArm02 = reverseFrameVertically(topArm02)
 const bottomArm03 = reverseFrameVertically(topArm03)
 
 // boxer when hit
-export const frame00Right = `${topArm00}\n${head00}\n${bottomArm00}`
+export const frame00Right = `${topArm01}\n${head00}\n${bottomArm01}`
 export const frame00Left = reverseFrameHorizontally(frame00Right)
 
 // boxer when neutral

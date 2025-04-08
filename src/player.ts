@@ -33,7 +33,7 @@ export class Player {
   private readonly playerSpeedX = 325
   private readonly playerSpeedY = 200
   private readonly hitPlayerSpeedX = 300
-  private readonly hitPlayerSpeedY = 290
+  private readonly hitPlayerSpeedY = 220
   private readonly headHeight = 30
   private readonly headWidth = 45
   private readonly gloveHeight = 28

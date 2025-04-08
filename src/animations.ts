@@ -40,24 +40,33 @@ const gloveFullPunchXOffsetLeft = 0
 const animationSpeed = 0.015
 const animationSpeedSm = 0.01
 
+const getFrame = (
+  sprite: string,
+  speed: number,
+  multipler: number,
+  gloveXOffset: number,
+): Frame => {
+  return {
+    sprite,
+    speed: animationSpeed * multipler,
+    gloveXOffset,
+  }
+}
+
 // Neutral stance
-export const faceRightIdle = [
-  { sprite: frame01Right, speed: animationSpeed * 2, gloveXOffset: gloveDefaultXOffsetRight },
-]
-export const faceLeftIdle = [
-  { sprite: frame01Left, speed: animationSpeed * 2, gloveXOffset: gloveDefaultXOffsetLeft },
-]
+export const faceRightIdle = [getFrame(frame01Right, animationSpeed, 1, gloveDefaultXOffsetRight)]
+export const faceLeftIdle = [getFrame(frame01Left, animationSpeed, 1, gloveDefaultXOffsetLeft)]
 
 // Got hit
 export const faceRightHit = [
-  { sprite: frame00Right, speed: animationSpeedSm * 14, gloveXOffset: gloveDefaultXOffsetRight },
-  { sprite: frame02Right, speed: animationSpeedSm * 4, gloveXOffset: gloveContractedXOffsetRight },
-  { sprite: frame01Right, speed: animationSpeedSm * 12, gloveXOffset: gloveDefaultXOffsetRight },
+  getFrame(frame00Right, animationSpeedSm, 14, gloveDefaultXOffsetRight),
+  getFrame(frame01Right, animationSpeedSm, 4, gloveContractedXOffsetRight),
+  getFrame(frame02Right, animationSpeedSm, 12, gloveMiddlePunchXOffsetRight),
 ]
 export const faceLeftHit = [
-  { sprite: frame00Left, speed: animationSpeedSm * 14, gloveXOffset: gloveDefaultXOffsetLeft },
-  { sprite: frame02Left, speed: animationSpeedSm * 4, gloveXOffset: gloveContractedXOffsetLeft },
-  { sprite: frame01Left, speed: animationSpeedSm * 12, gloveXOffset: gloveDefaultXOffsetLeft },
+  getFrame(frame00Left, animationSpeedSm, 14, gloveDefaultXOffsetLeft),
+  getFrame(frame01Left, animationSpeedSm, 4, gloveContractedXOffsetLeft),
+  getFrame(frame02Left, animationSpeedSm, 12, gloveMiddlePunchXOffsetLeft),
 ]
 
 /**
@@ -66,122 +75,42 @@ export const faceLeftHit = [
  */
 // Top punch right
 export const faceRightTopPunch: Animation = [
-  {
-    sprite: frame00PunchRightTop,
-    speed: animationSpeed * 3,
-    gloveXOffset: gloveContractedXOffsetRight,
-  },
-  { sprite: frame01Right, speed: animationSpeed * 2, gloveXOffset: gloveDefaultXOffsetRight },
-  {
-    sprite: frame01PunchRightTop,
-    speed: animationSpeed * 2,
-    gloveXOffset: gloveMiddlePunchXOffsetRight,
-  },
-  {
-    sprite: frame02PunchRightTop,
-    speed: animationSpeed * 6,
-    gloveXOffset: gloveFullPunchXOffsetRight,
-  },
-  {
-    sprite: frame01PunchRightTop,
-    speed: animationSpeed * 8,
-    gloveXOffset: gloveMiddlePunchXOffsetRight,
-  },
-  { sprite: frame01Right, speed: animationSpeed * 8, gloveXOffset: gloveDefaultXOffsetRight },
-  {
-    sprite: frame00PunchRightTop,
-    speed: animationSpeed * 12,
-    gloveXOffset: gloveContractedXOffsetRight,
-  },
+  getFrame(frame00PunchRightTop, animationSpeed, 3, gloveContractedXOffsetRight),
+  getFrame(frame01Right, animationSpeed, 2, gloveDefaultXOffsetRight),
+  getFrame(frame01PunchRightTop, animationSpeed, 2, gloveMiddlePunchXOffsetRight),
+  getFrame(frame02PunchRightTop, animationSpeed, 6, gloveFullPunchXOffsetRight),
+  getFrame(frame01PunchRightTop, animationSpeed, 8, gloveMiddlePunchXOffsetRight),
+  getFrame(frame01Right, animationSpeed, 8, gloveDefaultXOffsetRight),
+  getFrame(frame00PunchRightTop, animationSpeed, 12, gloveContractedXOffsetRight),
 ]
 
 export const faceLeftTopPunch: Animation = [
-  {
-    sprite: frame00PunchLeftTop,
-    speed: animationSpeed * 3,
-    gloveXOffset: gloveContractedXOffsetLeft,
-  },
-  { sprite: frame01Left, speed: animationSpeed * 2, gloveXOffset: gloveDefaultXOffsetLeft },
-  {
-    sprite: frame01PunchLeftTop,
-    speed: animationSpeed * 2,
-    gloveXOffset: gloveMiddlePunchXOffsetLeft,
-  },
-  {
-    sprite: frame02PunchLeftTop,
-    speed: animationSpeed * 6,
-    gloveXOffset: gloveFullPunchXOffsetLeft,
-  },
-  {
-    sprite: frame01PunchLeftTop,
-    speed: animationSpeed * 8,
-    gloveXOffset: gloveMiddlePunchXOffsetLeft,
-  },
-  { sprite: frame01Left, speed: animationSpeed * 8, gloveXOffset: gloveDefaultXOffsetLeft },
-  {
-    sprite: frame00PunchLeftTop,
-    speed: animationSpeed * 12,
-    gloveXOffset: gloveContractedXOffsetLeft,
-  },
+  getFrame(frame00PunchLeftTop, animationSpeed, 3, gloveContractedXOffsetLeft),
+  getFrame(frame01Left, animationSpeed, 2, gloveDefaultXOffsetLeft),
+  getFrame(frame01PunchLeftTop, animationSpeed, 2, gloveMiddlePunchXOffsetLeft),
+  getFrame(frame02PunchLeftTop, animationSpeed, 6, gloveFullPunchXOffsetLeft),
+  getFrame(frame01PunchLeftTop, animationSpeed, 8, gloveMiddlePunchXOffsetLeft),
+  getFrame(frame01Left, animationSpeed, 8, gloveDefaultXOffsetLeft),
+  getFrame(frame00PunchLeftTop, animationSpeed, 12, gloveContractedXOffsetLeft),
 ]
 
 // Bottom punch
 export const faceRightBottomPunch: Animation = [
-  {
-    sprite: frame00PunchRightBottom,
-    speed: animationSpeed * 3,
-    gloveXOffset: gloveContractedXOffsetRight,
-  },
-  { sprite: frame01Right, speed: animationSpeed * 2, gloveXOffset: gloveDefaultXOffsetRight },
-  {
-    sprite: frame01PunchRightBottom,
-    speed: animationSpeed * 2,
-    gloveXOffset: gloveMiddlePunchXOffsetRight,
-  },
-  {
-    sprite: frame02PunchRightBottom,
-    speed: animationSpeed * 6,
-    gloveXOffset: gloveFullPunchXOffsetRight,
-  },
-  {
-    sprite: frame01PunchRightBottom,
-    speed: animationSpeed * 8,
-    gloveXOffset: gloveMiddlePunchXOffsetRight,
-  },
-  { sprite: frame01Right, speed: animationSpeed * 8, gloveXOffset: gloveDefaultXOffsetRight },
-  {
-    sprite: frame00PunchRightBottom,
-    speed: animationSpeed * 12,
-    gloveXOffset: gloveContractedXOffsetRight,
-  },
+  getFrame(frame00PunchRightBottom, animationSpeed, 3, gloveContractedXOffsetRight),
+  getFrame(frame01Right, animationSpeed, 2, gloveDefaultXOffsetRight),
+  getFrame(frame01PunchRightBottom, animationSpeed, 2, gloveMiddlePunchXOffsetRight),
+  getFrame(frame02PunchRightBottom, animationSpeed, 6, gloveFullPunchXOffsetRight),
+  getFrame(frame01PunchRightBottom, animationSpeed, 8, gloveMiddlePunchXOffsetRight),
+  getFrame(frame01Right, animationSpeed, 8, gloveDefaultXOffsetRight),
+  getFrame(frame00PunchRightBottom, animationSpeed, 12, gloveContractedXOffsetRight),
 ]
 
 export const faceLeftBottomPunch: Animation = [
-  {
-    sprite: frame00PunchLeftBottom,
-    speed: animationSpeed * 3,
-    gloveXOffset: gloveContractedXOffsetLeft,
-  },
-  { sprite: frame01Left, speed: animationSpeed * 2, gloveXOffset: gloveDefaultXOffsetLeft },
-  {
-    sprite: frame01PunchLeftBottom,
-    speed: animationSpeed * 2,
-    gloveXOffset: gloveMiddlePunchXOffsetLeft,
-  },
-  {
-    sprite: frame02PunchLeftBottom,
-    speed: animationSpeed * 6,
-    gloveXOffset: gloveFullPunchXOffsetLeft,
-  },
-  {
-    sprite: frame01PunchLeftBottom,
-    speed: animationSpeed * 8,
-    gloveXOffset: gloveMiddlePunchXOffsetLeft,
-  },
-  { sprite: frame01Left, speed: animationSpeed * 8, gloveXOffset: gloveDefaultXOffsetLeft },
-  {
-    sprite: frame00PunchLeftBottom,
-    speed: animationSpeed * 12,
-    gloveXOffset: gloveContractedXOffsetLeft,
-  },
+  getFrame(frame00PunchLeftBottom, animationSpeed, 3, gloveContractedXOffsetLeft),
+  getFrame(frame01Left, animationSpeed, 2, gloveDefaultXOffsetLeft),
+  getFrame(frame01PunchLeftBottom, animationSpeed, 2, gloveMiddlePunchXOffsetLeft),
+  getFrame(frame02PunchLeftBottom, animationSpeed, 6, gloveFullPunchXOffsetLeft),
+  getFrame(frame01PunchLeftBottom, animationSpeed, 8, gloveMiddlePunchXOffsetLeft),
+  getFrame(frame01Left, animationSpeed, 8, gloveDefaultXOffsetLeft),
+  getFrame(frame00PunchLeftBottom, animationSpeed, 12, gloveContractedXOffsetLeft),
 ]
