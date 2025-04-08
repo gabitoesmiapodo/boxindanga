@@ -49,6 +49,10 @@ export class PlayerAnimation {
     this.currentAnimation = animation
   }
 
+  public getAnimation() {
+    return this.currentAnimation
+  }
+
   public getCurrentFrameIndex() {
     return this.currentFrameIndex
   }

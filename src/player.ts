@@ -21,10 +21,12 @@ export class Player {
 
   private readonly height = 110
   private readonly fullWidth = 134 // width when the arm is extended
-  private readonly width = 59 // width when idle (actually a little less to allow for some overlap, real width is 63)
+  private readonly width = 58 // width when idle (actually a little less to allow for some overlap, real width is 63)
   private readonly actualWidth = 63
   private readonly playerSpeedX = 325
   private readonly playerSpeedY = 200
+  private readonly headHeight = 30
+  private readonly headWidth = 45
   private readonly gloveHeight = 31
   private readonly gloveWidth = 36
 
@@ -44,56 +46,29 @@ export class Player {
     return this.isFacingRight()
       ? {
           left: this.x,
-          right: this.x + this.actualWidth,
+          right: this.x + this.width,
           top: this.y,
           bottom: this.y + this.height,
         }
       : {
-          left: this.x + this.fullWidth - this.actualWidth,
+          left: this.x + this.fullWidth - this.width,
           right: this.x + this.fullWidth,
           top: this.y,
           bottom: this.y + this.height,
         }
   }
 
-  private getGloveDefaultXOffset() {
-    return this.isFacingRight() ? 27 : 71
-  }
-
-  // this is the worst thing ever programmed
-  private getGloveXOffset() {
-    const backPunchOffset: number = this.isFacingRight() ? 18 : 80
-    const middlePunchOffset: number = this.isFacingRight() ? 62 : 40
-    const fullPunchOffset: number = this.isFacingRight() ? 98 : 0
-    const currentFrameIndex = this.playerAnimation.getCurrentFrameIndex()
-
-    return this.state === 'idle' || currentFrameIndex === 1 || currentFrameIndex === 4
-      ? this.getGloveDefaultXOffset()
-      : currentFrameIndex === 2
-        ? middlePunchOffset
-        : currentFrameIndex === 3
-          ? fullPunchOffset
-          : this.state === 'hit' || currentFrameIndex === 0 || currentFrameIndex === 5
-            ? backPunchOffset
-            : this.getGloveDefaultXOffset()
-  }
-
   private getGloveBoundingBox(top: number, bottom: number, update: boolean) {
-    const xOffset = update ? this.getGloveXOffset() : this.getGloveDefaultXOffset()
+    // const xOffset = update ? this.getGloveXOffset() : this.getGloveDefaultXOffset()
+    const xOffset =
+      this.playerAnimation.getAnimation()[this.playerAnimation.getCurrentFrameIndex()].gloveXOffset
 
-    return this.isFacingRight()
-      ? {
-          left: this.x + xOffset,
-          right: this.x + xOffset + this.gloveWidth,
-          top: top,
-          bottom: bottom,
-        }
-      : {
-          left: this.x + xOffset,
-          right: this.x + xOffset + this.gloveWidth,
-          top: top,
-          bottom: bottom,
-        }
+    return {
+      left: this.x + xOffset,
+      right: this.x + xOffset + this.gloveWidth,
+      top: top,
+      bottom: bottom,
+    }
   }
 
   public getTopGloveBoundingBox() {
@@ -109,21 +84,19 @@ export class Player {
   }
 
   public getHeadBoundingBox() {
-    const headHeight: number = 30
-    const headWidth: number = 45
     const top: number = this.y + 40
-    const bottom: number = top + headHeight
+    const bottom: number = top + this.headHeight
     const horizontalDisplacement: number = 9
 
     return this.isFacingRight()
       ? {
           left: this.x + horizontalDisplacement,
-          right: this.x + horizontalDisplacement + headWidth,
+          right: this.x + horizontalDisplacement + this.headWidth,
           top: top,
           bottom: bottom,
         }
       : {
-          left: this.x + this.fullWidth - horizontalDisplacement - headWidth,
+          left: this.x + this.fullWidth - horizontalDisplacement - this.headWidth,
           right: this.x + this.fullWidth - horizontalDisplacement,
           top: top,
           bottom: bottom,
@@ -220,8 +193,6 @@ export class Player {
   }
 
   private updateFacingDirection() {
-    const xOffset = 10 // hacky but will do
-
     // do not turn around if not idle
     if (this.state !== 'idle') return
 
@@ -230,7 +201,7 @@ export class Player {
       this.isFacingRight()
     ) {
       this.facingDirection = 'left'
-      this.x = this.x - this.width - xOffset
+      this.x = this.x - this.width
       this.playerAnimation.resetAnimation()
     }
 
@@ -239,7 +210,7 @@ export class Player {
       this.facingDirection === 'left'
     ) {
       this.facingDirection = 'right'
-      this.x = this.x + this.width + xOffset
+      this.x = this.x + this.width
       this.playerAnimation.resetAnimation()
     }
   }

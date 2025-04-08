@@ -20,39 +20,75 @@ export const ringInnerBounds = {
 }
 
 export const drawRing = () => {
+  const horizontalLineXStart = ringProperties.x
+  const horizontalLineXEnd = ringProperties.x + ringProperties.width
+  const horizontalTopLineY = ringProperties.y - ringProperties.horizontalLineWidth / 2
+  const horizontalBottomLineY =
+    ringProperties.y + ringProperties.height + ringProperties.horizontalLineWidth / 2
+
+  const verticalLineYStart = ringProperties.y
+  const verticalLineYEnd = ringProperties.y + ringProperties.height
+  const verticalLeftLineX = ringProperties.x - ringProperties.verticalLineWidth / 2
+  const verticalRightLineX =
+    ringProperties.x + ringProperties.width + ringProperties.verticalLineWidth / 2
+
   Canvas.ctx.strokeStyle = ringProperties.ringColor
 
   // Draw the horizontal lines
   Canvas.ctx.lineWidth = ringProperties.horizontalLineWidth
 
+  // Top line
   Canvas.ctx.beginPath()
-  Canvas.ctx.moveTo(107, 77)
-  Canvas.ctx.lineTo(533, 77)
+  Canvas.ctx.moveTo(horizontalLineXStart, horizontalTopLineY)
+  Canvas.ctx.lineTo(horizontalLineXEnd, horizontalTopLineY)
   Canvas.ctx.stroke()
 
+  // bottom line
   Canvas.ctx.beginPath()
-  Canvas.ctx.moveTo(107, 421)
-  Canvas.ctx.lineTo(533, 421)
+  Canvas.ctx.moveTo(horizontalLineXStart, horizontalBottomLineY)
+  Canvas.ctx.lineTo(horizontalLineXEnd, horizontalBottomLineY)
   Canvas.ctx.stroke()
 
   // Draw the vertical lines
   Canvas.ctx.lineWidth = ringProperties.verticalLineWidth
 
+  // Left line
   Canvas.ctx.beginPath()
-  Canvas.ctx.moveTo(98, 84)
-  Canvas.ctx.lineTo(98, 414)
+  Canvas.ctx.moveTo(verticalLeftLineX, verticalLineYStart)
+  Canvas.ctx.lineTo(verticalLeftLineX, verticalLineYEnd)
   Canvas.ctx.stroke()
 
+  // Right line
   Canvas.ctx.beginPath()
-  Canvas.ctx.moveTo(542, 84)
-  Canvas.ctx.lineTo(542, 414)
+  Canvas.ctx.moveTo(verticalRightLineX, verticalLineYStart)
+  Canvas.ctx.lineTo(verticalRightLineX, verticalLineYEnd)
   Canvas.ctx.stroke()
 
   // Draw the corners
   Canvas.ctx.fillStyle = ringProperties.ringColor
 
-  Canvas.ctx.fillRect(71, 59, 36, 25)
-  Canvas.ctx.fillRect(533, 59, 36, 25)
-  Canvas.ctx.fillRect(71, 414, 36, 25)
-  Canvas.ctx.fillRect(533, 414, 36, 25)
+  const cornerWidth = 36
+  const cornerHeight = 25
+  const leftCornerX = horizontalLineXStart - cornerWidth
+  const rightCornerX = horizontalLineXEnd
+  const topCornerY = verticalLineYStart - cornerHeight
+  const bottomCornerY = verticalLineYEnd
+
+  // left top
+  Canvas.ctx.fillRect(leftCornerX, topCornerY, cornerWidth, cornerHeight)
+  // left bottom
+  Canvas.ctx.fillRect(leftCornerX, bottomCornerY, cornerWidth, cornerHeight)
+  // right top
+  Canvas.ctx.fillRect(rightCornerX, topCornerY, cornerWidth, cornerHeight)
+  // right bottom
+  Canvas.ctx.fillRect(rightCornerX, bottomCornerY, cornerWidth, cornerHeight)
+
+  // Draw the inner bounds
+  // Canvas.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
+  // Canvas.ctx.fillRect(
+  //   ringInnerBounds.left,
+  //   ringInnerBounds.top,
+  //   ringInnerBounds.right - ringInnerBounds.left,
+  //   ringInnerBounds.bottom - ringInnerBounds.top,
+  // )
 }

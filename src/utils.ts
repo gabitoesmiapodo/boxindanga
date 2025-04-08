@@ -28,8 +28,12 @@ export const drawSprite = (sprite: string, color: string, x: number, y: number) 
   sprite.split('\n').forEach((line, row) => {
     line.split('').forEach((char, column) => {
       if (char === 'X') {
+        Canvas.ctx.fillStyle = color
         Canvas.ctx.fillRect(x + column * pixelSize, y + row * pixelSize, pixelSize, pixelSize)
       }
+      // debug
+      // Canvas.ctx.fillStyle = 'rgba(0, 0, 255, 0.5)'
+      // Canvas.ctx.fillRect(x + column * pixelSize, y + row * pixelSize, pixelSize, pixelSize)
     })
   })
 }
