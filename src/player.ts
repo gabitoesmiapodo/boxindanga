@@ -9,6 +9,7 @@ import {
 import { Overseer } from './overseer'
 import { PlayerAnimation } from './playerAnimation'
 import { ringInnerBounds } from './ring'
+import { isColliding } from './utils'
 
 export type PlayerType = 'playerOne' | 'playerTwo'
 type Direction = 'left' | 'right'
@@ -19,13 +20,13 @@ export class Player {
   private facingDirection: Direction = 'right' // direction is sorted out in the first update
 
   private readonly height = 110
-  private readonly fullWidth = 143 // width when the arm is extended
-  private readonly width = 62 // width when idle (actually a little less to allow for some overlap, real width is 66)
-  private readonly actualWidth = 66
+  private readonly fullWidth = 134 // width when the arm is extended
+  private readonly width = 59 // width when idle (actually a little less to allow for some overlap, real width is 63)
+  private readonly actualWidth = 63
   private readonly playerSpeedX = 325
   private readonly playerSpeedY = 200
-  private readonly gloveHeight = 30
-  private readonly gloveWidth = 38
+  private readonly gloveHeight = 31
+  private readonly gloveWidth = 36
 
   protected x = 0 // set in the constructor according to player type
   protected y = 0 // set in the constructor according to player type
@@ -56,23 +57,24 @@ export class Player {
   }
 
   private getGloveDefaultXOffset() {
-    return this.isFacingRight() ? 28 : 77
+    return this.isFacingRight() ? 27 : 71
   }
 
   // this is the worst thing ever programmed
   private getGloveXOffset() {
-    const middlePunchOffset: number = this.isFacingRight() ? 62 : 43
-    const fullPunchOffset: number = this.isFacingRight() ? 105 : 0
+    const backPunchOffset: number = this.isFacingRight() ? 18 : 80
+    const middlePunchOffset: number = this.isFacingRight() ? 62 : 40
+    const fullPunchOffset: number = this.isFacingRight() ? 98 : 0
     const currentFrameIndex = this.playerAnimation.getCurrentFrameIndex()
 
-    return this.state === 'idle' || this.state === 'hit'
+    return this.state === 'idle' || currentFrameIndex === 1 || currentFrameIndex === 4
       ? this.getGloveDefaultXOffset()
-      : currentFrameIndex === 0
+      : currentFrameIndex === 2
         ? middlePunchOffset
-        : currentFrameIndex === 1
+        : currentFrameIndex === 3
           ? fullPunchOffset
-          : currentFrameIndex === 2
-            ? middlePunchOffset
+          : this.state === 'hit' || currentFrameIndex === 0 || currentFrameIndex === 5
+            ? backPunchOffset
             : this.getGloveDefaultXOffset()
   }
 
@@ -108,7 +110,7 @@ export class Player {
 
   public getHeadBoundingBox() {
     const headHeight: number = 30
-    const headWidth: number = 48
+    const headWidth: number = 45
     const top: number = this.y + 40
     const bottom: number = top + headHeight
     const horizontalDisplacement: number = 9
@@ -128,28 +130,11 @@ export class Player {
         }
   }
 
-  private isColliding(
-    a: {
-      left: number
-      right: number
-      top: number
-      bottom: number
-    },
-    b: {
-      left: number
-      right: number
-      top: number
-      bottom: number
-    },
-  ) {
-    return a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
-  }
-
   protected isBodyCollidingWithEnemy() {
     const playerBoundingBox = this.getMainBoundingBox()
     const enemyBoundingBox = Overseer.getEnemy(this).getMainBoundingBox()
 
-    return this.isColliding(playerBoundingBox, enemyBoundingBox)
+    return isColliding(playerBoundingBox, enemyBoundingBox)
   }
 
   private isHittingEnemyHead() {
@@ -160,7 +145,7 @@ export class Player {
     const enemyHeadBoundingBox = Overseer.getEnemy(this).getHeadBoundingBox()
 
     return playerGlovesBoundingBoxes.some((playerGlove) =>
-      this.isColliding(playerGlove, enemyHeadBoundingBox),
+      isColliding(playerGlove, enemyHeadBoundingBox),
     )
   }
 
@@ -175,7 +160,7 @@ export class Player {
     ]
 
     return playerGlovesBoundingBoxes.some((playerGlove) =>
-      enemyGlovesBoundingBoxes.some((enemyGlove) => this.isColliding(playerGlove, enemyGlove)),
+      enemyGlovesBoundingBoxes.some((enemyGlove) => isColliding(playerGlove, enemyGlove)),
     )
   }
 

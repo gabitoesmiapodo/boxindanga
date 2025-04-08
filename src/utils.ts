@@ -13,6 +13,15 @@ export const reverseFrameVertically = (frame: string) => {
   return frame.split('\n').reverse().join('\n')
 }
 
+export const decompressRLE = (data: string) => {
+  return data
+    .split('\n')
+    .map((line) => {
+      return line.replace(/(\d+)(.)/g, (_, count, char) => char.repeat(Number(count)))
+    })
+    .join('\n')
+}
+
 export const drawSprite = (sprite: string, color: string, x: number, y: number) => {
   Canvas.ctx.fillStyle = color
 
@@ -23,6 +32,23 @@ export const drawSprite = (sprite: string, color: string, x: number, y: number) 
       }
     })
   })
+}
+
+export const isColliding = (
+  a: {
+    left: number
+    right: number
+    top: number
+    bottom: number
+  },
+  b: {
+    left: number
+    right: number
+    top: number
+    bottom: number
+  },
+) => {
+  return a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
 }
 
 export const drawBoundingBoxes = (player: Player) => {

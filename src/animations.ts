@@ -1,38 +1,22 @@
 import {
-  faceLeftBottomHit00,
-  faceLeftBottomHit00b,
-  faceLeftBottomHit01,
-  faceLeftBottomHit01b,
-  faceLeftBottomPunch00,
-  faceLeftBottomPunch01,
-  faceLeftBottomPunch02,
-  faceLeftNeutral,
-  faceLeftNeutralHit00,
-  faceLeftNeutralHit01,
-  faceLeftTopHit00,
-  faceLeftTopHit00b,
-  faceLeftTopHit01,
-  faceLeftTopHit01b,
-  faceLeftTopPunch00,
-  faceLeftTopPunch01,
-  faceLeftTopPunch02,
-  faceRightBottomHit00,
-  faceRightBottomHit00b,
-  faceRightBottomHit01,
-  faceRightBottomHit01b,
-  faceRightBottomPunch00,
-  faceRightBottomPunch01,
-  faceRightBottomPunch02,
-  faceRightNeutral,
-  faceRightNeutralHit00,
-  faceRightNeutralHit01,
-  faceRightTopHit00,
-  faceRightTopHit00b,
-  faceRightTopHit01,
-  faceRightTopHit01b,
-  faceRightTopPunch00,
-  faceRightTopPunch01,
-  faceRightTopPunch02,
+  frame00Left,
+  frame00PunchLeftBottom,
+  frame00PunchLeftTop,
+  frame00PunchRightBottom,
+  frame00PunchRightTop,
+  frame00Right,
+  frame01Left,
+  frame01PunchLeftBottom,
+  frame01PunchLeftTop,
+  frame01PunchRightBottom,
+  frame01PunchRightTop,
+  frame01Right,
+  frame02Left,
+  frame02PunchLeftBottom,
+  frame02PunchLeftTop,
+  frame02PunchRightBottom,
+  frame02PunchRightTop,
+  frame02Right,
 } from './frames'
 
 export interface Frame {
@@ -42,39 +26,43 @@ export interface Frame {
 
 export type Animation = Array<Frame>
 
-export const faceRightIdle = [{ sprite: faceRightNeutral, speed: 0.1 }]
-export const faceLeftIdle = [{ sprite: faceLeftNeutral, speed: 0.1 }]
+export const faceRightIdle = [{ sprite: frame01Right, speed: 0.1 }]
+export const faceLeftIdle = [{ sprite: frame01Left, speed: 0.1 }]
 
-const animationSpeed = 0.075
+const animationSpeed = 0.025
 
 export const faceRightTopPunch: Animation = [
-  { sprite: faceRightTopPunch01, speed: animationSpeed },
-  { sprite: faceRightTopPunch02, speed: animationSpeed },
-  { sprite: faceRightTopPunch01, speed: animationSpeed },
-  { sprite: faceRightNeutral, speed: animationSpeed },
-  { sprite: faceRightTopPunch00, speed: animationSpeed },
+  { sprite: frame00PunchRightTop, speed: animationSpeed * 3 },
+  { sprite: frame01Right, speed: animationSpeed * 2 },
+  { sprite: frame01PunchRightTop, speed: animationSpeed * 2 },
+  { sprite: frame02PunchRightTop, speed: animationSpeed * 6 },
+  { sprite: frame01Right, speed: animationSpeed * 8 },
+  { sprite: frame00PunchRightTop, speed: animationSpeed * 12 },
 ]
 
 export const faceRightBottomPunch: Animation = [
-  { sprite: faceRightBottomPunch01, speed: animationSpeed },
-  { sprite: faceRightBottomPunch02, speed: animationSpeed },
-  { sprite: faceRightBottomPunch01, speed: animationSpeed },
-  { sprite: faceRightNeutral, speed: animationSpeed },
-  { sprite: faceRightBottomPunch00, speed: animationSpeed },
+  { sprite: frame00PunchRightBottom, speed: animationSpeed * 3 },
+  { sprite: frame01Right, speed: animationSpeed * 2 },
+  { sprite: frame01PunchRightBottom, speed: animationSpeed * 2 },
+  { sprite: frame02PunchRightBottom, speed: animationSpeed * 6 },
+  { sprite: frame01Right, speed: animationSpeed * 8 },
+  { sprite: frame00PunchRightBottom, speed: animationSpeed * 12 },
 ]
 
 export const faceLeftTopPunch: Animation = [
-  { sprite: faceLeftTopPunch01, speed: animationSpeed },
-  { sprite: faceLeftTopPunch02, speed: animationSpeed },
-  { sprite: faceLeftTopPunch01, speed: animationSpeed },
-  { sprite: faceLeftNeutral, speed: animationSpeed },
-  { sprite: faceLeftTopPunch00, speed: animationSpeed },
+  { sprite: frame00PunchLeftTop, speed: animationSpeed * 3 },
+  { sprite: frame01Left, speed: animationSpeed * 2 },
+  { sprite: frame01PunchLeftTop, speed: animationSpeed * 2 },
+  { sprite: frame02PunchLeftTop, speed: animationSpeed * 6 },
+  { sprite: frame01Left, speed: animationSpeed * 8 },
+  { sprite: frame00PunchLeftTop, speed: animationSpeed * 12 },
 ]
 
 export const faceLeftBottomPunch: Animation = [
-  { sprite: faceLeftBottomPunch01, speed: animationSpeed },
-  { sprite: faceLeftBottomPunch02, speed: animationSpeed },
-  { sprite: faceLeftBottomPunch01, speed: animationSpeed },
-  { sprite: faceLeftNeutral, speed: animationSpeed },
-  { sprite: faceLeftBottomPunch00, speed: animationSpeed },
+  { sprite: frame00PunchLeftBottom, speed: animationSpeed * 3 },
+  { sprite: frame01Left, speed: animationSpeed * 2 },
+  { sprite: frame01PunchLeftBottom, speed: animationSpeed * 2 },
+  { sprite: frame02PunchLeftBottom, speed: animationSpeed * 6 },
+  { sprite: frame01Left, speed: animationSpeed * 8 },
+  { sprite: frame00PunchLeftBottom, speed: animationSpeed * 12 },
 ]
