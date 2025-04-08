@@ -37,7 +37,7 @@ const gloveDefaultXOffsetLeft = 71
 const gloveMiddlePunchXOffsetLeft = 40
 const gloveFullPunchXOffsetLeft = 0
 
-const animationSpeed = 0.02
+const animationSpeed = 0.015
 const animationSpeedSm = 0.01
 
 // Neutral stance
@@ -82,6 +82,11 @@ export const faceRightTopPunch: Animation = [
     speed: animationSpeed * 6,
     gloveXOffset: gloveFullPunchXOffsetRight,
   },
+  {
+    sprite: frame01PunchRightTop,
+    speed: animationSpeed * 8,
+    gloveXOffset: gloveMiddlePunchXOffsetRight,
+  },
   { sprite: frame01Right, speed: animationSpeed * 8, gloveXOffset: gloveDefaultXOffsetRight },
   {
     sprite: frame00PunchRightTop,
@@ -106,6 +111,11 @@ export const faceLeftTopPunch: Animation = [
     sprite: frame02PunchLeftTop,
     speed: animationSpeed * 6,
     gloveXOffset: gloveFullPunchXOffsetLeft,
+  },
+  {
+    sprite: frame01PunchLeftTop,
+    speed: animationSpeed * 8,
+    gloveXOffset: gloveMiddlePunchXOffsetLeft,
   },
   { sprite: frame01Left, speed: animationSpeed * 8, gloveXOffset: gloveDefaultXOffsetLeft },
   {
@@ -133,6 +143,11 @@ export const faceRightBottomPunch: Animation = [
     speed: animationSpeed * 6,
     gloveXOffset: gloveFullPunchXOffsetRight,
   },
+  {
+    sprite: frame01PunchRightBottom,
+    speed: animationSpeed * 8,
+    gloveXOffset: gloveMiddlePunchXOffsetRight,
+  },
   { sprite: frame01Right, speed: animationSpeed * 8, gloveXOffset: gloveDefaultXOffsetRight },
   {
     sprite: frame00PunchRightBottom,
@@ -157,6 +172,11 @@ export const faceLeftBottomPunch: Animation = [
     sprite: frame02PunchLeftBottom,
     speed: animationSpeed * 6,
     gloveXOffset: gloveFullPunchXOffsetLeft,
+  },
+  {
+    sprite: frame01PunchLeftBottom,
+    speed: animationSpeed * 8,
+    gloveXOffset: gloveMiddlePunchXOffsetLeft,
   },
   { sprite: frame01Left, speed: animationSpeed * 8, gloveXOffset: gloveDefaultXOffsetLeft },
   {
