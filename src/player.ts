@@ -1,8 +1,10 @@
 import {
   faceLeftBottomPunch,
+  faceLeftHit,
   faceLeftIdle,
   faceLeftTopPunch,
   faceRightBottomPunch,
+  faceRightHit,
   faceRightIdle,
   faceRightTopPunch,
 } from './animations'
@@ -13,7 +15,13 @@ import { isColliding } from './utils'
 
 export type PlayerType = 'playerOne' | 'playerTwo'
 type Direction = 'left' | 'right'
-type PlayerState = 'punchingTop' | 'punchingBottom' | 'hit' | 'idle'
+type PlayerState =
+  | 'punchingTop'
+  | 'punchingBottom'
+  | 'hitFromTop'
+  | 'hitFromBottom'
+  | 'hit'
+  | 'idle'
 
 export class Player {
   private playerAnimation: PlayerAnimation
@@ -22,12 +30,13 @@ export class Player {
   private readonly height = 110
   private readonly fullWidth = 134 // width when the arm is extended
   private readonly width = 58 // width when idle (actually a little less to allow for some overlap, real width is 63)
-  private readonly actualWidth = 63
   private readonly playerSpeedX = 325
   private readonly playerSpeedY = 200
+  private readonly hitPlayerSpeedX = 325
+  private readonly hitPlayerSpeedY = 250
   private readonly headHeight = 30
   private readonly headWidth = 45
-  private readonly gloveHeight = 31
+  private readonly gloveHeight = 28
   private readonly gloveWidth = 36
 
   protected x = 0 // set in the constructor according to player type
@@ -58,29 +67,28 @@ export class Player {
         }
   }
 
-  private getGloveBoundingBox(top: number, bottom: number, update: boolean) {
-    // const xOffset = update ? this.getGloveXOffset() : this.getGloveDefaultXOffset()
+  public getTopGloveBoundingBox() {
     const xOffset =
       this.playerAnimation.getAnimation()[this.playerAnimation.getCurrentFrameIndex()].gloveXOffset
 
     return {
       left: this.x + xOffset,
       right: this.x + xOffset + this.gloveWidth,
-      top: top,
-      bottom: bottom,
+      top: this.y,
+      bottom: this.y + this.gloveHeight,
     }
   }
 
-  public getTopGloveBoundingBox() {
-    return this.getGloveBoundingBox(this.y, this.y + this.gloveHeight, this.state === 'punchingTop')
-  }
-
   public getBottomGloveBoundingBox() {
-    return this.getGloveBoundingBox(
-      this.y + this.height - this.gloveHeight,
-      this.y + this.height,
-      this.state === 'punchingBottom',
-    )
+    const xOffset =
+      this.playerAnimation.getAnimation()[this.playerAnimation.getCurrentFrameIndex()].gloveXOffset
+
+    return {
+      left: this.x + xOffset,
+      right: this.x + xOffset + this.gloveWidth,
+      top: this.y + this.height - this.gloveHeight,
+      bottom: this.y + this.height,
+    }
   }
 
   public getHeadBoundingBox() {
@@ -110,64 +118,72 @@ export class Player {
     return isColliding(playerBoundingBox, enemyBoundingBox)
   }
 
+  private isHitting() {
+    return this.state === 'punchingTop' || this.state === 'punchingBottom'
+  }
+
   private isHittingEnemyHead() {
-    const playerGlovesBoundingBoxes = [
-      this.getTopGloveBoundingBox(),
-      this.getBottomGloveBoundingBox(),
-    ]
+    if (!this.isHitting()) return false
+
+    const playerGloveBoundingBox =
+      this.state === 'punchingTop'
+        ? this.getTopGloveBoundingBox()
+        : this.getBottomGloveBoundingBox()
     const enemyHeadBoundingBox = Overseer.getEnemy(this).getHeadBoundingBox()
 
-    return playerGlovesBoundingBoxes.some((playerGlove) =>
-      isColliding(playerGlove, enemyHeadBoundingBox),
-    )
+    return isColliding(playerGloveBoundingBox, enemyHeadBoundingBox)
   }
 
   private isHittingEnemyGlove() {
-    const playerGlovesBoundingBoxes = [
-      this.getTopGloveBoundingBox(),
-      this.getBottomGloveBoundingBox(),
-    ]
+    if (!this.isHitting()) return false
+
+    const playerGloveBoundingBox =
+      this.state === 'punchingTop'
+        ? this.getTopGloveBoundingBox()
+        : this.getBottomGloveBoundingBox()
+
     const enemyGlovesBoundingBoxes = [
       Overseer.getEnemy(this).getTopGloveBoundingBox(),
       Overseer.getEnemy(this).getBottomGloveBoundingBox(),
     ]
 
-    return playerGlovesBoundingBoxes.some((playerGlove) =>
-      enemyGlovesBoundingBoxes.some((enemyGlove) => isColliding(playerGlove, enemyGlove)),
+    return enemyGlovesBoundingBoxes.some((enemyGlove) =>
+      isColliding(playerGloveBoundingBox, enemyGlove),
     )
   }
 
-  private calculateHorizontalDisplacement(dt: number) {
-    return Math.trunc(this.playerSpeedX * dt)
+  private calculateHorizontalDisplacement(dt: number, speed: number) {
+    return Math.trunc(speed * dt)
   }
 
-  private calculateVerticalDisplacement(dt: number) {
-    return Math.trunc(this.playerSpeedY * dt)
+  private calculateVerticalDisplacement(dt: number, speed: number) {
+    return Math.trunc(speed * dt)
   }
 
-  private isCollidingWithRingLeft(dt: number) {
+  private isCollidingWithRingLeft(dt: number, speed: number) {
     return (
-      this.getMainBoundingBox().left - this.calculateHorizontalDisplacement(dt) <
+      this.getMainBoundingBox().left - this.calculateHorizontalDisplacement(dt, speed) <
       ringInnerBounds.left
     )
   }
 
-  private isCollidingWithRingRight(dt: number) {
+  private isCollidingWithRingRight(dt: number, speed: number) {
     return (
-      this.getMainBoundingBox().right + this.calculateHorizontalDisplacement(dt) >
+      this.getMainBoundingBox().right + this.calculateHorizontalDisplacement(dt, speed) >
       ringInnerBounds.right
     )
   }
 
-  private isCollidingWithRingTop(dt: number) {
+  private isCollidingWithRingTop(dt: number, speed: number) {
     return (
-      this.getMainBoundingBox().top - this.calculateVerticalDisplacement(dt) < ringInnerBounds.top
+      this.getMainBoundingBox().top - this.calculateVerticalDisplacement(dt, speed) <
+      ringInnerBounds.top
     )
   }
 
-  private isCollidingWithRingBottom(dt: number) {
+  private isCollidingWithRingBottom(dt: number, speed: number) {
     return (
-      this.getMainBoundingBox().bottom + this.calculateVerticalDisplacement(dt) >
+      this.getMainBoundingBox().bottom + this.calculateVerticalDisplacement(dt, speed) >
       ringInnerBounds.bottom
     )
   }
@@ -176,20 +192,24 @@ export class Player {
     return this.getVerticalCenter() < Overseer.getEnemy(this).getVerticalCenter()
   }
 
-  protected moveUp(dt: number) {
-    if (!this.isCollidingWithRingTop(dt)) this.y -= this.calculateVerticalDisplacement(dt)
+  protected moveUp(dt: number, speed: number = this.playerSpeedY) {
+    if (!this.isCollidingWithRingTop(dt, speed))
+      this.y -= this.calculateVerticalDisplacement(dt, speed)
   }
 
-  protected moveDown(dt: number) {
-    if (!this.isCollidingWithRingBottom(dt)) this.y += this.calculateVerticalDisplacement(dt)
+  protected moveDown(dt: number, speed: number = this.playerSpeedY) {
+    if (!this.isCollidingWithRingBottom(dt, speed))
+      this.y += this.calculateVerticalDisplacement(dt, speed)
   }
 
-  protected moveLeft(dt: number) {
-    if (!this.isCollidingWithRingLeft(dt)) this.x -= this.calculateHorizontalDisplacement(dt)
+  protected moveLeft(dt: number, speed: number = this.playerSpeedX) {
+    if (!this.isCollidingWithRingLeft(dt, speed))
+      this.x -= this.calculateHorizontalDisplacement(dt, speed)
   }
 
-  protected moveRight(dt: number) {
-    if (!this.isCollidingWithRingRight(dt)) this.x += this.calculateHorizontalDisplacement(dt)
+  protected moveRight(dt: number, speed: number = this.playerSpeedX) {
+    if (!this.isCollidingWithRingRight(dt, speed))
+      this.x += this.calculateHorizontalDisplacement(dt, speed)
   }
 
   private updateFacingDirection() {
@@ -213,6 +233,20 @@ export class Player {
       this.x = this.x + this.width
       this.playerAnimation.resetAnimation()
     }
+  }
+
+  private updateHitState(dt: number) {
+    if (this.state !== 'hitFromTop' && this.state !== 'hitFromBottom') return
+
+    this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightHit : faceLeftHit)
+
+    this.state === 'hitFromBottom'
+      ? this.moveUp(dt, this.hitPlayerSpeedY)
+      : this.moveDown(dt, this.hitPlayerSpeedY)
+
+    this.isFacingRight()
+      ? this.moveLeft(dt, this.hitPlayerSpeedX)
+      : this.moveRight(dt, this.hitPlayerSpeedX)
   }
 
   protected handlePunching() {
@@ -260,14 +294,20 @@ export class Player {
 
   public update(dt: number) {
     this.updateFacingDirection()
+    this.updateHitState(dt)
     this.playerAnimation.playAnimation(dt)
 
-    if (this.isHittingEnemyHead()) {
-      console.log('head hit')
+    // check if hitting enemy glove first (blocks punches)
+    if (this.isHittingEnemyGlove()) {
+      console.log(`glove hit with ${this.state === 'punchingTop' ? 'top' : 'bottom'} punch`)
+      return
     }
 
-    if (this.isHittingEnemyGlove()) {
-      console.log('glove hit')
+    if (this.isHittingEnemyHead()) {
+      console.log(`head hit with ${this.state === 'punchingTop' ? 'top' : 'bottom'} punch`)
+      Overseer.getEnemy(this).setState(
+        this.state === 'punchingTop' ? 'hitFromTop' : 'hitFromBottom',
+      )
     }
   }
 }

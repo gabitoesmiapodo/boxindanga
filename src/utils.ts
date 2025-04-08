@@ -28,7 +28,6 @@ export const drawSprite = (sprite: string, color: string, x: number, y: number) 
   sprite.split('\n').forEach((line, row) => {
     line.split('').forEach((char, column) => {
       if (char === 'X') {
-        Canvas.ctx.fillStyle = color
         Canvas.ctx.fillRect(x + column * pixelSize, y + row * pixelSize, pixelSize, pixelSize)
       }
       // debug
@@ -60,19 +59,24 @@ export const drawBoundingBoxes = (player: Player) => {
   Canvas.ctx.fillStyle = 'rgba(0, 0, 256, 0.2)'
 
   // top glove
-  Canvas.ctx.fillRect(
-    player.getTopGloveBoundingBox().left,
-    player.getTopGloveBoundingBox().top,
-    player.getTopGloveBoundingBox().right - player.getTopGloveBoundingBox().left,
-    player.getTopGloveBoundingBox().bottom - player.getTopGloveBoundingBox().top,
-  )
+  if (player.state === 'punchingTop') {
+    Canvas.ctx.fillRect(
+      player.getTopGloveBoundingBox().left,
+      player.getTopGloveBoundingBox().top,
+      player.getTopGloveBoundingBox().right - player.getTopGloveBoundingBox().left,
+      player.getTopGloveBoundingBox().bottom - player.getTopGloveBoundingBox().top,
+    )
+  }
+
   // bottom glove
-  Canvas.ctx.fillRect(
-    player.getBottomGloveBoundingBox().left,
-    player.getBottomGloveBoundingBox().top,
-    player.getBottomGloveBoundingBox().right - player.getBottomGloveBoundingBox().left,
-    player.getBottomGloveBoundingBox().bottom - player.getBottomGloveBoundingBox().top,
-  )
+  if (player.state === 'punchingBottom') {
+    Canvas.ctx.fillRect(
+      player.getBottomGloveBoundingBox().left,
+      player.getBottomGloveBoundingBox().top,
+      player.getBottomGloveBoundingBox().right - player.getBottomGloveBoundingBox().left,
+      player.getBottomGloveBoundingBox().bottom - player.getBottomGloveBoundingBox().top,
+    )
+  }
 
   // head
   Canvas.ctx.fillRect(
