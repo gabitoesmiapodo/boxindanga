@@ -1,15 +1,14 @@
-import { Canvas } from './canvas'
-import { playerOneColor, playerTwoColor } from './config'
-import { initKeys } from './keys'
-import { Overseer } from './overseer'
-import { PlayerOne } from './playerOne'
-import { PlayerTwo } from './playerTwo'
-import { drawRing } from './ring'
+import { Canvas } from './include/canvas'
+import { playerOneColor, playerTwoColor } from './include/config'
+import { initKeys } from './include/keys'
+import { Overseer } from './include/overseer'
+import { PlayerOne } from './include/playerOne'
+import { PlayerTwo } from './include/playerTwo'
+import { drawRing } from './include/ring'
 
 const init = () => {
   const canvas = new Canvas('mainCanvas')
   const playerOne = new PlayerOne('playerOne')
-
   const playerTwo = new PlayerTwo('playerTwo')
 
   new Overseer(playerOne, playerTwo)

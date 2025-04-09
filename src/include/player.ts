@@ -10,6 +10,7 @@ import {
 import { Overseer } from './overseer'
 import { PlayerAnimation } from './playerAnimation'
 import { ringInnerBounds } from './ring'
+import { SoundPlayer } from './soundPlayer'
 import { isColliding } from './utils'
 
 export type PlayerType = 'playerOne' | 'playerTwo'
@@ -31,6 +32,7 @@ export class Player {
   private readonly headWidth = 45
   private readonly gloveHeight = 24
   private readonly gloveWidth = 36
+  private readonly soundPlayer = new SoundPlayer()
 
   protected x = 0 // set in the constructor according to player type
   protected y = 0 // set in the constructor according to player type
@@ -248,6 +250,7 @@ export class Player {
     }
 
     if (this.isHittingEnemyHead()) {
+      this.soundPlayer.playTestSound()
       Overseer.getEnemy(this).setState(
         this.state === 'punchingTop' ? 'hitFromTop' : 'hitFromBottom',
       )
