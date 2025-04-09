@@ -38,8 +38,11 @@ const gloveMiddlePunchXOffsetLeft = 40
 const gloveFullPunchXOffsetLeft = 0
 
 const animationSpeed = 0.015
-const animationSpeedSm = 0.01
 
+/**
+ * The speed multiplier here is amount of frames we want to show
+ * For example `speed: animationSpeed * 3` will show the frame 3 times
+ */
 const getFrame = (
   sprite: string,
   speed: number,
@@ -59,20 +62,16 @@ export const faceLeftIdle = [getFrame(frame01Left, animationSpeed, 1, gloveDefau
 
 // Got hit
 export const faceRightHit = [
-  getFrame(frame00Right, animationSpeedSm, 14, gloveDefaultXOffsetRight),
-  getFrame(frame01Right, animationSpeedSm, 4, gloveContractedXOffsetRight),
-  getFrame(frame02Right, animationSpeedSm, 12, gloveMiddlePunchXOffsetRight),
+  getFrame(frame00Right, animationSpeed, 14, gloveDefaultXOffsetRight),
+  getFrame(frame01Right, animationSpeed, 4, gloveContractedXOffsetRight),
+  getFrame(frame02Right, animationSpeed, 18, gloveMiddlePunchXOffsetRight),
 ]
 export const faceLeftHit = [
-  getFrame(frame00Left, animationSpeedSm, 14, gloveDefaultXOffsetLeft),
-  getFrame(frame01Left, animationSpeedSm, 4, gloveContractedXOffsetLeft),
-  getFrame(frame02Left, animationSpeedSm, 12, gloveMiddlePunchXOffsetLeft),
+  getFrame(frame00Left, animationSpeed, 14, gloveDefaultXOffsetLeft),
+  getFrame(frame01Left, animationSpeed, 4, gloveContractedXOffsetLeft),
+  getFrame(frame02Left, animationSpeed, 18, gloveMiddlePunchXOffsetLeft),
 ]
 
-/**
- * The speed multiplier here is amount of frames we want to show
- * For example `speed: animationSpeed * 3` will show the frame 3 times
- */
 // Top punch right
 export const faceRightTopPunch: Animation = [
   getFrame(frame00PunchRightTop, animationSpeed, 3, gloveContractedXOffsetRight),
