@@ -32,7 +32,7 @@ export class PlayerOne extends Player {
     }
 
     if (keys.p) {
-      this.handlePunching()
+      this.punch()
     }
   }
 
