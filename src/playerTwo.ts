@@ -6,10 +6,10 @@ export class PlayerTwo extends Player {
   constructor(playerType: PlayerType) {
     super(playerType)
 
-    // this.x = ringInnerBounds.right - (134 - 58) // 134 (player.fullWidth) - 58 (player.width) === 76, this one is confusing because playerTwo is rotated when drawn for the first time
-    // this.y = ringInnerBounds.bottom - 110 // 110 === player.height
-    this.x = 300
-    this.y = 250
+    this.x = ringInnerBounds.right - (134 - 58) // 134 (player.fullWidth) - 58 (player.width) === 76, this one is confusing because playerTwo is rotated when drawn for the first time
+    this.y = ringInnerBounds.bottom - 110 // 110 === player.height
+    // this.x = 300
+    // this.y = 250
     this.color = playerTwoColor
   }
 
