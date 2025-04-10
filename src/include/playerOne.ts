@@ -1,11 +1,13 @@
 import { playerOneColor } from './config'
-import { keys } from './keys'
+import { initKeys, keys } from './keys'
 import { Player } from './player'
 import { ringInnerBounds } from './ring'
 
 export class PlayerOne extends Player {
   constructor(playerType: 'playerOne') {
     super(playerType)
+
+    initKeys()
 
     this.x = ringInnerBounds.left
     this.y = ringInnerBounds.top

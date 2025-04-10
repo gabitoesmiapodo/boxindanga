@@ -71,7 +71,9 @@ export const drawScore = (score: string | number, color: string, x: number, y: n
     .split('')
     .forEach((char, index) => {
       const offset = isNumber && score < 10 ? 32 : index === 0 ? 0 : 32
-      drawSprite(characterMap[char], color, x + offset, y, 4.3, 2.3)
+
+      // should be 4.3 and 2.3 (not 4 / 2), but it looks bad because how canvas renders things
+      drawSprite(characterMap[char], color, x + offset, y, 4, 2)
     })
 }
 
