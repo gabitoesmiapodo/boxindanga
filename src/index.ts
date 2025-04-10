@@ -13,8 +13,8 @@ new Canvas('mainCanvas')
  * Draws both players' scores
  */
 const drawScores = (playerOneScore: number | string, playerTwoScore: number | string) => {
-  drawScore(playerOneScore, playerOneColor, 137, 11)
-  drawScore(playerTwoScore, playerTwoColor, 424, 11)
+  drawScore(playerOneScore, playerOneColor, 137)
+  drawScore(playerTwoScore, playerTwoColor, 424)
 }
 
 /**

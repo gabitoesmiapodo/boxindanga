@@ -62,7 +62,7 @@ export const isColliding = (
   return a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
 }
 
-export const drawScore = (score: string | number, color: string, x: number, y: number) => {
+export const drawScore = (score: string | number, color: string, x: number) => {
   const isNumber = typeof score === 'number'
   const formattedScore = isNumber ? score.toString() : score
 
@@ -73,7 +73,7 @@ export const drawScore = (score: string | number, color: string, x: number, y: n
       const offset = isNumber && score < 10 ? 32 : index === 0 ? 0 : 32
 
       // should be 4.3 and 2.3 (not 4 / 2), but it looks bad because how canvas renders things
-      drawSprite(characterMap[char], color, x + offset, y, 4, 2)
+      drawSprite(characterMap[char], color, x + offset, 12, 4, 2)
     })
 }
 
