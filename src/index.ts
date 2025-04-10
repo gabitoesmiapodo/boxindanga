@@ -4,7 +4,8 @@ import { Overseer } from './include/overseer'
 import { PlayerOne } from './include/playerOne'
 import { PlayerTwo } from './include/playerTwo'
 import { drawRing } from './include/ring'
-import { drawScore } from './include/utils'
+import { SoundPlayer } from './include/soundPlayer'
+import { drawScore, drawTime } from './include/utils'
 
 new Overseer()
 new Canvas('mainCanvas')
@@ -12,9 +13,9 @@ new Canvas('mainCanvas')
 /**
  * Draws both players' scores
  */
-const drawScores = (playerOneScore: number | string, playerTwoScore: number | string) => {
+const drawScores = (playerOneScore: number, playerTwoScore: number) => {
   drawScore(playerOneScore, playerOneColor, 137)
-  drawScore(playerTwoScore, playerTwoColor, 424)
+  drawScore(playerTwoScore, playerTwoColor, 420)
 }
 
 /**
@@ -29,6 +30,15 @@ const updateScreen = (playerOne: PlayerOne, playerTwo: PlayerTwo, dt: number) =>
   playerOne.update(dt)
 
   drawScores(playerOne.getScore(), playerTwo.getScore())
+
+  drawTime()
+}
+
+/**
+ * Checks for KO
+ */
+const isKO = (playerOneScore: number, playerTwoScore: number) => {
+  return playerOneScore >= 99 || playerTwoScore >= 99
 }
 
 /**
@@ -45,7 +55,11 @@ const reset = () => {
   return { playerOne, playerTwo }
 }
 
+/**
+ * Main function
+ */
 const init = () => {
+  const soundPlayer = new SoundPlayer()
   let { playerOne, playerTwo } = reset()
   let isPlaying = false
 
@@ -74,6 +88,11 @@ const init = () => {
       last = now
 
       updateScreen(playerOne, playerTwo, dt)
+
+      if (isKO(playerOne.getScore(), playerTwo.getScore())) {
+        isPlaying = false
+        soundPlayer.playEndOfRoundBell()
+      }
     }
     requestAnimationFrame(gameLoop)
   }

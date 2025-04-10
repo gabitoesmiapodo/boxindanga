@@ -24,7 +24,7 @@ export class SoundPlayer {
       this.tia.setChannel0(9, 12, 12)
       setTimeout(() => {
         this.tia.setChannel0(0, 0, 0)
-      }, 300)
+      }, 280)
     }
 
     playBell()
@@ -36,7 +36,7 @@ export class SoundPlayer {
       if (count === 1) {
         clearInterval(id)
       }
-    }, 500)
+    }, 340)
   }
 
   /**

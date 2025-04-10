@@ -20,7 +20,7 @@ type PlayerState = 'punchingTop' | 'punchingBottom' | 'hitFromTop' | 'hitFromBot
 export class Player {
   private playerAnimation: PlayerAnimation
   private facingDirection: Direction = 'right' // direction is sorted out in the first update
-  private score: number | string = 0
+  private score = 0
 
   private readonly height = 110
   private readonly fullWidth = 134 // width when the arm is extended
@@ -241,11 +241,7 @@ export class Player {
    * Increase the score
    */
   private increaseScore() {
-    if (typeof this.score === 'number' && this.score < 99) {
-      this.score++
-    } else {
-      this.score = 'ko'
-    }
+    this.score += 10
   }
 
   /**

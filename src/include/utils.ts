@@ -1,6 +1,6 @@
 import { Canvas } from './canvas'
 import { characterMap } from './characters'
-import { pixelSize } from './config'
+import { pixelSize, textColor } from './config'
 import type { Player } from './player'
 
 export const reverseFrameHorizontally = (frame: string) => {
@@ -38,9 +38,6 @@ export const drawSprite = (
       if (char === 'X') {
         Canvas.ctx.fillRect(x + column * pixelWidth, y + row * pixelHeight, pixelWidth, pixelHeight)
       }
-      // debug
-      // Canvas.ctx.fillStyle = 'rgba(0, 0, 255, 0.5)'
-      // Canvas.ctx.fillRect(x + column * pixelWidth, y + row * pixelHeight, pixelWidth, pixelHeight)
     })
   })
 }
@@ -62,50 +59,30 @@ export const isColliding = (
   return a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
 }
 
-export const drawScore = (score: string | number, color: string, x: number) => {
-  const isNumber = typeof score === 'number'
-  const formattedScore = isNumber ? score.toString() : score
+const write = (text: string, color: string, x: number, y: number) => {
+  const number = Number.parseInt(text)
 
-  formattedScore
-    .toString()
-    .split('')
-    .forEach((char, index) => {
-      const offset = isNumber && score < 10 ? 32 : index === 0 ? 0 : 32
+  text.split('').forEach((char, index) => {
+    const spacing = 36
+    const offset = text.length === 1 ? spacing : index === 0 ? 0 : spacing
 
-      // should be 4.3 and 2.3 (not 4 / 2), but it looks bad because how canvas renders things
-      drawSprite(characterMap[char], color, x + offset, 12, 4, 2)
-    })
+    // 4.3 and 2.3 looks kind of bad (canvas glitches), but 4 / 2 looks too small IMO
+    drawSprite(characterMap[char], color, x + offset, y, 4.3, 2.3)
+  })
 }
 
-export const drawBoundingBoxes = (player: Player) => {
-  // debug
-  Canvas.ctx.fillStyle = 'rgba(0, 0, 256, 0.2)'
+export const drawScore = (score: number, color: string, x: number) => {
+  write(score <= 99 ? score.toString() : 'ko', color, x, 11)
+}
 
-  // top glove
-  // if (player.state === 'punchingTop') {
-  Canvas.ctx.fillRect(
-    player.getTopGloveBoundingBox().left,
-    player.getTopGloveBoundingBox().top,
-    player.getTopGloveBoundingBox().right - player.getTopGloveBoundingBox().left,
-    player.getTopGloveBoundingBox().bottom - player.getTopGloveBoundingBox().top,
-  )
-  // }
+export const drawTime = (time = 120000) => {
+  const minutes = Math.floor(time / 60000).toString()
+  const seconds = Math.floor((time % 60000) / 1000)
+    .toString()
+    .padStart(2, '0')
+  const y = 39
 
-  // bottom glove
-  // if (player.state === 'punchingBottom') {
-  Canvas.ctx.fillRect(
-    player.getBottomGloveBoundingBox().left,
-    player.getBottomGloveBoundingBox().top,
-    player.getBottomGloveBoundingBox().right - player.getBottomGloveBoundingBox().left,
-    player.getBottomGloveBoundingBox().bottom - player.getBottomGloveBoundingBox().top,
-  )
-  // }
-
-  // head
-  Canvas.ctx.fillRect(
-    player.getHeadBoundingBox().left,
-    player.getHeadBoundingBox().top,
-    player.getHeadBoundingBox().right - player.getHeadBoundingBox().left,
-    player.getHeadBoundingBox().bottom - player.getHeadBoundingBox().top,
-  )
+  write(minutes, textColor, 204, y)
+  write(':', textColor, 241, y)
+  write(seconds, textColor, 313, y)
 }
