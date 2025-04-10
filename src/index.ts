@@ -5,6 +5,7 @@ import { Overseer } from './include/overseer'
 import { PlayerOne } from './include/playerOne'
 import { PlayerTwo } from './include/playerTwo'
 import { drawRing } from './include/ring'
+import { drawScore } from './include/utils'
 
 const init = () => {
   const canvas = new Canvas('mainCanvas')
@@ -26,6 +27,9 @@ const init = () => {
     drawRing()
     playerTwo.update(dt)
     playerOne.update(dt)
+
+    drawScore(playerOne.getScore(), playerOneColor, 137, 11)
+    drawScore(playerTwo.getScore(), playerTwoColor, 424, 11)
 
     requestAnimationFrame(gameLoop)
   }

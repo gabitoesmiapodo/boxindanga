@@ -14,6 +14,7 @@ export class Canvas {
     Canvas.canvas.style.background = '#649335'
 
     Canvas.ctx = Canvas.canvas.getContext('2d') as CanvasRenderingContext2D
+    Canvas.ctx.imageSmoothingEnabled = false
 
     if (!Canvas.ctx) {
       throw new Error('2d context not supported')

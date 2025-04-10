@@ -1,4 +1,5 @@
 import { Canvas } from './canvas'
+import { characterMap } from './characters'
 import { pixelSize } from './config'
 import type { Player } from './player'
 
@@ -22,17 +23,24 @@ export const decompressRLE = (data: string) => {
     .join('\n')
 }
 
-export const drawSprite = (sprite: string, color: string, x: number, y: number) => {
+export const drawSprite = (
+  sprite: string,
+  color: string,
+  x: number,
+  y: number,
+  pixelWidth: number = pixelSize,
+  pixelHeight: number = pixelSize,
+) => {
   Canvas.ctx.fillStyle = color
 
   sprite.split('\n').forEach((line, row) => {
     line.split('').forEach((char, column) => {
       if (char === 'X') {
-        Canvas.ctx.fillRect(x + column * pixelSize, y + row * pixelSize, pixelSize, pixelSize)
+        Canvas.ctx.fillRect(x + column * pixelWidth, y + row * pixelHeight, pixelWidth, pixelHeight)
       }
       // debug
       // Canvas.ctx.fillStyle = 'rgba(0, 0, 255, 0.5)'
-      // Canvas.ctx.fillRect(x + column * pixelSize, y + row * pixelSize, pixelSize, pixelSize)
+      // Canvas.ctx.fillRect(x + column * pixelWidth, y + row * pixelHeight, pixelWidth, pixelHeight)
     })
   })
 }
@@ -52,6 +60,19 @@ export const isColliding = (
   },
 ) => {
   return a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
+}
+
+export const drawScore = (score: string | number, color: string, x: number, y: number) => {
+  const isNumber = typeof score === 'number'
+  const formattedScore = isNumber ? score.toString() : score
+
+  formattedScore
+    .toString()
+    .split('')
+    .forEach((char, index) => {
+      const offset = isNumber && score < 10 ? 32 : index === 0 ? 0 : 32
+      drawSprite(characterMap[char], color, x + offset, y, 4.3, 2.3)
+    })
 }
 
 export const drawBoundingBoxes = (player: Player) => {

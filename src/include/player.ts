@@ -20,6 +20,7 @@ type PlayerState = 'punchingTop' | 'punchingBottom' | 'hitFromTop' | 'hitFromBot
 export class Player {
   private playerAnimation: PlayerAnimation
   private facingDirection: Direction = 'right' // direction is sorted out in the first update
+  private score: number | string = 0
 
   private readonly height = 110
   private readonly fullWidth = 134 // width when the arm is extended
@@ -237,6 +238,17 @@ export class Player {
   }
 
   /**
+   * Increase the score
+   */
+  private increaseScore() {
+    if (typeof this.score === 'number' && this.score < 99) {
+      this.score++
+    } else {
+      this.score = 'ko'
+    }
+  }
+
+  /**
    * What to do when the player is hitting something
    */
   private updateIsHitting() {
@@ -251,6 +263,7 @@ export class Player {
     }
 
     if (this.isHittingEnemyHead()) {
+      this.increaseScore()
       this.soundPlayer.playHeadHit()
       Overseer.getEnemy(this).setState(
         this.state === 'punchingTop' ? 'hitFromTop' : 'hitFromBottom',
@@ -419,6 +432,13 @@ export class Player {
    */
   public getY() {
     return this.y
+  }
+
+  /**
+   * Get the player's score
+   */
+  public getScore() {
+    return this.score
   }
 
   /**
