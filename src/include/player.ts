@@ -245,12 +245,13 @@ export class Player {
 
     // Check if the player is hitting the enemy's glove first
     if (this.isHittingEnemyGlove()) {
+      this.soundPlayer.playGloveHit()
       this.reversePunch()
       return
     }
 
     if (this.isHittingEnemyHead()) {
-      this.soundPlayer.playTestSound()
+      this.soundPlayer.playHeadHit()
       Overseer.getEnemy(this).setState(
         this.state === 'punchingTop' ? 'hitFromTop' : 'hitFromBottom',
       )
@@ -295,7 +296,6 @@ export class Player {
    */
   protected punch() {
     if (this.state !== 'idle') return
-
     if (this.isAboveEnemy()) {
       this.state = 'punchingBottom'
       this.playerAnimation.setAnimation(
