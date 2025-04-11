@@ -1,11 +1,12 @@
 import { Canvas } from './include/canvas'
-import { playerOneColor, playerTwoColor } from './include/config'
+import { playerOneColor, playerTwoColor, textColor } from './include/config'
+import { logo } from './include/logo'
 import { Overseer } from './include/overseer'
 import { PlayerOne } from './include/playerOne'
 import { PlayerTwo } from './include/playerTwo'
 import { drawRing } from './include/ring'
 import { SoundPlayer } from './include/soundPlayer'
-import { drawScore, drawTime } from './include/utils'
+import { drawScore, drawSprite, drawTime } from './include/utils'
 
 new Overseer()
 new Canvas('mainCanvas')
@@ -31,8 +32,8 @@ const updateScreen = (playerOne: PlayerOne, playerTwo: PlayerTwo, dt: number, ti
   playerOne.update(dt)
 
   drawScores(playerOne.getScore(), playerTwo.getScore())
-
   drawTime(time)
+  drawSprite(logo, textColor, 222, 445, 3.3, 1.5)
 }
 
 /**
