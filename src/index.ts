@@ -114,6 +114,7 @@ const main = () => {
       if (gameState === 'finished') init(playerOne, playerTwo, intervalId)
       if (gameState === 'playing') return
 
+      // Initialize only once
       if (!SoundPlayer.tia.audioContext) {
         SoundPlayer.tiaInit()
       }
