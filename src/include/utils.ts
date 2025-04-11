@@ -72,7 +72,7 @@ const write = (text: string, color: string, x: number, y: number) => {
 }
 
 export const drawScore = (score: number, color: string, x: number) => {
-  write(score <= 99 ? score.toString() : 'ko', color, x, 11)
+  write(score < 99 ? score.toString() : 'ko', color, x, 11)
 }
 
 export const drawTime = (time: number) => {
