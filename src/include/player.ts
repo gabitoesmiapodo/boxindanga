@@ -208,8 +208,8 @@ export class Player {
   private updateHitState(dt: number) {
     if (this.state !== 'hitFromTop' && this.state !== 'hitFromBottom') return
 
-    this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightHit : faceLeftHit)
-    this.playerAnimation.setFastForward()
+    // this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightHit : faceLeftHit)
+    // this.playerAnimation.setFastForward()
 
     this.state === 'hitFromBottom'
       ? this.moveUp(dt, this.hitPlayerSpeedY)
@@ -339,7 +339,7 @@ export class Player {
    * Punch the enemy (or at least try...)
    */
   protected punch() {
-    if (this.state !== 'idle') return
+    if (this.state !== 'idle' || this.playerAnimation.isPlayingAnimation()) return
 
     if (this.isAboveEnemy()) {
       this.state = 'punchingBottom'
@@ -491,6 +491,9 @@ export class Player {
     this.updateFacingDirection()
     this.updateIsHitting()
     this.updateHitState(dt)
+
+    console.log(`Player ${this.playerType} state: ${this.state}`)
+
     this.playerAnimation.playAnimation(dt)
   }
 }

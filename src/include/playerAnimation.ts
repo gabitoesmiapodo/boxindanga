@@ -29,13 +29,6 @@ export class PlayerAnimation {
   }
 
   public playAnimation(dt: number) {
-    drawSprite(
-      this.currentAnimation[this.currentFrameIndex].sprite,
-      this.player.getColor(),
-      this.player.getX(),
-      this.player.getY(),
-    )
-
     this.animationTimeElapsed += dt
 
     if (
@@ -50,6 +43,13 @@ export class PlayerAnimation {
         this.currentFrameIndex += 1
       }
     }
+
+    drawSprite(
+      this.currentAnimation[this.currentFrameIndex].sprite,
+      this.player.getColor(),
+      this.player.getX(),
+      this.player.getY(),
+    )
   }
 
   public setAnimation(animation: Animation) {
@@ -74,5 +74,9 @@ export class PlayerAnimation {
 
   public setCurrentFrameIndex(currentFrameIndex: number) {
     this.currentFrameIndex = currentFrameIndex
+  }
+
+  public isPlayingAnimation() {
+    return this.currentFrameIndex > 0
   }
 }

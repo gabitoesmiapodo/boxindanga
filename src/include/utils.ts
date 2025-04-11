@@ -1,20 +1,19 @@
 import { Canvas } from './canvas'
 import { characterMap } from './characters'
 import { pixelSize, textColor } from './config'
-import type { Player } from './player'
 
-export const reverseFrameHorizontally = (frame: string) => {
+export function reverseFrameHorizontally(frame: string) {
   return frame
     .split('\n')
     .map((line) => line.split('').reverse().join(''))
     .join('\n')
 }
 
-export const reverseFrameVertically = (frame: string) => {
+export function reverseFrameVertically(frame: string) {
   return frame.split('\n').reverse().join('\n')
 }
 
-export const decompressRLE = (data: string) => {
+export function decompressRLE(data: string) {
   return data
     .split('\n')
     .map((line) => {
@@ -23,14 +22,14 @@ export const decompressRLE = (data: string) => {
     .join('\n')
 }
 
-export const drawSprite = (
+export function drawSprite(
   sprite: string,
   color: string,
   x: number,
   y: number,
   pixelWidth: number = pixelSize,
   pixelHeight: number = pixelSize,
-) => {
+) {
   Canvas.ctx.fillStyle = color
 
   sprite.split('\n').forEach((line, row) => {
@@ -42,7 +41,7 @@ export const drawSprite = (
   })
 }
 
-export const isColliding = (
+export function isColliding(
   a: {
     left: number
     right: number
@@ -55,11 +54,11 @@ export const isColliding = (
     top: number
     bottom: number
   },
-) => {
+) {
   return a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
 }
 
-const write = (text: string, color: string, x: number, y: number) => {
+function write(text: string, color: string, x: number, y: number) {
   const number = Number.parseInt(text)
 
   text.split('').forEach((char, index) => {
@@ -71,11 +70,11 @@ const write = (text: string, color: string, x: number, y: number) => {
   })
 }
 
-export const drawScore = (score: number, color: string, x: number) => {
+export function drawScore(score: number, color: string, x: number) {
   write(score < 99 ? score.toString() : 'ko', color, x, 11)
 }
 
-export const drawTime = (time: number) => {
+export function drawTime(time: number) {
   const minutes = Math.floor(time / 60000).toString()
   const seconds = Math.floor((time % 60000) / 1000)
     .toString()
