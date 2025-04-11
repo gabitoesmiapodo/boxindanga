@@ -38,6 +38,13 @@ export class PlayerOne extends Player {
     }
   }
 
+  public reset() {
+    super.reset()
+
+    this.x = ringInnerBounds.left
+    this.y = ringInnerBounds.top
+  }
+
   public update(dt: number) {
     this.handleInput(dt)
     super.update(dt)

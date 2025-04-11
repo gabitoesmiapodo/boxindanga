@@ -47,6 +47,16 @@ export class Player {
     this.playerAnimation = new PlayerAnimation(this, faceRightIdle)
   }
 
+  protected reset() {
+    this.x = 0
+    this.y = 0
+    this.score = 0
+    this.state = 'idle'
+    this.facingDirection = 'right'
+    this.playerAnimation.setAnimation(faceRightIdle)
+    this.playerAnimation.resetAnimation()
+  }
+
   /**
    * Get the bounding box of the player's body
    */
@@ -191,7 +201,7 @@ export class Player {
 
     if (
       this.getMainBoundingBox().left - offset < Overseer.getEnemy(this).getMainBoundingBox().left &&
-      this.facingDirection === 'left'
+      !this.isFacingRight()
     ) {
       this.facingDirection = 'right'
       this.x = this.x + this.width + offset

@@ -75,7 +75,7 @@ export const drawScore = (score: number, color: string, x: number) => {
   write(score <= 99 ? score.toString() : 'ko', color, x, 11)
 }
 
-export const drawTime = (time = 120000) => {
+export const drawTime = (time: number) => {
   const minutes = Math.floor(time / 60000).toString()
   const seconds = Math.floor((time % 60000) / 1000)
     .toString()

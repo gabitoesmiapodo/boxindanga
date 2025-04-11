@@ -21,7 +21,7 @@ const drawScores = (playerOneScore: number, playerTwoScore: number) => {
 /**
  * Clears canvas, draws ring
  */
-const updateScreen = (playerOne: PlayerOne, playerTwo: PlayerTwo, dt: number) => {
+const updateScreen = (playerOne: PlayerOne, playerTwo: PlayerTwo, dt: number, time = 120000) => {
   Canvas.ctx.clearRect(0, 0, Canvas.canvas.width, Canvas.canvas.height)
 
   drawRing()
@@ -31,7 +31,7 @@ const updateScreen = (playerOne: PlayerOne, playerTwo: PlayerTwo, dt: number) =>
 
   drawScores(playerOne.getScore(), playerTwo.getScore())
 
-  drawTime()
+  drawTime(time)
 }
 
 /**
@@ -42,15 +42,17 @@ const isKO = (playerOneScore: number, playerTwoScore: number) => {
 }
 
 /**
- * Reset everything
+ * Init function
  */
-const reset = () => {
-  const playerOne = new PlayerOne('playerOne')
-  const playerTwo = new PlayerTwo('playerTwo')
-
-  Overseer.init(playerOne, playerTwo)
+const init = (playerOne: PlayerOne, playerTwo: PlayerTwo, intervalId?: number) => {
+  playerOne.reset()
+  playerTwo.reset()
 
   updateScreen(playerOne, playerTwo, 0)
+
+  if (intervalId) {
+    clearInterval(intervalId)
+  }
 
   return { playerOne, playerTwo }
 }
@@ -58,46 +60,72 @@ const reset = () => {
 /**
  * Main function
  */
-const init = () => {
+const main = () => {
   const soundPlayer = new SoundPlayer()
-  let { playerOne, playerTwo } = reset()
-  let isPlaying = false
+  const playerOne = new PlayerOne('playerOne')
+  const playerTwo = new PlayerTwo('playerTwo')
+  const roundTime = 120000 // 2 minutes
 
-  document.addEventListener('keydown', (e) => {
-    // Start with space
-    if (e.key === ' ') {
-      isPlaying = true
-    }
+  let gameState: 'paused' | 'playing' | 'finished' = 'paused'
+  let remainingTime = roundTime
+  let last: number
+  let intervalId: number
 
-    // Reset with escape
-    if (e.key === 'Escape') {
-      const players = reset()
+  Overseer.init(playerOne, playerTwo)
 
-      playerOne = players.playerOne
-      playerTwo = players.playerTwo
+  init(playerOne, playerTwo)
 
-      isPlaying = false
-    }
-  })
+  /**
+   * Starts the game
+   */
+  const startGame = () => {
+    gameState = 'playing'
+    last = performance.now()
+    remainingTime = roundTime
 
-  let last = performance.now()
+    intervalId = setInterval(() => {
+      remainingTime -= 1000
+    }, 1000)
+  }
 
+  /**
+   * Main game loop
+   */
   const gameLoop = (now: number) => {
-    if (isPlaying) {
+    if (gameState === 'playing') {
       const dt = (now - last) / 1000
       last = now
 
-      updateScreen(playerOne, playerTwo, dt)
+      updateScreen(playerOne, playerTwo, dt, remainingTime)
 
-      if (isKO(playerOne.getScore(), playerTwo.getScore())) {
-        isPlaying = false
+      if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
         soundPlayer.playEndOfRoundBell()
+        gameState = 'finished'
       }
     }
+
     requestAnimationFrame(gameLoop)
   }
 
+  // Handle key events
+  document.addEventListener('keydown', (e) => {
+    // SPACE: start
+    if (e.key === ' ') {
+      if (gameState === 'finished') init(playerOne, playerTwo, intervalId)
+      if (gameState === 'playing') return
+
+      startGame()
+    }
+
+    // ESCAPE: reset
+    if (e.key === 'Escape') {
+      init(playerOne, playerTwo, intervalId)
+      gameState = 'paused'
+    }
+  })
+
+  // Gotta call this to start the game loop
   requestAnimationFrame(gameLoop)
 }
 
-window.addEventListener('load', init)
+window.addEventListener('load', main)
