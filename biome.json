@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["public", ".gitignore", ".DS_Store", "**/*.json"]
+    "ignore": ["public", ".gitignore", ".DS_Store", "**/*.json", "**/*.js"]
   },
   "formatter": {
     "attributePosition": "multiline",
