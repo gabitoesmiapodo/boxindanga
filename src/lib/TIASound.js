@@ -29,12 +29,15 @@
 export class TIASound {
   constructor() {
     // Create audio context
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
+    this.audioContext = null
   }
 
   // Initialize audio worklet nodes for two sound channels
 
   async init() {
+    if (!this.audioContext) {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
+    }
     // Load the audio processor module
     await this.audioContext.audioWorklet.addModule('https://boxindanga.vercel.app/TIASoundProcessor.js')
 
