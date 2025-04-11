@@ -36,7 +36,7 @@ export class TIASound {
 
   async init() {
     // Load the audio processor module
-    await this.audioContext.audioWorklet.addModule('TIASoundProcessor.js')
+    await this.audioContext.audioWorklet.addModule('https://boxindanga.vercel.app/TIASoundProcessor.js')
 
     // Create and connect two sound nodes
     this.soundNode0 = new AudioWorkletNode(this.audioContext, 'TIASoundProcessor')
