@@ -9,7 +9,6 @@ import { drawScore, drawTime } from './include/utils'
 
 new Overseer()
 new Canvas('mainCanvas')
-new SoundPlayer()
 
 /**
  * Draws both players' scores
@@ -83,8 +82,6 @@ const main = () => {
     last = performance.now()
     remainingTime = roundTime
 
-    SoundPlayer.tiaInit()
-
     intervalId = setInterval(() => {
       remainingTime -= 1000
     }, 1000)
@@ -115,6 +112,9 @@ const main = () => {
     if (e.key === ' ') {
       if (gameState === 'finished') init(playerOne, playerTwo, intervalId)
       if (gameState === 'playing') return
+
+      new SoundPlayer()
+      SoundPlayer.tiaInit()
 
       startGame()
     }
