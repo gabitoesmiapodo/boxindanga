@@ -174,13 +174,6 @@ export class Player {
   }
 
   /**
-   * Check if the player is above the enemy
-   */
-  private isAboveEnemy() {
-    return this.getYCenter() < Overseer.getEnemy(this).getYCenter()
-  }
-
-  /**
    * Update the player's facing direction according to the enemy's position
    */
   private updateFacingDirection() {
@@ -255,17 +248,10 @@ export class Player {
   }
 
   /**
-   * Get the distance to the enemy
-   */
-  private getDistanceToEnemy() {
-    return Math.abs(this.getXCenter() - Overseer.getEnemy(this).getXCenter())
-  }
-
-  /**
    * Increase the score
    */
   private increaseScore() {
-    this.score += this.getDistanceToEnemy() <= 80 ? 2 : 1
+    this.score += this.getXDistanceToEnemy() <= 80 ? 2 : 1
   }
 
   /**
@@ -294,6 +280,27 @@ export class Player {
 
       SoundPlayer.playHeadHit()
     }
+  }
+
+  /**
+   * Check if the player is above the enemy
+   */
+  protected isAboveEnemy() {
+    return this.getYCenter() < Overseer.getEnemy(this).getYCenter()
+  }
+
+  /**
+   * Get the X distance to the enemy
+   */
+  protected getXDistanceToEnemy() {
+    return Math.abs(this.getXCenter() - Overseer.getEnemy(this).getXCenter())
+  }
+
+  /**
+   * Get the distance to the enemy
+   */
+  protected getYDistanceToEnemy() {
+    return Math.abs(this.getYCenter() - Overseer.getEnemy(this).getYCenter())
   }
 
   /**
