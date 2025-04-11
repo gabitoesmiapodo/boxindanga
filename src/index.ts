@@ -83,6 +83,8 @@ const main = () => {
     last = performance.now()
     remainingTime = roundTime
 
+    SoundPlayer.tiaInit()
+
     intervalId = setInterval(() => {
       remainingTime -= 1000
     }, 1000)

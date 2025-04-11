@@ -3,18 +3,11 @@ import { TIASound } from '../lib/TIASound'
 export class SoundPlayer {
   static readonly tia = new TIASound()
 
-  constructor() {
-    this.tiaInit()
-  }
-
   /**
    * Initialize the TIA sound instance
    */
-  private async tiaInit() {
-    console.log(SoundPlayer.tia)
+  static async tiaInit() {
     await SoundPlayer.tia.init()
-    console.log(SoundPlayer.tia)
-    console.log('SoundPlayer initialized')
   }
 
   /**
