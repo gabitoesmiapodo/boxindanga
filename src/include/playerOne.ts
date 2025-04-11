@@ -67,9 +67,7 @@ export class PlayerOne extends Player {
    * Update the player state
    */
   public update(dt: number) {
-    this.handleMovement(dt)
     super.update(dt)
-
-    if (this.punchPressed) console.log('pressed!')
+    this.handleMovement(dt)
   }
 }

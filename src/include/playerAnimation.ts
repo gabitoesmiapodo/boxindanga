@@ -35,7 +35,7 @@ export class PlayerAnimation {
       this.player.getX(),
       this.player.getY(),
     )
-    // drawBoundingBoxes(this.player)
+
     this.animationTimeElapsed += dt
 
     if (
