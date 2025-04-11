@@ -247,7 +247,11 @@ export class Player {
    */
   private isHittingEnemy() {
     // this is a shitty way of testing this, but it works
-    return this.playerAnimation.isFastForwarding()
+    return (
+      this.playerAnimation.isFastForwarding() ||
+      Overseer.getEnemy(this).getState() === 'hitFromTop' ||
+      Overseer.getEnemy(this).getState() === 'hitFromBottom'
+    )
   }
 
   /**

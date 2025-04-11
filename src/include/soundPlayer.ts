@@ -40,9 +40,6 @@ export class SoundPlayer {
    * Play the sound when the player hits the enemy's gloves
    */
   static playGloveHit() {
-    // mute first
-    SoundPlayer.tia.setChannel0(0, 0, 0)
-
     SoundPlayer.tia.setChannel0(31, 3, 15)
     setTimeout(() => {
       SoundPlayer.tia.setChannel0(0, 0, 0)
@@ -54,16 +51,11 @@ export class SoundPlayer {
    * It's made by the combination of a high and low sound
    */
   static playHeadHit() {
-    // mute first
-    SoundPlayer.tia.setChannel0(0, 0, 0)
-    SoundPlayer.tia.setChannel1(0, 0, 0)
-
     // Sound 1: smash
     SoundPlayer.tia.setChannel0(9, 8, 2)
     setTimeout(() => {
       SoundPlayer.tia.setChannel0(0, 0, 0)
     }, 180)
-
     // Sound 2: glove
     SoundPlayer.tia.setChannel1(12, 3, 31)
     setTimeout(() => {
