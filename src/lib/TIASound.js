@@ -28,7 +28,7 @@
 
 export class TIASound {
   constructor() {
-    // This must be called initalized from a user interaction or otherwise 
+    // This must be initalized from some kind of user interaction or otherwise 
     // it won't work on https servers and will be muted with no warning
     this.audioContext = null
   }
