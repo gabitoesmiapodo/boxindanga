@@ -28,13 +28,15 @@
 
 export class TIASound {
   constructor() {
-    // Create audio context
+    // This must be called initalized from a user interaction or otherwise 
+    // it won't work on https servers and will be muted with no warning
     this.audioContext = null
   }
 
   // Initialize audio worklet nodes for two sound channels
-
+  // Call this from some kind of user interaction (e.g., a button click)
   async init() {
+
     if (!this.audioContext) {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     }

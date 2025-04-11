@@ -1,5 +1,6 @@
 import { TIASound } from '../lib/TIASound'
 
+// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class SoundPlayer {
   static readonly tia = new TIASound()
 
