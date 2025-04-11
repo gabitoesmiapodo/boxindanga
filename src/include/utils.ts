@@ -63,7 +63,7 @@ const write = (text: string, color: string, x: number, y: number) => {
   const number = Number.parseInt(text)
 
   text.split('').forEach((char, index) => {
-    const spacing = 36
+    const spacing = 32
     const offset = text.length === 1 ? spacing : index === 0 ? 0 : spacing
 
     // 4.3 and 2.3 looks kind of bad (canvas glitches), but 4 / 2 looks too small IMO
