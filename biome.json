@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["public", ".gitignore", ".DS_Store", "**/*.json", "**/*.js"]
+    "ignore": ["public", ".gitignore", ".DS_Store", "**/*.json", "**/*.js", "tsconfig.json"]
   },
   "formatter": {
     "attributePosition": "multiline",

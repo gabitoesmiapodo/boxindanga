@@ -56,6 +56,7 @@ export class SoundPlayer {
     setTimeout(() => {
       SoundPlayer.tia.setChannel0(0, 0, 0)
     }, 180)
+
     // Sound 2: glove
     SoundPlayer.tia.setChannel1(12, 3, 31)
     setTimeout(() => {
