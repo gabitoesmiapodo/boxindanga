@@ -1,7 +1,7 @@
 import { TIASound } from '../lib/TIASound'
 
 export class SoundPlayer {
-  private readonly tia = new TIASound()
+  static readonly tia = new TIASound()
 
   constructor() {
     this.tiaInit()
@@ -11,19 +11,22 @@ export class SoundPlayer {
    * Initialize the TIA sound instance
    */
   private async tiaInit() {
-    await this.tia.init()
+    console.log(SoundPlayer.tia)
+    await SoundPlayer.tia.init()
+    console.log(SoundPlayer.tia)
+    console.log('SoundPlayer initialized')
   }
 
   /**
    * Play the sound when the round ends
    */
-  public playEndOfRoundBell() {
+  static playEndOfRoundBell() {
     let count = 0
 
     const playBell = () => {
-      this.tia.setChannel0(9, 12, 12)
+      SoundPlayer.tia.setChannel0(9, 12, 12)
       setTimeout(() => {
-        this.tia.setChannel0(0, 0, 0)
+        SoundPlayer.tia.setChannel0(0, 0, 0)
       }, 280)
     }
 
@@ -42,13 +45,13 @@ export class SoundPlayer {
   /**
    * Play the sound when the player hits the enemy's gloves
    */
-  public playGloveHit() {
+  static playGloveHit() {
     // mute first
-    this.tia.setChannel0(0, 0, 0)
+    SoundPlayer.tia.setChannel0(0, 0, 0)
 
-    this.tia.setChannel0(31, 3, 15)
+    SoundPlayer.tia.setChannel0(31, 3, 15)
     setTimeout(() => {
-      this.tia.setChannel0(0, 0, 0)
+      SoundPlayer.tia.setChannel0(0, 0, 0)
     }, 22)
   }
 
@@ -56,21 +59,21 @@ export class SoundPlayer {
    * Play the sound when the player hits the enemy's gloves
    * It's made by the combination of a high and low sound
    */
-  public playHeadHit() {
+  static playHeadHit() {
     // mute first
-    this.tia.setChannel0(0, 0, 0)
-    this.tia.setChannel1(0, 0, 0)
+    SoundPlayer.tia.setChannel0(0, 0, 0)
+    SoundPlayer.tia.setChannel1(0, 0, 0)
 
     // Sound 1: smash
-    this.tia.setChannel0(9, 8, 2)
+    SoundPlayer.tia.setChannel0(9, 8, 2)
     setTimeout(() => {
-      this.tia.setChannel0(0, 0, 0)
+      SoundPlayer.tia.setChannel0(0, 0, 0)
     }, 180)
 
     // Sound 2: glove
-    this.tia.setChannel1(12, 3, 31)
+    SoundPlayer.tia.setChannel1(12, 3, 31)
     setTimeout(() => {
-      this.tia.setChannel1(0, 0, 0)
+      SoundPlayer.tia.setChannel1(0, 0, 0)
     }, 22)
   }
 }

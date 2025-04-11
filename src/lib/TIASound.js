@@ -1,4 +1,4 @@
-/*!
+/*
  * TIASound 1.0
  * Emulates the sound capabilities of the Atari TIA chip using Web Audio API.
  * https://github.com/fabiopiratininga/TIASound

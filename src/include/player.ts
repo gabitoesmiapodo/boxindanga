@@ -34,7 +34,6 @@ export class Player {
   private readonly headWidth = 45
   private readonly gloveHeight = 24
   private readonly gloveWidth = 36
-  private readonly soundPlayer = new SoundPlayer()
 
   protected x = 0 // set in the constructor according to player type
   protected y = 0 // set in the constructor according to player type
@@ -274,14 +273,14 @@ export class Player {
 
     // Check if the player is hitting the enemy's glove first
     if (this.isHittingEnemyGlove()) {
-      this.soundPlayer.playGloveHit()
+      SoundPlayer.playGloveHit()
       this.reversePunch()
       return
     }
 
     if (this.isHittingEnemyHead()) {
       this.increaseScore()
-      this.soundPlayer.playHeadHit()
+      SoundPlayer.playHeadHit()
       Overseer.getEnemy(this).setState(
         this.state === 'punchingTop' ? 'hitFromTop' : 'hitFromBottom',
       )

@@ -9,6 +9,7 @@ import { drawScore, drawTime } from './include/utils'
 
 new Overseer()
 new Canvas('mainCanvas')
+new SoundPlayer()
 
 /**
  * Draws both players' scores
@@ -61,7 +62,6 @@ const init = (playerOne: PlayerOne, playerTwo: PlayerTwo, intervalId?: number) =
  * Main function
  */
 const main = () => {
-  const soundPlayer = new SoundPlayer()
   const playerOne = new PlayerOne('playerOne')
   const playerTwo = new PlayerTwo('playerTwo')
   const roundTime = 120000 // 2 minutes
@@ -94,12 +94,12 @@ const main = () => {
   const gameLoop = (now: number) => {
     if (gameState === 'playing') {
       const dt = (now - last) / 1000
-      last = now
 
+      last = now
       updateScreen(playerOne, playerTwo, dt, remainingTime)
 
       if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
-        soundPlayer.playEndOfRoundBell()
+        SoundPlayer.playEndOfRoundBell()
         gameState = 'finished'
       }
     }
