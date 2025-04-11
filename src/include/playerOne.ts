@@ -1,26 +1,53 @@
 import { playerOneColor } from './config'
-import { initKeys, keys } from './keys'
 import { Player } from './player'
 import { ringInnerBounds } from './ring'
 
 export class PlayerOne extends Player {
+  private keys: Record<string, boolean> = {}
+  private punchPressed = false
+
   constructor(playerType: 'playerOne') {
     super(playerType)
-
-    initKeys()
 
     this.x = ringInnerBounds.left
     this.y = ringInnerBounds.top
     this.color = playerOneColor
+
+    this.initKeys()
   }
 
+  /**
+   * Initialize key listeners
+   */
+  private initKeys() {
+    document.addEventListener('keydown', (e) => {
+      this.keys[e.key] = true
+
+      if (!this.punchPressed && this.keys.p) {
+        this.punchPressed = true
+        this.punch()
+      }
+    })
+
+    document.addEventListener('keyup', (e) => {
+      if (this.punchPressed && this.keys.p) {
+        this.punchPressed = false
+      }
+
+      this.keys[e.key] = false
+    })
+  }
+
+  /**
+   * Handle player's movement
+   */
   private handleMovement(dt: number) {
     const originalPosition = { x: this.x, y: this.y }
 
-    if (keys.w) this.moveUp(dt)
-    if (keys.s) this.moveDown(dt)
-    if (keys.a) this.moveLeft(dt)
-    if (keys.d) this.moveRight(dt)
+    if (this.keys.w) this.moveUp(dt)
+    if (this.keys.s) this.moveDown(dt)
+    if (this.keys.a) this.moveLeft(dt)
+    if (this.keys.d) this.moveRight(dt)
 
     if (this.isBodyCollidingWithEnemy()) {
       this.x = originalPosition.x
@@ -28,16 +55,9 @@ export class PlayerOne extends Player {
     }
   }
 
-  private handleInput(dt: number) {
-    if (keys.w || keys.s || keys.a || keys.d) {
-      this.handleMovement(dt)
-    }
-
-    if (keys.p) {
-      this.punch()
-    }
-  }
-
+  /**
+   * Reset states
+   */
   public reset() {
     super.reset()
 
@@ -45,8 +65,11 @@ export class PlayerOne extends Player {
     this.y = ringInnerBounds.top
   }
 
+  /**
+   * Update the player state
+   */
   public update(dt: number) {
-    this.handleInput(dt)
+    this.handleMovement(dt)
     super.update(dt)
   }
 }

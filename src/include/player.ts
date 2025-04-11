@@ -329,6 +329,7 @@ export class Player {
    */
   protected punch() {
     if (this.state !== 'idle') return
+
     if (this.isAboveEnemy()) {
       this.state = 'punchingBottom'
       this.playerAnimation.setAnimation(
