@@ -25,6 +25,7 @@ export class Player {
   private readonly height = 110
   private readonly fullWidth = 134 // width when the arm is extended
   private readonly width = 58 // width when idle (actually a little less to allow for some overlap, real width is 63)
+  private readonly actualWidth = 63
   private readonly playerSpeedX = 325
   private readonly playerSpeedY = 200
   private readonly hitPlayerSpeedX = 300
@@ -177,7 +178,7 @@ export class Player {
    * Check if the player is above the enemy
    */
   private isAboveEnemy() {
-    return this.getVerticalCenter() < Overseer.getEnemy(this).getVerticalCenter()
+    return this.getYCenter() < Overseer.getEnemy(this).getYCenter()
   }
 
   /**
@@ -251,10 +252,17 @@ export class Player {
   }
 
   /**
+   * Get the distance to the enemy
+   */
+  private getDistanceToEnemy() {
+    return Math.abs(this.getXCenter() - Overseer.getEnemy(this).getXCenter())
+  }
+
+  /**
    * Increase the score
    */
   private increaseScore() {
-    this.score += 2
+    this.score += this.getDistanceToEnemy() <= 80 ? 2 : 1
   }
 
   /**
@@ -394,11 +402,22 @@ export class Player {
   }
 
   /**
-   * Get the vertical of the player, used to decide wether the player
-   * should hit with the top or bottom glove
+   * Get the center of the player along the Y axis,
+   * used to decide wether the player should hit
+   * with the top or bottom glove
    */
-  public getVerticalCenter() {
-    return this.getMainBoundingBox().top + this.height / 2
+  public getYCenter() {
+    return Math.trunc(this.y + this.height / 2)
+  }
+
+  /**
+   * Get the center of the player along the X axis,
+   * used to decide how much each hit is worth
+   */
+  public getXCenter() {
+    return Math.trunc(
+      this.getMainBoundingBox().left + (this.actualWidth - this.width) + this.actualWidth / 2,
+    )
   }
 
   /**
