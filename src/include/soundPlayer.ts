@@ -43,7 +43,7 @@ export class SoundPlayer {
     SoundPlayer.tia.setChannel0(31, 3, 15)
     setTimeout(() => {
       SoundPlayer.tia.setChannel0(0, 0, 0)
-    }, 22)
+    }, 18)
   }
 
   /**
@@ -60,6 +60,6 @@ export class SoundPlayer {
     SoundPlayer.tia.setChannel1(12, 3, 31)
     setTimeout(() => {
       SoundPlayer.tia.setChannel1(0, 0, 0)
-    }, 22)
+    }, 18)
   }
 }
