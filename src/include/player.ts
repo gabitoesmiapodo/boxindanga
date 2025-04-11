@@ -177,21 +177,24 @@ export class Player {
     // Don't turn around if not idle
     if (this.state !== 'idle') return
 
+    const offset = 8
+
     if (
-      this.getMainBoundingBox().right > Overseer.getEnemy(this).getMainBoundingBox().right &&
+      this.getMainBoundingBox().right + offset >
+        Overseer.getEnemy(this).getMainBoundingBox().right &&
       this.isFacingRight()
     ) {
       this.facingDirection = 'left'
-      this.x = this.x - this.width
+      this.x = this.x - this.width - offset
       this.playerAnimation.resetAnimation()
     }
 
     if (
-      this.getMainBoundingBox().left < Overseer.getEnemy(this).getMainBoundingBox().left &&
+      this.getMainBoundingBox().left - offset < Overseer.getEnemy(this).getMainBoundingBox().left &&
       this.facingDirection === 'left'
     ) {
       this.facingDirection = 'right'
-      this.x = this.x + this.width
+      this.x = this.x + this.width + offset
       this.playerAnimation.resetAnimation()
     }
   }
@@ -241,7 +244,7 @@ export class Player {
    * Increase the score
    */
   private increaseScore() {
-    this.score += 10
+    this.score += 2
   }
 
   /**
