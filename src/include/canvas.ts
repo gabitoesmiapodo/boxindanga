@@ -20,12 +20,4 @@ export class Canvas {
       throw new Error('2d context not supported')
     }
   }
-
-  getCanvas() {
-    return Canvas.canvas
-  }
-
-  getCtx() {
-    return Canvas.ctx
-  }
 }
