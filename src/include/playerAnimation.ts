@@ -53,6 +53,7 @@ export class PlayerAnimation {
   }
 
   public setAnimation(animation: Animation) {
+    this.setCurrentFrameIndex(0)
     this.currentAnimation = animation
   }
 

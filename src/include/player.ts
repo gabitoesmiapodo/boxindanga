@@ -1,4 +1,5 @@
 import {
+  type Animation,
   faceLeftBottomPunch,
   faceLeftHit,
   faceLeftTopPunch,
@@ -203,13 +204,24 @@ export class Player {
   }
 
   /**
+   * Check if the current animation is playing
+   */
+  private isCurrentAnimationPlaying(animationOne: Animation, animationTwo?: Animation) {
+    const currentAnimation = this.playerAnimation.getAnimation()
+
+    return currentAnimation === animationOne || currentAnimation === animationTwo
+  }
+
+  /**
    * What to do when the player is hit
    */
   private updateHitState(dt: number) {
     if (this.state !== 'hitFromTop' && this.state !== 'hitFromBottom') return
 
-    // this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightHit : faceLeftHit)
-    // this.playerAnimation.setFastForward()
+    if (!this.isCurrentAnimationPlaying(faceLeftHit, faceRightHit)) {
+      this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightHit : faceLeftHit)
+      this.playerAnimation.setFastForward()
+    }
 
     this.state === 'hitFromBottom'
       ? this.moveUp(dt, this.hitPlayerSpeedY)
@@ -341,16 +353,18 @@ export class Player {
   protected punch() {
     if (this.state !== 'idle' || this.playerAnimation.isPlayingAnimation()) return
 
-    if (this.isAboveEnemy()) {
-      this.state = 'punchingBottom'
-      this.playerAnimation.setAnimation(
-        this.isFacingRight() ? faceRightBottomPunch : faceLeftBottomPunch,
-      )
-      return
-    }
+    if (!this.isCurrentAnimationPlaying(faceRightTopPunch, faceLeftTopPunch)) {
+      if (this.isAboveEnemy()) {
+        this.state = 'punchingBottom'
+        this.playerAnimation.setAnimation(
+          this.isFacingRight() ? faceRightBottomPunch : faceLeftBottomPunch,
+        )
+        return
+      }
 
-    this.state = 'punchingTop'
-    this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightTopPunch : faceLeftTopPunch)
+      this.state = 'punchingTop'
+      this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightTopPunch : faceLeftTopPunch)
+    }
   }
 
   /**
@@ -418,7 +432,7 @@ export class Player {
 
   /**
    * Get the center of the player along the Y axis,
-   * used to decide wether the player should hit
+   * used to decide whether the player should hit
    * with the top or bottom glove
    */
   public getYCenter() {
@@ -491,9 +505,6 @@ export class Player {
     this.updateFacingDirection()
     this.updateIsHitting()
     this.updateHitState(dt)
-
-    console.log(`Player ${this.playerType} state: ${this.state}`)
-
     this.playerAnimation.playAnimation(dt)
   }
 }

@@ -51,22 +51,26 @@ const getFrame = (
 ): Frame => {
   return {
     sprite,
-    speed: animationSpeed * multipler,
+    speed: speed * multipler,
     gloveXOffset,
   }
 }
 
 // Neutral stance
-export const faceRightIdle = [getFrame(frame01Right, animationSpeed, 1, gloveDefaultXOffsetRight)]
-export const faceLeftIdle = [getFrame(frame01Left, animationSpeed, 1, gloveDefaultXOffsetLeft)]
+export const faceRightIdle: Animation = [
+  getFrame(frame01Right, animationSpeed, 1, gloveDefaultXOffsetRight),
+]
+export const faceLeftIdle: Animation = [
+  getFrame(frame01Left, animationSpeed, 1, gloveDefaultXOffsetLeft),
+]
 
 // Got hit
-export const faceRightHit = [
+export const faceRightHit: Animation = [
   getFrame(frame00Right, animationSpeed, 14, gloveDefaultXOffsetRight),
   getFrame(frame01Right, animationSpeed, 4, gloveContractedXOffsetRight),
   getFrame(frame02Right, animationSpeed, 18, gloveMiddlePunchXOffsetRight),
 ]
-export const faceLeftHit = [
+export const faceLeftHit: Animation = [
   getFrame(frame00Left, animationSpeed, 14, gloveDefaultXOffsetLeft),
   getFrame(frame01Left, animationSpeed, 4, gloveContractedXOffsetLeft),
   getFrame(frame02Left, animationSpeed, 18, gloveMiddlePunchXOffsetLeft),
