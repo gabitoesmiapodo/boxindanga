@@ -85,3 +85,55 @@ export function drawTime(time: number) {
   write(':', textColor, 241, y)
   write(seconds, textColor, 313, y)
 }
+
+function drawScanlines(ctx: CanvasRenderingContext2D) {
+  const { width, height } = ctx.canvas
+  ctx.save()
+  ctx.globalAlpha = 0.15 // subtle darkness
+  ctx.fillStyle = '#000'
+
+  for (let y = 0; y < height; y += 2) {
+    ctx.fillRect(0, y, width, 1)
+  }
+
+  ctx.restore()
+}
+
+function drawCRTGlitch(ctx: CanvasRenderingContext2D) {
+  const { width, height } = ctx.canvas
+  const image = ctx.getImageData(0, 0, width, height)
+  const temp = ctx.createImageData(width, 1)
+
+  for (let y = 0; y < height; y++) {
+    const chaos = Math.random() < 0.03
+    const offset = chaos ? (Math.random() * 10 - 5) | 0 : 0
+
+    const start = y * width * 4
+    const row = image.data.slice(start, start + width * 4)
+    temp.data.set(row)
+    ctx.putImageData(temp, offset, y)
+  }
+}
+
+function drawVignette(ctx: CanvasRenderingContext2D) {
+  const { width, height } = ctx.canvas
+  const gradient = ctx.createRadialGradient(
+    width / 2,
+    height / 2,
+    width * 0.5,
+    width / 2,
+    height / 2,
+    width * 1,
+  )
+  gradient.addColorStop(0, 'rgba(0,0,0,0)')
+  gradient.addColorStop(1, 'rgba(0,0,0,0.5)')
+
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, width, height)
+}
+
+export function crtFilter(ctx: CanvasRenderingContext2D) {
+  drawCRTGlitch(Canvas.ctx)
+  drawScanlines(Canvas.ctx)
+  drawVignette(Canvas.ctx)
+}
