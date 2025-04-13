@@ -10,6 +10,7 @@ export class PlayerAnimation {
   private animationTimeElapsed = 0
   private player: Player
   private speedDivider = this.defaultSpeed
+  private isPaused = false
 
   constructor(player: Player, currentAnimation: Animation) {
     this.currentAnimation = currentAnimation
@@ -29,18 +30,20 @@ export class PlayerAnimation {
   }
 
   public playAnimation(dt: number) {
-    this.animationTimeElapsed += dt
+    if (!this.isPaused) {
+      this.animationTimeElapsed += dt
 
-    if (
-      this.animationTimeElapsed >=
-      this.currentAnimation[this.currentFrameIndex].speed / this.speedDivider
-    ) {
-      this.animationTimeElapsed = 0
+      if (
+        this.animationTimeElapsed >=
+        this.currentAnimation[this.currentFrameIndex].speed / this.speedDivider
+      ) {
+        this.animationTimeElapsed = 0
 
-      if (this.isAtAnimationEnd()) {
-        this.resetAnimation()
-      } else {
-        this.currentFrameIndex += 1
+        if (this.isAtAnimationEnd()) {
+          this.resetAnimation()
+        } else {
+          this.currentFrameIndex += 1
+        }
       }
     }
 
@@ -79,5 +82,13 @@ export class PlayerAnimation {
 
   public isPlayingAnimation() {
     return this.currentFrameIndex > 0
+  }
+
+  public pauseAnimation() {
+    this.isPaused = true
+  }
+
+  public unPauseAnimation() {
+    this.isPaused = false
   }
 }

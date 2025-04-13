@@ -2,7 +2,7 @@ export class Canvas {
   static canvas: HTMLCanvasElement
   static ctx: CanvasRenderingContext2D
 
-  constructor(canvasId: string) {
+  constructor() {
     Canvas.canvas = document.getElementById('mainCanvas') as HTMLCanvasElement
 
     if (!Canvas.canvas) {

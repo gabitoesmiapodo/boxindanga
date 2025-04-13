@@ -3,12 +3,14 @@ import { TIASound } from '../lib/TIASound'
 // biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class SoundPlayer {
   static readonly tia = new TIASound()
+  static initialized = false
 
   /**
    * Initialize the TIA sound instance
    */
   static async tiaInit() {
     await SoundPlayer.tia.init()
+    SoundPlayer.initialized = true
   }
 
   /**

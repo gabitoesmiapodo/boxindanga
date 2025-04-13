@@ -40,6 +40,7 @@ export class Player {
   protected y = 0 // set in the constructor according to player type
   protected color = '#649335' // set in the constructor according to player type
   protected state: PlayerState = 'idle'
+  protected isPaused = true
 
   public readonly playerType: PlayerType
 
@@ -56,6 +57,7 @@ export class Player {
     this.facingDirection = 'right'
     this.playerAnimation.setAnimation(faceRightIdle)
     this.playerAnimation.resetAnimation()
+    this.isPaused = true
   }
 
   /**
@@ -499,12 +501,30 @@ export class Player {
   }
 
   /**
+   * Pause the player
+   */
+  public pause() {
+    this.playerAnimation.pauseAnimation()
+    this.isPaused = true
+  }
+
+  /**
+   * Unpause the player
+   */
+  public unPause() {
+    this.playerAnimation.unPauseAnimation()
+    this.isPaused = false
+  }
+
+  /**
    * Update the player
    */
   public update(dt: number) {
     this.updateFacingDirection()
-    this.updateIsHitting()
-    this.updateHitState(dt)
+    if (!this.isPaused) {
+      this.updateIsHitting()
+      this.updateHitState(dt)
+    }
     this.playerAnimation.playAnimation(dt)
   }
 }

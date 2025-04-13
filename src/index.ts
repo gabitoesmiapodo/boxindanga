@@ -6,10 +6,10 @@ import { PlayerOne } from './include/playerOne'
 import { PlayerTwo } from './include/playerTwo'
 import { drawRing } from './include/ring'
 import { SoundPlayer } from './include/soundPlayer'
-import { drawScore, drawSprite, drawTime } from './include/utils'
+import { crtFilter, drawScore, drawSprite, drawTime } from './include/utils'
 
 new Overseer()
-new Canvas('mainCanvas')
+new Canvas()
 new SoundPlayer()
 
 /**
@@ -67,25 +67,24 @@ const main = () => {
   const playerTwo = new PlayerTwo('playerTwo')
   const roundTime = 120000 // 2 minutes
 
-  let gameState: 'paused' | 'playing' | 'finished' = 'paused'
   let remainingTime = roundTime
   let last: number
   let intervalId: number
+  let applyCRTFilter = true
 
   Overseer.init(playerOne, playerTwo)
-
   init(playerOne, playerTwo)
 
   /**
    * Starts the game
    */
   const startGame = () => {
-    gameState = 'playing'
+    Overseer.gameState = 'playing'
     last = performance.now()
     remainingTime = roundTime
 
     intervalId = setInterval(() => {
-      remainingTime -= 1000
+      if (Overseer.gameState === 'playing') remainingTime -= 1000
     }, 1000)
   }
 
@@ -93,40 +92,62 @@ const main = () => {
    * Main game loop
    */
   const gameLoop = (now: number) => {
-    if (gameState === 'playing') {
-      const dt = (now - last) / 1000
+    const dt = (now - last) / 1000
 
-      last = now
-      updateScreen(playerOne, playerTwo, dt, remainingTime)
+    last = now
+    updateScreen(playerOne, playerTwo, dt, remainingTime)
+    if (applyCRTFilter) crtFilter(Canvas.ctx)
 
+    if (Overseer.gameState === 'playing') {
       if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
         SoundPlayer.playEndOfRoundBell()
-        gameState = 'finished'
+        Overseer.gameState = 'finished'
       }
     }
 
     requestAnimationFrame(gameLoop)
   }
 
-  // Handle key events
+  /**
+   * Key event listeners
+   */
   document.addEventListener('keydown', (e) => {
-    // SPACE: start
-    if (e.key === ' ') {
-      if (gameState === 'finished') init(playerOne, playerTwo, intervalId)
-      if (gameState === 'playing') return
-
-      // Initialize only once
-      if (!SoundPlayer.tia.audioContext) {
-        SoundPlayer.tiaInit()
-      }
-
-      startGame()
-    }
-
     // ESCAPE: reset
     if (e.key === 'Escape') {
       init(playerOne, playerTwo, intervalId)
-      gameState = 'paused'
+      remainingTime = roundTime
+      Overseer.gameState = 'finished'
+    }
+
+    // F1: start / pause
+    if (e.key === 'F2') {
+      switch (Overseer.gameState) {
+        case 'finished':
+          init(playerOne, playerTwo, intervalId)
+          startGame()
+          break
+        case 'paused':
+          Overseer.gameState = 'playing'
+          playerOne.unPause()
+          playerTwo.unPause()
+          break
+        case 'playing':
+          Overseer.gameState = 'paused'
+          playerOne.pause()
+          playerTwo.pause()
+          break
+      }
+
+      // AudioContext: Initialize only once (must be done
+      // after user interaction, that's why I put this here)
+      if (!SoundPlayer.initialized) {
+        SoundPlayer.tiaInit()
+      }
+    }
+
+    // F2: toggle CRT filter
+    if (e.key === 'F3') {
+      applyCRTFilter = !applyCRTFilter
     }
   })
 

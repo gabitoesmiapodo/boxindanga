@@ -126,7 +126,9 @@ export class PlayerTwo extends Player {
    * Update the player.
    */
   public update(dt: number) {
-    this.think(dt)
+    if (!this.isPaused) {
+      this.think(dt)
+    }
     super.update(dt)
   }
 }

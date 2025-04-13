@@ -1,9 +1,12 @@
 import type { Player } from './player'
 
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
+type GameStates = 'paused' | 'playing' | 'finished'
+
+// biome-ignore lint/complexity/noStaticOnlyClass: Fuck you
 export class Overseer {
   static playerOne: Player
   static playerTwo: Player
+  static gameState: GameStates
 
   static getEnemy(player: Player) {
     return player.playerType === 'playerOne' ? Overseer.playerTwo : Overseer.playerOne
@@ -12,5 +15,6 @@ export class Overseer {
   static init(playerOne: Player, playerTwo: Player) {
     Overseer.playerOne = playerOne
     Overseer.playerTwo = playerTwo
+    Overseer.gameState = 'finished'
   }
 }

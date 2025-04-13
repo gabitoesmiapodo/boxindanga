@@ -1,67 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <title>Boxindanga.js</title>
-  <meta content="Boxindanga.js" property="og:title" />
-  <meta name="description"
-    content="A clone of the classic Activision game Boxing (1980) for the Atari 2600 by Bob Whitehead, developed in Typescript." />
-  <meta
-    content="A clone of the classic Activision game Boxing (1980) for the Atari 2600 by Bob Whitehead, developed in Typescript."
-    property="og:description" />
-  <link rel="canonical" href="https://boxindanga.vercel.app/" />
-  <meta content="https://boxindanga.vercel.app/" property="og:url" />
-  <meta content="https://boxindanga.vercel.app/images/share/ogImage.jpg" property="og:image" />
-  <meta content="website" property="og:type" />
-  <meta content="summary_large_image" name="twitter:card" />
-  <meta content="Boxindanga" name="twitter:site" />
-  <meta content="@gabitoesmiapodo" name="twitter:creator" />
-  <meta content="summary_large_image" name="twitter:card" />
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" href="/images/favicon/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg" />
-  <link rel="shortcut icon" href="/images/favicon/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png" />
-  <link rel="manifest" href="/images/favicon/site.webmanifest" crossorigin="use-credentials" />
-  <style type="text/css">
-    body {
-      align-items: center;
-      background-color: #000;
-      display: flex;
-      height: 100vh;
-      justify-content: center;
-      margin: 0;
-      padding: 0;
-      position: relative;
-      width: 100vw;
-    }
+  <head>
+    <meta charset="UTF-8">
+    <title>Boxindanga.js</title>
+    <meta
+      content="Boxindanga.js"
+      property="og:title"
+    />
+    <meta
+      name="description"
+      content="A clone of the classic Activision game Boxing (1980) for the Atari 2600 by Bob Whitehead, developed in Typescript."
+    />
+    <meta
+      content="A clone of the classic Activision game Boxing (1980) for the Atari 2600 by Bob Whitehead, developed in Typescript."
+      property="og:description"
+    />
+    <link
+      rel="canonical"
+      href="https://boxindanga.vercel.app/"
+    />
+    <meta
+      content="https://boxindanga.vercel.app/"
+      property="og:url"
+    />
+    <meta
+      content="https://boxindanga.vercel.app/images/share/ogImage.jpg"
+      property="og:image"
+    />
+    <meta
+      content="website"
+      property="og:type"
+    />
+    <meta
+      content="summary_large_image"
+      name="twitter:card"
+    />
+    <meta
+      content="Boxindanga"
+      name="twitter:site"
+    />
+    <meta
+      content="@gabitoesmiapodo"
+      name="twitter:creator"
+    />
+    <meta
+      content="summary_large_image"
+      name="twitter:card"
+    />
+    <!-- Favicons -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="/images/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/images/favicon/favicon.svg"
+    />
+    <link
+      rel="shortcut icon"
+      href="/images/favicon/favicon.ico"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/images/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="manifest"
+      href="/images/favicon/site.webmanifest"
+      crossorigin="use-credentials"
+    />
+    <style type="text/css">
+      body {
+        align-items: center;
+        background-color: #000;
+        display: flex;
+        height: 100vh;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        width: 100vw;
+      }
 
-    #mainCanvas {
-      cursor: none
-    }
+      #mainCanvas {
+        cursor: none
+      }
 
-    .info {
-      color: #fff;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 12px;
-      left: 10px;
-      line-height: 1.4;
-      position: absolute;
-      top: 10px;
-    }
-  </style>
-</head>
+      .info {
+        color: #fff;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 12px;
+        left: 10px;
+        line-height: 1.4;
+        position: absolute;
+        top: 10px;
+      }
+    </style>
+  </head>
 
-<body>
-  <div class="info">
-    <strong>SPACE:</strong> start<br />
-    <strong>ESC:</strong> reset<br />
-    <strong>WASD:</strong> move<br />
-    <strong>P:</strong> punch<br />
-  </div>
-  <canvas id="mainCanvas">You shouldn't see this</canvas>
-  <script type="module" src="index.js"></script>
-</body>
+  <body>
+    <div class="info">
+      <strong>ESC:</strong> reset<br />
+      <strong>F2:</strong> start / pause<br />
+      <strong>F3:</strong> toggle CRT filter<br />
+      <strong>WASD:</strong> move<br />
+      <strong>P:</strong> punch<br />
+    </div>
+    <canvas id="mainCanvas">You shouldn't see this</canvas>
+    <script
+      type="module"
+      src="index.js"
+    ></script>
+  </body>
 
 </html>
