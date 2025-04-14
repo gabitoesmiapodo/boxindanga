@@ -83,6 +83,9 @@ const main = () => {
     last = performance.now()
     remainingTime = roundTime
 
+    playerOne.unPause()
+    playerTwo.unPause()
+
     intervalId = setInterval(() => {
       if (Overseer.gameState === 'playing') remainingTime -= 1000
     }, 1000)
