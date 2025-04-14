@@ -67,9 +67,7 @@ export class PlayerOne extends Player {
    * Update the player state
    */
   public update(dt: number) {
-    if (!this.isPaused) {
-      this.handleMovement(dt)
-    }
+    this.handleMovement(dt)
     super.update(dt)
   }
 }

@@ -83,9 +83,6 @@ const main = () => {
     last = performance.now()
     remainingTime = roundTime
 
-    playerOne.unPause()
-    playerTwo.unPause()
-
     intervalId = setInterval(() => {
       if (Overseer.gameState === 'playing') remainingTime -= 1000
     }, 1000)
@@ -123,23 +120,9 @@ const main = () => {
     }
 
     // F1: start / pause
-    if (e.key === 'F2') {
-      switch (Overseer.gameState) {
-        case 'finished':
-          init(playerOne, playerTwo, intervalId)
-          startGame()
-          break
-        case 'paused':
-          Overseer.gameState = 'playing'
-          playerOne.unPause()
-          playerTwo.unPause()
-          break
-        case 'playing':
-          Overseer.gameState = 'paused'
-          playerOne.pause()
-          playerTwo.pause()
-          break
-      }
+    if (e.key === 'F2' && Overseer.gameState === 'finished') {
+      init(playerOne, playerTwo, intervalId)
+      startGame()
 
       // AudioContext: Initialize only once (must be done
       // after user interaction, that's why I put this here)
