@@ -63,7 +63,7 @@ You can open the `public/index.html` file in your browser using [Liver Server](h
 - [Atari 2600 Boxing](https://atariage.com/software_page.php?SoftwareLabelID=45) - Original game
 - [Bob Whitehead](https://en.wikipedia.org/wiki/Bob_Whitehead) - Original game programmer
 - [TIASound](https://github.com/fabiopiratininga/TIASound) - A JavaScript library that emulates the sound capabilities of the Atari 2600's TIA sound chip using the Web Audio API
-- [Boxing dissaembly](https://github.com/milnak/atari-vcs-disassembly/blob/main/Third%20Party/Boxing%20(1980)%20(Activision)%20-%20Dennis%20Debro.asm) - Disassembly of the original game, for inspiration
+- [Boxing disassembly](https://github.com/milnak/atari-vcs-disassembly/blob/main/Third%20Party/Boxing%20(1980)%20(Activision)%20-%20Dennis%20Debro.asm) - Disassembly of the original game, for inspiration
 
 
 ## License
