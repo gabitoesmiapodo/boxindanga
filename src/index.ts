@@ -66,8 +66,6 @@ const main = () => {
   const playerOne = new PlayerOne('playerOne')
   const playerTwo = new PlayerTwo('playerTwo')
   const roundTime = 120000 // 2 minutes
-  const targetFPS = 60
-  const frameDelay = 1000 / targetFPS
 
   let remainingTime = roundTime
   let last: number
@@ -82,7 +80,7 @@ const main = () => {
    */
   const startGame = () => {
     Overseer.gameState = 'playing'
-    // Don't reset 'last' here to avoid timing issues
+    last = performance.now()
     remainingTime = roundTime
 
     intervalId = setInterval(() => {
@@ -93,35 +91,32 @@ const main = () => {
   /**
    * Main game loop
    */
+  const fpsLimit = 1000 / 60 // 60 FPS
   const gameLoop = (now: number) => {
-    // Calculate time since last frame
-    const elapsed = now - last
+    const timeDiff = now - last
 
-    // Only update if enough time has passed for 60fps (16.67ms)
-    if (elapsed > frameDelay) {
-      // Calculate delta time in seconds and adjust for 60fps consistency
-      const dt = Math.min(elapsed, frameDelay * 2) / 1000
+    if (timeDiff < fpsLimit) {
+      requestAnimationFrame(gameLoop)
+      return
+    }
 
-      // Update last frame timestamp
-      last = now - (elapsed % frameDelay) // Maintain consistent timing offset
+    const dt = timeDiff / 1000
 
-      // Update game state
-      updateScreen(playerOne, playerTwo, dt, remainingTime)
-      if (applyCRTFilter) crtFilter(Canvas.ctx)
+    last = now
+    updateScreen(playerOne, playerTwo, dt, remainingTime)
+    if (applyCRTFilter) crtFilter(Canvas.ctx)
 
-      if (Overseer.gameState === 'playing') {
-        if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
-          SoundPlayer.playEndOfRoundBell()
-          Overseer.gameState = 'finished'
-        }
+    if (Overseer.gameState === 'playing') {
+      if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
+        SoundPlayer.playEndOfRoundBell()
+        Overseer.gameState = 'finished'
       }
     }
 
     requestAnimationFrame(gameLoop)
   }
 
-  // Initialize last timestamp and start the game loop
-  last = performance.now()
+  // Gotta call this to start the game loop
   requestAnimationFrame(gameLoop)
 
   /**
