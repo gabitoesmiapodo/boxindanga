@@ -10,6 +10,7 @@ export class PlayerTwo extends Player {
   private readonly maximumXPunchingRange = 100
   private readonly minimumYPunchingRange = 25
   private readonly maximumYPunchingRange = 50
+  private readonly tiredThreshold = 25
 
   private movementXChunk = 0
   private chosenXDirection: 'left' | 'right' | 'none' = 'none'
@@ -56,6 +57,8 @@ export class PlayerTwo extends Player {
    * Get in X range to punch
    */
   private getInXRange(dt: number) {
+    if (this.state !== 'idle') return
+
     if (this.xDistance > this.maximumXPunchingRange) {
       if (this.isFacingRight()) {
         this.moveRight(dt)
@@ -69,6 +72,8 @@ export class PlayerTwo extends Player {
    * Get in Y range to punch
    */
   private getInYRange(dt: number) {
+    if (this.state !== 'idle') return
+
     if (this.yDistance > this.maximumYPunchingRange) {
       if (this.isAboveEnemy()) {
         this.moveDown(dt)
@@ -118,13 +123,6 @@ export class PlayerTwo extends Player {
   }
 
   private getOverMinimumXRange(dt: number) {
-    // if (this.state === 'hitFromBottom' || this.state === 'hitFromTop') {
-    //   this.movementXChunk = 0
-    //   this.chosenXDirection = 'none'
-    //   return
-    // }
-
-    const isWhithinMaximumXRange = this.yDistance < this.maximumXPunchingRange
     const extremelyClose = this.xDistance <= 65 //&& isWhithinMaximumXRange
     const justClose = this.xDistance <= 80 //&& isWhithinMaximumXRange
 
@@ -170,32 +168,34 @@ export class PlayerTwo extends Player {
   /**
    * Is whithin punching range?
    */
-  private shouldPunch() {
+  private canHit() {
     return (
       this.xDistance <= this.maximumXPunchingRange &&
       this.yDistance <= this.maximumYPunchingRange &&
-      this.yDistance > this.minimumYPunchingRange &&
-      Math.random() < 0.5
+      this.yDistance > this.minimumYPunchingRange
     )
   }
 
   /**
-   * Set the player to tired state for 1 second
+   * Set the player to tired state for a while
    */
   private setIsTired() {
     this.isTired = true
+    const score = this.getScore()
+    const delay =
+      score > this.tiredThreshold && score < 50 ? 250 : score > 50 && score < 75 ? 500 : 1000
 
     setTimeout(() => {
       this.isTired = false
-    }, 1000)
+    }, delay)
   }
 
   /**
    * Think what to do
    */
   private think(dt: number) {
-    if (!this.isTired && this.getScore() > 50) {
-      if (Math.random() < 0.02) {
+    if (!this.isTired && this.getScore() > this.tiredThreshold) {
+      if (Math.random() < 0.01) {
         this.setIsTired()
       }
     }
@@ -210,7 +210,7 @@ export class PlayerTwo extends Player {
     this.getOverMinimumYRange(dt)
     this.getOverMinimumXRange(dt)
 
-    if (this.shouldPunch()) {
+    if (this.canHit() && Math.random() < 0.3) {
       this.punch()
     }
   }
