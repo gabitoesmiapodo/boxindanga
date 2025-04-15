@@ -29,11 +29,11 @@ export class Player {
   private readonly actualWidth = 63
   private readonly playerSpeedX = 325
   private readonly playerSpeedY = 200
-  private readonly hitPlayerSpeedX = 300
-  private readonly hitPlayerSpeedY = 350
-  private readonly headHeight = 34
+  private readonly hitPlayerSpeedX = 200
+  private readonly hitPlayerSpeedY = 290
+  private readonly headHeight = 36
   private readonly headWidth = 45
-  private readonly gloveHeight = 24
+  private readonly gloveHeight = 25
   private readonly gloveWidth = 36
 
   protected x = 0 // set in the constructor according to player type

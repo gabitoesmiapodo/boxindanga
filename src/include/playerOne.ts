@@ -1,4 +1,5 @@
 import { playerOneColor } from './config'
+import { Overseer } from './overseer'
 import { Player } from './player'
 import { ringInnerBounds } from './ring'
 
@@ -21,6 +22,8 @@ export class PlayerOne extends Player {
    */
   private initKeys() {
     document.addEventListener('keydown', (e) => {
+      if (Overseer.gameState !== 'playing') return
+
       if ((e.key === 'p' || e.key === 'P') && !this.punchPressed) {
         this.punchPressed = true
         this.punch()
@@ -40,6 +43,8 @@ export class PlayerOne extends Player {
    * Handle player's movement
    */
   private handleMovement(dt: number) {
+    if (this.state === 'hitFromBottom' || this.state === 'hitFromTop') return
+
     const originalPosition = { x: this.x, y: this.y }
 
     if (this.keys.w || this.keys.P) this.moveUp(dt)
@@ -67,7 +72,9 @@ export class PlayerOne extends Player {
    * Update the player state
    */
   public update(dt: number) {
-    this.handleMovement(dt)
+    if (Overseer.gameState === 'playing') {
+      this.handleMovement(dt)
+    }
     super.update(dt)
   }
 }
