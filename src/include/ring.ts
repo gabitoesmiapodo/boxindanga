@@ -82,13 +82,4 @@ export const drawRing = () => {
   Canvas.ctx.fillRect(rightCornerX, topCornerY, cornerWidth, cornerHeight)
   // right bottom
   Canvas.ctx.fillRect(rightCornerX, bottomCornerY, cornerWidth, cornerHeight)
-
-  // Draw the inner bounds
-  // Canvas.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
-  // Canvas.ctx.fillRect(
-  //   ringInnerBounds.left,
-  //   ringInnerBounds.top,
-  //   ringInnerBounds.right - ringInnerBounds.left,
-  //   ringInnerBounds.bottom - ringInnerBounds.top,
-  // )
 }
