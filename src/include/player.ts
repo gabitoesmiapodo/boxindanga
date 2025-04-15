@@ -27,10 +27,10 @@ export class Player {
   private readonly fullWidth = 134 // width when the arm is extended
   private readonly width = 58 // width when idle (actually a little less to allow for some overlap, real width is 63)
   private readonly actualWidth = 63
-  private readonly playerSpeedX = 162
-  private readonly playerSpeedY = 100
+  private readonly playerSpeedX = 325
+  private readonly playerSpeedY = 200
   private readonly hitPlayerSpeedX = 200
-  private readonly hitPlayerSpeedY = 210
+  private readonly hitPlayerSpeedY = 240
   private readonly headHeight = 36
   private readonly headWidth = 45
   private readonly gloveHeight = 25
@@ -61,8 +61,8 @@ export class Player {
   /**
    * Get the bounding box of the player's body
    */
-  private getMainBoundingBox() {
-    return this.isFacingRight()
+  private getMainBoundingBox = () =>
+    this.isFacingRight()
       ? {
           left: this.x,
           right: this.x + this.width,
@@ -75,14 +75,11 @@ export class Player {
           top: this.y,
           bottom: this.y + this.height,
         }
-  }
 
   /**
    * Check if the player is punching
    */
-  private isPunching() {
-    return this.state === 'punchingTop' || this.state === 'punchingBottom'
-  }
+  private isPunching = () => this.state === 'punchingTop' || this.state === 'punchingBottom'
 
   /**
    * Check if the player is hitting the enemy's head
@@ -123,56 +120,40 @@ export class Player {
   /**
    * Calculate the horizontal displacement of the player
    */
-  private calculateHorizontalDisplacement(dt: number, speed: number) {
-    return Math.trunc(speed * dt)
-  }
+  private calculateHorizontalDisplacement = (dt: number, speed: number) => Math.trunc(speed * dt)
 
   /**
    * Calculate the vertical displacement of the player
    */
-  private calculateVerticalDisplacement(dt: number, speed: number) {
-    return Math.trunc(speed * dt)
-  }
+  private calculateVerticalDisplacement = (dt: number, speed: number) => Math.trunc(speed * dt)
 
   /**
    * Check if the player is colliding with the left of the ring
    */
-  private isCollidingWithRingLeft(dt: number, speed: number) {
-    return (
-      this.getMainBoundingBox().left - this.calculateHorizontalDisplacement(dt, speed) <
-      ringInnerBounds.left
-    )
-  }
+  private isCollidingWithRingLeft = (dt: number, speed: number) =>
+    this.getMainBoundingBox().left - this.calculateHorizontalDisplacement(dt, speed) <
+    ringInnerBounds.left
 
   /**
    * Check if the player is colliding with the right of the ring
    */
-  private isCollidingWithRingRight(dt: number, speed: number) {
-    return (
-      this.getMainBoundingBox().right + this.calculateHorizontalDisplacement(dt, speed) >
-      ringInnerBounds.right
-    )
-  }
+  private isCollidingWithRingRight = (dt: number, speed: number) =>
+    this.getMainBoundingBox().right + this.calculateHorizontalDisplacement(dt, speed) >
+    ringInnerBounds.right
 
   /**
    * Check if the player is colliding with the top of the ring
    */
-  private isCollidingWithRingTop(dt: number, speed: number) {
-    return (
-      this.getMainBoundingBox().top - this.calculateVerticalDisplacement(dt, speed) <
-      ringInnerBounds.top
-    )
-  }
+  private isCollidingWithRingTop = (dt: number, speed: number) =>
+    this.getMainBoundingBox().top - this.calculateVerticalDisplacement(dt, speed) <
+    ringInnerBounds.top
 
   /**
    * Check if the player is colliding with the bottom of the ring
    */
-  private isCollidingWithRingBottom(dt: number, speed: number) {
-    return (
-      this.getMainBoundingBox().bottom + this.calculateVerticalDisplacement(dt, speed) >
-      ringInnerBounds.bottom
-    )
-  }
+  private isCollidingWithRingBottom = (dt: number, speed: number) =>
+    this.getMainBoundingBox().bottom + this.calculateVerticalDisplacement(dt, speed) >
+    ringInnerBounds.bottom
 
   /**
    * Update the player's facing direction according to the enemy's position
@@ -249,15 +230,12 @@ export class Player {
 
   /**
    * Check if the player is already hitting the enemy
+   * this is a shitty way of testing this, but it works
    */
-  private isHittingEnemy() {
-    // this is a shitty way of testing this, but it works
-    return (
-      this.playerAnimation.isFastForwarding() ||
-      Overseer.getEnemy(this).getState() === 'hitFromTop' ||
-      Overseer.getEnemy(this).getState() === 'hitFromBottom'
-    )
-  }
+  private isHittingEnemy = () =>
+    this.playerAnimation.isFastForwarding() ||
+    Overseer.getEnemy(this).getState() === 'hitFromTop' ||
+    Overseer.getEnemy(this).getState() === 'hitFromBottom'
 
   /**
    * Increase the score
@@ -297,23 +275,19 @@ export class Player {
   /**
    * Check if the player is above the enemy
    */
-  protected isAboveEnemy() {
-    return this.getYCenter() < Overseer.getEnemy(this).getYCenter()
-  }
+  protected isAboveEnemy = () => this.getYCenter() < Overseer.getEnemy(this).getYCenter()
 
   /**
    * Get the X distance to the enemy
    */
-  protected getXDistanceToEnemy() {
-    return Math.abs(this.getXCenter() - Overseer.getEnemy(this).getXCenter())
-  }
+  protected getXDistanceToEnemy = () =>
+    Math.abs(this.getXCenter() - Overseer.getEnemy(this).getXCenter())
 
   /**
    * Get the distance to the enemy
    */
-  protected getYDistanceToEnemy() {
-    return Math.abs(this.getYCenter() - Overseer.getEnemy(this).getYCenter())
-  }
+  protected getYDistanceToEnemy = () =>
+    Math.abs(this.getYCenter() - Overseer.getEnemy(this).getYCenter())
 
   /**
    * Move the player up
@@ -435,26 +409,21 @@ export class Player {
    * used to decide whether the player should hit
    * with the top or bottom glove
    */
-  public getYCenter() {
-    return Math.trunc(this.y + this.height / 2)
-  }
+  public getYCenter = () => Math.trunc(this.y + this.height / 2)
 
   /**
    * Get the center of the player along the X axis,
    * used to decide how much each hit is worth
    */
-  public getXCenter() {
-    return Math.trunc(
+  public getXCenter = () =>
+    Math.trunc(
       this.getMainBoundingBox().left + (this.actualWidth - this.width) + this.actualWidth / 2,
     )
-  }
 
   /**
    * Get the player's state
    */
-  public getState() {
-    return this.state
-  }
+  public getState = () => this.state
 
   /**
    * Set the player's state
@@ -466,37 +435,27 @@ export class Player {
   /**
    * Get the player's facing direction
    */
-  public isFacingRight() {
-    return this.facingDirection === 'right'
-  }
+  public isFacingRight = () => this.facingDirection === 'right'
 
   /**
    * Get the player's color
    */
-  public getColor() {
-    return this.color
-  }
+  public getColor = () => this.color
 
   /**
    * Get the player's x position
    */
-  public getX() {
-    return this.x
-  }
+  public getX = () => this.x
 
   /**
    * Get the player's y position
    */
-  public getY() {
-    return this.y
-  }
+  public getY = () => this.y
 
   /**
    * Get the player's score
    */
-  public getScore() {
-    return this.score
-  }
+  public getScore = () => this.score
 
   /**
    * Update the player
