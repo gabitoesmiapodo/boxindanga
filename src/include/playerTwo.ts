@@ -16,9 +16,6 @@ export class PlayerTwo extends Player {
   private chosenXDirection: 'left' | 'right' | 'none' = 'none'
   private movementYChunk = 0
   private chosenYDirection: 'top' | 'bottom' | 'none' = 'none'
-
-  private xDistance = 0
-  private yDistance = 0
   private isTired = false
 
   constructor(playerType: PlayerType) {
@@ -46,20 +43,12 @@ export class PlayerTwo extends Player {
   }
 
   /**
-   * Update the X and Y distance to the enemy.
-   */
-  private updateDistance() {
-    this.xDistance = Math.abs(this.getXCenter() - Overseer.getEnemy(this).getXCenter())
-    this.yDistance = Math.abs(this.getYCenter() - Overseer.getEnemy(this).getYCenter())
-  }
-
-  /**
    * Get in X range to punch
    */
   private getInXRange(dt: number) {
     if (this.state !== 'idle') return
 
-    if (this.xDistance > this.maximumXPunchingRange) {
+    if (this.getXDistanceToEnemy() > this.maximumXPunchingRange) {
       if (this.isFacingRight()) {
         this.moveRight(dt)
       } else {
@@ -74,7 +63,7 @@ export class PlayerTwo extends Player {
   private getInYRange(dt: number) {
     if (this.state !== 'idle') return
 
-    if (this.yDistance > this.maximumYPunchingRange) {
+    if (this.getYDistanceToEnemy() > this.maximumYPunchingRange) {
       if (this.isAboveEnemy()) {
         this.moveDown(dt)
       } else {
@@ -98,9 +87,9 @@ export class PlayerTwo extends Player {
     // Also has to be close enough along the X axis, otherwise it will try to do this all the time
     // It'll choose whether to go up or down randomly 50 / 50
     if (
-      this.yDistance <= this.minimumYPunchingRange &&
+      this.getYDistanceToEnemy() <= this.minimumYPunchingRange &&
       this.movementYChunk <= 0 &&
-      this.xDistance <= this.maximumXPunchingRange
+      this.getXDistanceToEnemy() <= this.maximumXPunchingRange
     ) {
       if (Math.random() < 0.8) {
         this.chosenYDirection = 'top'
@@ -123,8 +112,8 @@ export class PlayerTwo extends Player {
   }
 
   private getOverMinimumXRange(dt: number) {
-    const extremelyClose = this.xDistance <= 65 //&& isWhithinMaximumXRange
-    const justClose = this.xDistance <= 80 //&& isWhithinMaximumXRange
+    const extremelyClose = this.getXDistanceToEnemy() <= 65 //&& isWhithinMaximumXRange
+    const justClose = this.getXDistanceToEnemy() <= 80 //&& isWhithinMaximumXRange
 
     if (extremelyClose) {
       this.chosenXDirection = 'none'
@@ -170,9 +159,9 @@ export class PlayerTwo extends Player {
    */
   private canHit() {
     return (
-      this.xDistance <= this.maximumXPunchingRange &&
-      this.yDistance <= this.maximumYPunchingRange &&
-      this.yDistance > this.minimumYPunchingRange
+      this.getXDistanceToEnemy() <= this.maximumXPunchingRange &&
+      this.getYDistanceToEnemy() <= this.maximumYPunchingRange &&
+      this.getYDistanceToEnemy() > this.minimumYPunchingRange
     )
   }
 
@@ -219,7 +208,6 @@ export class PlayerTwo extends Player {
    * Update the player.
    */
   public update(dt: number) {
-    this.updateDistance()
     if (Overseer.gameState === 'playing') {
       this.think(dt)
     }
