@@ -110,6 +110,9 @@ export class PlayerTwo extends Player {
     }
   }
 
+  /**
+   * Move away if too close to the enemy
+   */
   private getOverMinimumXRange(dt: number) {
     if (
       this.getXDistanceToEnemy() < 80 &&
@@ -121,7 +124,6 @@ export class PlayerTwo extends Player {
       this.movementXChunk = 20
     }
 
-    // too close, move away
     if (this.movementXChunk > 0) {
       this.movementXChunk--
 
@@ -148,6 +150,8 @@ export class PlayerTwo extends Player {
    * Set the player to tired state for a while
    */
   private setIsTired() {
+    if (this.isTired || this.getScore() < this.tiredThreshold || !(Math.random() < 0.01)) return
+
     this.isTired = true
     const score = this.getScore()
     const delay =
@@ -159,25 +163,74 @@ export class PlayerTwo extends Player {
   }
 
   /**
+   * Move away if too close to the enemy
+   * (tries to avoid infinite combos)
+   */
+  private movementXHitChunk = 0
+  private moveAwayXIfHit(dt: number) {
+    if (
+      this.movementXHitChunk <= 0 &&
+      (this.state === 'hitFromBottom' || this.state === 'hitFromTop') &&
+      Math.random() < 0.05
+    ) {
+      this.movementXHitChunk = 5
+      // there's a chance to also get tired if hit
+      this.setIsTired()
+    }
+
+    if (this.movementXHitChunk > 0 && this.state === 'idle') {
+      this.movementXHitChunk--
+
+      if (this.isFacingRight()) {
+        this.moveLeft(dt)
+      } else {
+        this.moveRight(dt)
+      }
+    }
+  }
+
+  private movementYHitChunk = 0
+  private moveAwayYIfHit(dt: number) {
+    if (
+      this.movementYHitChunk <= 0 &&
+      (this.state === 'hitFromBottom' || this.state === 'hitFromTop') &&
+      Math.random() < 0.1
+    ) {
+      this.movementYHitChunk = 15
+    }
+
+    if (this.movementYHitChunk > 0 && this.state === 'idle') {
+      this.movementYHitChunk--
+
+      if (this.isAboveEnemy()) {
+        this.moveUp(dt)
+      } else {
+        this.moveDown(dt)
+      }
+    }
+  }
+
+  /**
    * Think what to do
    */
   private think(dt: number) {
-    if (!this.isTired && this.getScore() > this.tiredThreshold) {
-      if (Math.random() < 0.01) {
-        this.setIsTired()
-      }
+    this.moveAwayXIfHit(dt)
+    this.moveAwayYIfHit(dt)
+
+    // There's a chance to get tired after the player has scored a certain amount of points
+    this.setIsTired()
+
+    // If the player is tired, it will not move for a bit
+    if (!this.isTired && this.state === 'idle' && this.movementXHitChunk === 0) {
+      this.getInXRange(dt)
+      this.getInYRange(dt)
     }
 
-    if (!this.isTired) {
-      if (this.state === 'idle') {
-        this.getInXRange(dt)
-        this.getInYRange(dt)
-      }
-    }
-
+    // Get farther from the enemy if too close
     this.getOverMinimumYRange(dt)
     this.getOverMinimumXRange(dt)
 
+    // Punch
     if (this.canHit() && Math.random() < 0.5) {
       this.punch()
     }
