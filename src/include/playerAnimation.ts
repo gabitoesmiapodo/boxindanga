@@ -25,9 +25,7 @@ export class PlayerAnimation {
     this.player.setState('idle')
   }
 
-  private isAtAnimationEnd() {
-    return this.currentFrameIndex === this.currentAnimation.length - 1
-  }
+  private isAtAnimationEnd = () => this.currentFrameIndex === this.currentAnimation.length - 1
 
   public playAnimation(dt: number) {
     if (!this.isPaused) {
@@ -60,29 +58,21 @@ export class PlayerAnimation {
     this.currentAnimation = animation
   }
 
-  public getAnimation() {
-    return this.currentAnimation
-  }
+  public getAnimation = () => this.currentAnimation
 
   public setFastForward() {
     this.speedDivider = 2
   }
 
-  public isFastForwarding() {
-    return this.speedDivider === 2
-  }
+  public isFastForwarding = () => this.speedDivider === 2
 
-  public getCurrentFrameIndex() {
-    return this.currentFrameIndex
-  }
+  public getCurrentFrameIndex = () => this.currentFrameIndex
 
   public setCurrentFrameIndex(currentFrameIndex: number) {
     this.currentFrameIndex = currentFrameIndex
   }
 
-  public isPlayingAnimation() {
-    return this.currentFrameIndex > 0
-  }
+  public isPlayingAnimation = () => this.currentFrameIndex > 0
 
   public pauseAnimation() {
     this.isPaused = true

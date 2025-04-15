@@ -39,9 +39,8 @@ const updateScreen = (playerOne: PlayerOne, playerTwo: PlayerTwo, dt: number, ti
 /**
  * Checks for KO
  */
-const isKO = (playerOneScore: number, playerTwoScore: number) => {
-  return playerOneScore >= 99 || playerTwoScore >= 99
-}
+const isKO = (playerOneScore: number, playerTwoScore: number) =>
+  playerOneScore >= 99 || playerTwoScore >= 99
 
 /**
  * Init function
