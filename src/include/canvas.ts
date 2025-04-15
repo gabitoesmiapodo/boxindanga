@@ -13,11 +13,14 @@ export class Canvas {
     Canvas.canvas.height = 480
     Canvas.canvas.style.background = '#649335'
 
-    Canvas.ctx = Canvas.canvas.getContext('2d') as CanvasRenderingContext2D
-    Canvas.ctx.imageSmoothingEnabled = false
+    Canvas.ctx = Canvas.canvas.getContext('2d', {
+      willReadFrequently: true,
+    }) as CanvasRenderingContext2D
 
     if (!Canvas.ctx) {
       throw new Error('2d context not supported')
     }
+
+    Canvas.ctx.imageSmoothingEnabled = false
   }
 }
