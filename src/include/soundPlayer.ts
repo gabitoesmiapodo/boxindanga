@@ -42,7 +42,7 @@ export class SoundPlayer {
    * Play the sound when the player hits the enemy's gloves
    */
   static playGloveHit() {
-    SoundPlayer.tia.setChannel0(31, 3, 15)
+    SoundPlayer.tia.setChannel0(31, 3, 10)
     setTimeout(() => {
       SoundPlayer.tia.setChannel0(0, 0, 0)
     }, 18)
