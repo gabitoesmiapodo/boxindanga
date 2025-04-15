@@ -91,7 +91,7 @@ export class PlayerTwo extends Player {
       this.movementYChunk <= 0 &&
       this.getXDistanceToEnemy() <= this.maximumXPunchingRange
     ) {
-      if (Math.random() < 0.8) {
+      if (Math.random() < 0.5) {
         this.chosenYDirection = 'top'
       } else {
         this.chosenYDirection = 'bottom'
