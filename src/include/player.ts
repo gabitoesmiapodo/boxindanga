@@ -27,10 +27,10 @@ export class Player {
   private readonly fullWidth = 134 // width when the arm is extended
   private readonly width = 58 // width when idle (actually a little less to allow for some overlap, real width is 63)
   private readonly actualWidth = 63
-  private readonly playerSpeedX = 325
-  private readonly playerSpeedY = 200
+  private readonly playerSpeedX = 162
+  private readonly playerSpeedY = 100
   private readonly hitPlayerSpeedX = 200
-  private readonly hitPlayerSpeedY = 250
+  private readonly hitPlayerSpeedY = 210
   private readonly headHeight = 36
   private readonly headWidth = 45
   private readonly gloveHeight = 25
