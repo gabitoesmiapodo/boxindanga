@@ -14,6 +14,8 @@ export class PlayerTwo extends Player {
 
   private movementXChunk = 0
   private movementYChunk = 0
+  private movementXHitChunk = 0
+  private movementYHitChunk = 0
   private chosenYDirection: 'top' | 'bottom' | 'none' = 'none'
   private isTired = false
 
@@ -87,8 +89,10 @@ export class PlayerTwo extends Player {
     // It'll choose whether to go up or down randomly 50 / 50
     if (
       this.getYDistanceToEnemy() <= this.minimumYPunchingRange &&
+      this.getXDistanceToEnemy() <= this.maximumXPunchingRange &&
       this.movementYChunk <= 0 &&
-      this.getXDistanceToEnemy() <= this.maximumXPunchingRange
+      this.movementYHitChunk <= 0 &&
+      this.state === 'idle'
     ) {
       if (Math.random() < 0.5) {
         this.chosenYDirection = 'top'
@@ -118,6 +122,7 @@ export class PlayerTwo extends Player {
       this.getXDistanceToEnemy() < 80 &&
       this.getXDistanceToEnemy() >= 60 &&
       this.movementXChunk <= 0 &&
+      this.movementXHitChunk <= 0 &&
       this.state === 'idle' &&
       Math.random() < 0.1
     ) {
@@ -138,7 +143,7 @@ export class PlayerTwo extends Player {
   /**
    * Is whithin punching range?
    */
-  private canHit() {
+  private isInPunchingRange() {
     return (
       this.getXDistanceToEnemy() <= this.maximumXPunchingRange &&
       this.getYDistanceToEnemy() <= this.maximumYPunchingRange &&
@@ -150,7 +155,7 @@ export class PlayerTwo extends Player {
    * Set the player to tired state for a while
    */
   private setIsTired() {
-    if (this.isTired || this.getScore() < this.tiredThreshold || !(Math.random() < 0.01)) return
+    if (this.isTired || this.getScore() < this.tiredThreshold || !(Math.random() < 0.02)) return
 
     this.isTired = true
     const score = this.getScore()
@@ -163,17 +168,17 @@ export class PlayerTwo extends Player {
   }
 
   /**
-   * Move away if too close to the enemy
+   * Move away along X if too close to the enemy
    * (tries to avoid infinite combos)
    */
-  private movementXHitChunk = 0
   private moveAwayXIfHit(dt: number) {
     if (
       this.movementXHitChunk <= 0 &&
+      this.movementXChunk <= 0 &&
       (this.state === 'hitFromBottom' || this.state === 'hitFromTop') &&
-      Math.random() < 0.05
+      Math.random() < 0.04
     ) {
-      this.movementXHitChunk = 5
+      this.movementXHitChunk = 10
       // there's a chance to also get tired if hit
       this.setIsTired()
     }
@@ -189,10 +194,14 @@ export class PlayerTwo extends Player {
     }
   }
 
-  private movementYHitChunk = 0
+  /**
+   * Move away along Y if too close to the enemy
+   * (tries to avoid infinite combos)
+   */
   private moveAwayYIfHit(dt: number) {
     if (
       this.movementYHitChunk <= 0 &&
+      this.movementYChunk <= 0 &&
       (this.state === 'hitFromBottom' || this.state === 'hitFromTop') &&
       Math.random() < 0.1
     ) {
@@ -231,7 +240,7 @@ export class PlayerTwo extends Player {
     this.getOverMinimumXRange(dt)
 
     // Punch
-    if (this.canHit() && Math.random() < 0.5) {
+    if (this.isInPunchingRange() && Math.random() < 0.35) {
       this.punch()
     }
   }
