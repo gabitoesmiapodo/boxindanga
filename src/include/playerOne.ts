@@ -47,7 +47,7 @@ export class PlayerOne extends Player {
 
     const originalPosition = { x: this.x, y: this.y }
 
-    if (this.keys.w || this.keys.P) this.moveUp(dt)
+    if (this.keys.w || this.keys.W) this.moveUp(dt)
     if (this.keys.s || this.keys.S) this.moveDown(dt)
     if (this.keys.a || this.keys.A) this.moveLeft(dt)
     if (this.keys.d || this.keys.D) this.moveRight(dt)
