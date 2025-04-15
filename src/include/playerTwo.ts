@@ -210,7 +210,7 @@ export class PlayerTwo extends Player {
     this.getOverMinimumYRange(dt)
     this.getOverMinimumXRange(dt)
 
-    if (this.canHit() && Math.random() < 0.3) {
+    if (this.canHit() && Math.random() < 0.5) {
       this.punch()
     }
   }
