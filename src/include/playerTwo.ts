@@ -7,13 +7,12 @@ export class PlayerTwo extends Player {
   private readonly initialX = ringInnerBounds.right - (134 - 58) // 134 (player.fullWidth) - 58 (player.width) === 76, this one is confusing because playerTwo is rotated when drawn for the first time
   private readonly initialY = ringInnerBounds.bottom - 110 // 110 === player.height
 
-  private readonly maximumXPunchingRange = 100
+  private readonly maximumXPunchingRange = 125
   private readonly minimumYPunchingRange = 25
   private readonly maximumYPunchingRange = 50
   private readonly tiredThreshold = 25
 
   private movementXChunk = 0
-  private chosenXDirection: 'left' | 'right' | 'none' = 'none'
   private movementYChunk = 0
   private chosenYDirection: 'top' | 'bottom' | 'none' = 'none'
   private isTired = false
@@ -112,44 +111,24 @@ export class PlayerTwo extends Player {
   }
 
   private getOverMinimumXRange(dt: number) {
-    const extremelyClose = this.getXDistanceToEnemy() <= 65 //&& isWhithinMaximumXRange
-    const justClose = this.getXDistanceToEnemy() <= 80 //&& isWhithinMaximumXRange
-
-    if (extremelyClose) {
-      this.chosenXDirection = 'none'
-      this.movementXChunk = 20
-    } else if (justClose) {
-      // choose a random direction to move away from the enemy
-      if (Math.random() < 0.5) {
-        this.chosenXDirection = 'left'
-      } else {
-        this.chosenXDirection = 'right'
-      }
+    if (
+      this.getXDistanceToEnemy() < 80 &&
+      this.getXDistanceToEnemy() >= 60 &&
+      this.movementXChunk <= 0 &&
+      this.state === 'idle' &&
+      Math.random() < 0.1
+    ) {
       this.movementXChunk = 20
     }
 
-    // too close, move away in predetermined direction
-    if (this.chosenXDirection === 'none' && this.movementXChunk > 0) {
+    // too close, move away
+    if (this.movementXChunk > 0) {
       this.movementXChunk--
 
       if (this.isFacingRight()) {
         this.moveLeft(dt)
       } else {
         this.moveRight(dt)
-      }
-    }
-
-    // just close, move away in random direction
-    if (
-      (this.chosenXDirection === 'right' || this.chosenXDirection === 'left') &&
-      this.movementXChunk > 0
-    ) {
-      this.movementXChunk--
-
-      if (this.chosenXDirection === 'right') {
-        this.moveRight(dt)
-      } else {
-        this.moveLeft(dt)
       }
     }
   }
@@ -172,7 +151,7 @@ export class PlayerTwo extends Player {
     this.isTired = true
     const score = this.getScore()
     const delay =
-      score > this.tiredThreshold && score < 50 ? 250 : score > 50 && score < 75 ? 500 : 1000
+      score > this.tiredThreshold && score < 50 ? 250 : score > 50 && score < 75 ? 750 : 1000
 
     setTimeout(() => {
       this.isTired = false

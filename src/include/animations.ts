@@ -67,13 +67,13 @@ export const faceLeftIdle: Animation = [
 // Got hit
 export const faceRightHit: Animation = [
   getFrame(frame00Right, animationSpeed, 14, gloveDefaultXOffsetRight),
-  getFrame(frame01Right, animationSpeed, 4, gloveContractedXOffsetRight),
-  getFrame(frame02Right, animationSpeed, 18, gloveMiddlePunchXOffsetRight),
+  getFrame(frame01Right, animationSpeed, 6, gloveContractedXOffsetRight),
+  getFrame(frame02Right, animationSpeed, 20, gloveMiddlePunchXOffsetRight),
 ]
 export const faceLeftHit: Animation = [
   getFrame(frame00Left, animationSpeed, 14, gloveDefaultXOffsetLeft),
-  getFrame(frame01Left, animationSpeed, 4, gloveContractedXOffsetLeft),
-  getFrame(frame02Left, animationSpeed, 18, gloveMiddlePunchXOffsetLeft),
+  getFrame(frame01Left, animationSpeed, 6, gloveContractedXOffsetLeft),
+  getFrame(frame02Left, animationSpeed, 20, gloveMiddlePunchXOffsetLeft),
 ]
 
 // Top punch right
