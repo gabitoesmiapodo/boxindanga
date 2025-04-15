@@ -66,6 +66,8 @@ const main = () => {
   const playerOne = new PlayerOne('playerOne')
   const playerTwo = new PlayerTwo('playerTwo')
   const roundTime = 120000 // 2 minutes
+  const targetFPS = 60
+  const frameDelay = 1000 / targetFPS
 
   let remainingTime = roundTime
   let last: number
@@ -80,7 +82,7 @@ const main = () => {
    */
   const startGame = () => {
     Overseer.gameState = 'playing'
-    last = performance.now()
+    // Don't reset 'last' here to avoid timing issues
     remainingTime = roundTime
 
     intervalId = setInterval(() => {
@@ -92,21 +94,35 @@ const main = () => {
    * Main game loop
    */
   const gameLoop = (now: number) => {
-    const dt = (now - last) / 1000
+    // Calculate time since last frame
+    const elapsed = now - last
 
-    last = now
-    updateScreen(playerOne, playerTwo, dt, remainingTime)
-    if (applyCRTFilter) crtFilter(Canvas.ctx)
+    // Only update if enough time has passed for 60fps (16.67ms)
+    if (elapsed > frameDelay) {
+      // Calculate delta time in seconds and adjust for 60fps consistency
+      const dt = Math.min(elapsed, frameDelay * 2) / 1000
 
-    if (Overseer.gameState === 'playing') {
-      if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
-        SoundPlayer.playEndOfRoundBell()
-        Overseer.gameState = 'finished'
+      // Update last frame timestamp
+      last = now - (elapsed % frameDelay) // Maintain consistent timing offset
+
+      // Update game state
+      updateScreen(playerOne, playerTwo, dt, remainingTime)
+      if (applyCRTFilter) crtFilter(Canvas.ctx)
+
+      if (Overseer.gameState === 'playing') {
+        if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
+          SoundPlayer.playEndOfRoundBell()
+          Overseer.gameState = 'finished'
+        }
       }
     }
 
     requestAnimationFrame(gameLoop)
   }
+
+  // Initialize last timestamp and start the game loop
+  last = performance.now()
+  requestAnimationFrame(gameLoop)
 
   /**
    * Key event listeners
@@ -136,9 +152,6 @@ const main = () => {
       applyCRTFilter = !applyCRTFilter
     }
   })
-
-  // Gotta call this to start the game loop
-  requestAnimationFrame(gameLoop)
 }
 
 window.addEventListener('load', main)
