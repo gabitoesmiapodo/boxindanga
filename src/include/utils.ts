@@ -89,10 +89,10 @@ export function drawTime(time: number) {
 function drawScanlines(ctx: CanvasRenderingContext2D) {
   const { width, height } = ctx.canvas
   ctx.save()
-  ctx.globalAlpha = 0.15 // subtle darkness
+  ctx.globalAlpha = 0.3
   ctx.fillStyle = '#000'
 
-  for (let y = 0; y < height; y += 2) {
+  for (let y = 0; y < height; y += 3) {
     ctx.fillRect(0, y, width, 1)
   }
 
