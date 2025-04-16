@@ -12,13 +12,16 @@ Go to [itch.io](https://gabitoesmiapodo.itch.io/boxindangajs) or [https://boxind
 
 Whoever gets to 99 points first or has the most points when the time runs out wins.
 
-## Controls
+## Player controls
+
+- WASD: Move
+- P: Punch
+
+## Game
 
 - ESC: Reset
 - F2: Start
-- F3: Toggle CRT filter
-- WASD: Move
-- P: Punch
+- F3: Toggle CRT filter on / off
 
 ## A little history
 
@@ -26,7 +29,7 @@ I never liked the Atari 2600 too much, but I remember enjoying Boxing and Enduro
 
 ## Running locally / Development
 
->**Note:** I implemented this in a few weeks, with zero planning or really thinking too much about what I had to do. I haven't touched anything related to game programming in maybe 20 years... The code is the spaghettiest of spaghetti code, so modify it at your own risk. I tried to make this as small as possible, so no graphics, no sounds, no nothing. Everything's in the code, as it would be in the original game (it's like 10x the original ROM's size, though...)
+>**Note:** I implemented this in a few weeks, with zero planning or really thinking too much about what I had to do. I haven't touched anything related to game programming in maybe 20 years... The code is the spaghettiest of spaghetti code, so modify it at your own risk. I tried to make this as small as possible, so no graphics, no sounds, no nothing. Everything's in the code, as it would be in the original game (it's like 10x the original ROM's size, though...) Anyways, no Unity, no Godot, no Phaser, no nothing. Just plain old ~~JavaScript~~ Typescript and HTML.
 
 ### Clone the repository
 
