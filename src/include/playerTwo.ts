@@ -241,7 +241,7 @@ export class PlayerTwo extends Player {
 
     // Punch
     // could be 0.4 or more if needs to be more aggressive
-    if (this.isInPunchingRange() && Math.random() < 0.35) {
+    if (this.isInPunchingRange() && Math.random() < 0.3) {
       this.punch()
     }
   }
