@@ -8,14 +8,14 @@ A clone (or close enough) of the classic Activision game Boxing (1980) for the [
 
 I tried to make it as close to the original as possible, but... well, as I said: close enough.
 
-Go to [https://boxindanga.vercel.app/](https://boxindanga.vercel.app/) to play the game.
+Go to [itch.io](https://gabitoesmiapodo.itch.io/boxindangajs) or [https://boxindanga.vercel.app/](https://boxindanga.vercel.app/) to play the game.
 
 Whoever gets to 99 points first or has the most points when the time runs out wins.
 
 ## Controls
 
 - ESC: Reset
-- F2: Start / Pause
+- F2: Start
 - F3: Toggle CRT filter
 - WASD: Move
 - P: Punch
