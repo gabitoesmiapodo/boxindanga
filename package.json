@@ -13,5 +13,6 @@
     "esbuild": "^0.25.1",
     "live-server": "^1.2.2",
     "typescript": "^5.8.2"
-  }
+  },
+  "packageManager": "pnpm@9.9.0"
 }
