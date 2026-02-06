@@ -1,6 +1,8 @@
 node_modules
 dist
 
+.worktrees
+
 dev-files
 
 public/index.js.map
