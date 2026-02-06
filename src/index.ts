@@ -6,6 +6,7 @@ import { PlayerOne } from './include/playerOne'
 import { PlayerTwo } from './include/playerTwo'
 import { drawRing } from './include/ring'
 import { SoundPlayer } from './include/soundPlayer'
+import { computeFrameDeltaMs } from './include/timing'
 import { crtFilter, drawScore, drawSprite, drawTime } from './include/utils'
 
 new Overseer()
@@ -45,15 +46,11 @@ const isKO = (playerOneScore: number, playerTwoScore: number) =>
 /**
  * Init function
  */
-const init = (playerOne: PlayerOne, playerTwo: PlayerTwo, intervalId?: number) => {
+const init = (playerOne: PlayerOne, playerTwo: PlayerTwo) => {
   playerOne.reset()
   playerTwo.reset()
 
   updateScreen(playerOne, playerTwo, 0)
-
-  if (intervalId) {
-    clearInterval(intervalId)
-  }
 
   return { playerOne, playerTwo }
 }
@@ -67,8 +64,7 @@ const main = () => {
   const roundTime = 120000 // 2 minutes
 
   let remainingTime = roundTime
-  let last: number
-  let intervalId: number
+  let last: number | undefined
   let applyCRTFilter = true
 
   Overseer.init(playerOne, playerTwo)
@@ -79,29 +75,20 @@ const main = () => {
    */
   const startGame = () => {
     Overseer.gameState = 'playing'
-    last = performance.now()
+    last = undefined
     remainingTime = roundTime
-
-    intervalId = setInterval(() => {
-      if (Overseer.gameState === 'playing') remainingTime -= 1000
-    }, 1000)
   }
 
   /**
    * Main game loop
    */
-  const fpsLimit = 1000 / 60 // 60 FPS
   const gameLoop = (now: number) => {
-    const timeDiff = now - last
-
-    if (timeDiff < fpsLimit) {
-      requestAnimationFrame(gameLoop)
-      return
+    const { deltaMs, lastTime } = computeFrameDeltaMs(last, now, 100)
+    last = lastTime
+    const dt = deltaMs / 1000
+    if (Overseer.gameState === 'playing') {
+      remainingTime = Math.max(0, remainingTime - deltaMs)
     }
-
-    const dt = timeDiff / 1000
-
-    last = now
     updateScreen(playerOne, playerTwo, dt, remainingTime)
     if (applyCRTFilter) crtFilter(Canvas.ctx)
 
@@ -124,14 +111,14 @@ const main = () => {
   document.addEventListener('keydown', (e) => {
     // ESCAPE: reset
     if (e.key === 'Escape') {
-      init(playerOne, playerTwo, intervalId)
+      init(playerOne, playerTwo)
       remainingTime = roundTime
       Overseer.gameState = 'finished'
     }
 
     // F1: start / pause
     if (e.key === 'F2' && Overseer.gameState === 'finished') {
-      init(playerOne, playerTwo, intervalId)
+      init(playerOne, playerTwo)
       startGame()
 
       // AudioContext: Initialize only once (must be done
