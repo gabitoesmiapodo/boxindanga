@@ -5,5 +5,7 @@ dist
 
 dev-files
 
+docs/
+
 public/index.js.map
 public/index.js
