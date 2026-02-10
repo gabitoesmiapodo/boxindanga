@@ -67,7 +67,7 @@ const init = (playerOne: PlayerOne, playerTwo: PlayerTwo) => {
  * Main function
  */
 const main = () => {
-  const playerOne = new PlayerOne('playerOne')
+  const playerOne = new PlayerOne('playerOne', inputManager)
   const playerTwo = new PlayerTwo('playerTwo')
   const roundTime = 120000 // 2 minutes
 

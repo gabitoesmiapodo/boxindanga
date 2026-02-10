@@ -1,42 +1,19 @@
 import { playerOneColor } from './config'
+import type { InputManager } from './inputManager'
 import { Overseer } from './overseer'
 import { Player } from './player'
 import { ringInnerBounds } from './ring'
 
 export class PlayerOne extends Player {
-  private keys: Record<string, boolean> = {}
-  private punchPressed = false
+  private input: InputManager
 
-  constructor(playerType: 'playerOne') {
+  constructor(playerType: 'playerOne', input: InputManager) {
     super(playerType)
 
     this.x = ringInnerBounds.left
     this.y = ringInnerBounds.top
     this.color = playerOneColor
-
-    this.initKeys()
-  }
-
-  /**
-   * Initialize key listeners
-   */
-  private initKeys() {
-    document.addEventListener('keydown', (e) => {
-      if (Overseer.gameState !== 'playing') return
-
-      if ((e.key === 'p' || e.key === 'P') && !this.punchPressed) {
-        this.punchPressed = true
-        this.punch()
-      }
-      this.keys[e.key] = true
-    })
-
-    document.addEventListener('keyup', (e) => {
-      if (e.key === 'p' || e.key === 'P') {
-        this.punchPressed = false
-      }
-      this.keys[e.key] = false
-    })
+    this.input = input
   }
 
   /**
@@ -47,10 +24,10 @@ export class PlayerOne extends Player {
 
     const originalPosition = { x: this.x, y: this.y }
 
-    if (this.keys.w || this.keys.W) this.moveUp(dt)
-    if (this.keys.s || this.keys.S) this.moveDown(dt)
-    if (this.keys.a || this.keys.A) this.moveLeft(dt)
-    if (this.keys.d || this.keys.D) this.moveRight(dt)
+    if (this.input.isDown('moveUp')) this.moveUp(dt)
+    if (this.input.isDown('moveDown')) this.moveDown(dt)
+    if (this.input.isDown('moveLeft')) this.moveLeft(dt)
+    if (this.input.isDown('moveRight')) this.moveRight(dt)
 
     if (this.isBodyCollidingWithEnemy()) {
       this.x = originalPosition.x
@@ -73,8 +50,12 @@ export class PlayerOne extends Player {
    */
   public update(dt: number) {
     if (Overseer.gameState === 'playing') {
+      if (this.input.justPressed('punch')) {
+        this.punch()
+      }
       this.handleMovement(dt)
     }
     super.update(dt)
+    this.input.flush()
   }
 }
