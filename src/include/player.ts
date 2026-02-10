@@ -4,7 +4,7 @@ import { AnimationStateMachine } from './animationStateMachine'
 import type { AnimationClip, AnimationClipId } from './animationTypes'
 import { Overseer } from './overseer'
 import { ringInnerBounds } from './ring'
-import { SoundPlayer } from './soundPlayer'
+import { audioEvents } from './audioEvents'
 import { drawSprite, isColliding } from './utils'
 
 export type PlayerType = 'playerOne' | 'playerTwo'
@@ -300,7 +300,7 @@ export class Player {
     if (this.isHittingEnemyGlove()) {
       this.emitHitBlocked()
 
-      SoundPlayer.playGloveHit()
+      audioEvents.emit('audio:gloveHit')
 
       return
     }
@@ -313,7 +313,7 @@ export class Player {
         this.state === 'punchingTop' ? 'hitFromTop' : 'hitFromBottom',
       )
 
-      SoundPlayer.playHeadHit()
+      audioEvents.emit('audio:headHit')
     }
   }
 

@@ -6,6 +6,8 @@ import { Overseer } from './include/overseer'
 import { PlayerOne } from './include/playerOne'
 import { PlayerTwo } from './include/playerTwo'
 import { drawRing } from './include/ring'
+import { audioEvents } from './include/audioEvents'
+import { AudioManager } from './include/audioManager'
 import { SoundPlayer } from './include/soundPlayer'
 import { computeFrameDeltaMs } from './include/timing'
 import { crtFilter, drawScore, drawSprite, drawTime } from './include/utils'
@@ -13,6 +15,7 @@ import { crtFilter, drawScore, drawSprite, drawTime } from './include/utils'
 new Overseer()
 new Canvas()
 new SoundPlayer()
+new AudioManager(SoundPlayer, () => SoundPlayer.initialized).init()
 
 document.addEventListener('keydown', inputManager.onKeyDown)
 document.addEventListener('keyup', inputManager.onKeyUp)
@@ -102,7 +105,7 @@ const main = () => {
 
     if (Overseer.gameState === 'playing') {
       if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
-        SoundPlayer.playEndOfRoundBell()
+        audioEvents.emit('audio:roundEnd')
         Overseer.gameState = 'finished'
       }
     }
