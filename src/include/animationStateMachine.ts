@@ -6,7 +6,6 @@ type AnimationEvent =
   | { type: 'PunchRequested'; punch: PunchType }
   | { type: 'HitTakenTop' }
   | { type: 'HitTakenBottom' }
-  | { type: 'HitBlocked' }
   | { type: 'ClipFinished' }
 
 type State = 'idle' | 'punchTop' | 'punchBottom' | 'hitTop' | 'hitBottom'
