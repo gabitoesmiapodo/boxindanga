@@ -80,6 +80,7 @@ export class Player {
   }
 
   private emitHitBlocked() {
+    this.stateMachine.onEvent('HitBlocked')
     this.reversePunch()
   }
 

@@ -6,6 +6,7 @@ type AnimationEvent =
   | { type: 'PunchRequested'; punch: PunchType }
   | { type: 'HitTakenTop' }
   | { type: 'HitTakenBottom' }
+  | { type: 'HitBlocked' }
   | { type: 'ClipFinished' }
 
 type State = 'idle' | 'punchTop' | 'punchBottom' | 'hitTop' | 'hitBottom'
@@ -34,6 +35,9 @@ export class AnimationStateMachine {
     if (type === 'HitTakenBottom') {
       this.state = 'hitBottom'
       this.clipId = this.resolveClip()
+      return
+    }
+    if (type === 'HitBlocked') {
       return
     }
     if (type === 'ClipFinished') {
