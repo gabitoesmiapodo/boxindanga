@@ -46,12 +46,12 @@ const animationSpeed = 0.015
 const getFrame = (
   sprite: string,
   speed: number,
-  multipler: number,
+  multiplier: number,
   gloveXOffset: number,
 ): Frame => {
   return {
     sprite,
-    speed: speed * multipler,
+    speed: speed * multiplier,
     gloveXOffset,
   }
 }

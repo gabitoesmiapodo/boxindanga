@@ -1,25 +1,23 @@
-import {
-  type Animation,
-  faceLeftBottomPunch,
-  faceLeftHit,
-  faceLeftTopPunch,
-  faceRightBottomPunch,
-  faceRightHit,
-  faceRightIdle,
-  faceRightTopPunch,
-} from './animations'
+import { animationClips } from './animationClips'
+import { AnimationPlayer } from './animationPlayer'
+import { AnimationStateMachine } from './animationStateMachine'
+import type { AnimationClip, AnimationClipId } from './animationTypes'
 import { Overseer } from './overseer'
-import { PlayerAnimation } from './playerAnimation'
 import { ringInnerBounds } from './ring'
 import { SoundPlayer } from './soundPlayer'
-import { isColliding } from './utils'
+import { drawSprite, isColliding } from './utils'
 
 export type PlayerType = 'playerOne' | 'playerTwo'
 type Direction = 'left' | 'right'
 type PlayerState = 'punchingTop' | 'punchingBottom' | 'hitFromTop' | 'hitFromBottom' | 'idle'
 
 export class Player {
-  private playerAnimation: PlayerAnimation
+  private readonly animationPlayer = new AnimationPlayer()
+  private readonly stateMachine = new AnimationStateMachine()
+  private currentClipId: AnimationClipId | null = null
+  private currentClip: AnimationClip | null = null
+  private animationSpeedMultiplier = 1
+  private isFastForwarding = false
   private facingDirection: Direction = 'right' // direction is sorted out in the first update
   private score = 0
 
@@ -45,7 +43,8 @@ export class Player {
 
   constructor(playerType: PlayerType) {
     this.playerType = playerType
-    this.playerAnimation = new PlayerAnimation(this, faceRightIdle)
+    this.stateMachine.setFacing('right')
+    this.syncClipFromStateMachine(true)
   }
 
   protected reset() {
@@ -54,8 +53,49 @@ export class Player {
     this.score = 0
     this.state = 'idle'
     this.facingDirection = 'right'
-    this.playerAnimation.setAnimation(faceRightIdle)
-    this.playerAnimation.resetAnimation()
+    this.stateMachine.setFacing('right')
+    this.stateMachine.onEvent('ClipFinished')
+    this.resetAnimationSpeed()
+    this.syncClipFromStateMachine(true)
+  }
+
+  private syncClipFromStateMachine(force = false) {
+    const clipId = this.stateMachine.getClipId()
+    if (!force && this.currentClipId === clipId) return
+
+    const clip = animationClips[clipId]
+    this.currentClipId = clipId
+    this.currentClip = clip
+    this.animationPlayer.play(clip)
+  }
+
+  private resetAnimationSpeed() {
+    this.animationSpeedMultiplier = 1
+    this.isFastForwarding = false
+  }
+
+  private setAnimationSpeedMultiplier(multiplier: number) {
+    this.animationSpeedMultiplier = multiplier
+    this.isFastForwarding = multiplier !== 1
+  }
+
+  private emitHitBlocked() {
+    this.reversePunch()
+  }
+
+  private updateAnimation(dt: number) {
+    this.syncClipFromStateMachine()
+    this.animationPlayer.update(dt * this.animationSpeedMultiplier)
+
+    if (this.animationPlayer.isFinished()) {
+      this.stateMachine.onEvent('ClipFinished')
+      this.state = 'idle'
+      this.resetAnimationSpeed()
+      this.syncClipFromStateMachine(true)
+    }
+
+    const frame = this.animationPlayer.getFrame()
+    drawSprite(frame.sprite, this.color, this.x, this.y)
   }
 
   /**
@@ -171,7 +211,9 @@ export class Player {
     ) {
       this.facingDirection = 'left'
       this.x = this.x - this.width - offset
-      this.playerAnimation.resetAnimation()
+      this.stateMachine.setFacing('left')
+      this.resetAnimationSpeed()
+      this.syncClipFromStateMachine(true)
     }
 
     if (
@@ -180,17 +222,10 @@ export class Player {
     ) {
       this.facingDirection = 'right'
       this.x = this.x + this.width + offset
-      this.playerAnimation.resetAnimation()
+      this.stateMachine.setFacing('right')
+      this.resetAnimationSpeed()
+      this.syncClipFromStateMachine(true)
     }
-  }
-
-  /**
-   * Check if the current animation is playing
-   */
-  private isCurrentAnimationPlaying(animationOne: Animation, animationTwo?: Animation) {
-    const currentAnimation = this.playerAnimation.getAnimation()
-
-    return currentAnimation === animationOne || currentAnimation === animationTwo
   }
 
   /**
@@ -198,11 +233,6 @@ export class Player {
    */
   private updateHitState(dt: number) {
     if (this.state !== 'hitFromTop' && this.state !== 'hitFromBottom') return
-
-    if (!this.isCurrentAnimationPlaying(faceLeftHit, faceRightHit)) {
-      this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightHit : faceLeftHit)
-      this.playerAnimation.setFastForward()
-    }
 
     this.state === 'hitFromBottom'
       ? this.moveUp(dt, this.hitPlayerSpeedY)
@@ -217,15 +247,29 @@ export class Player {
    * Reverses the punch at a higher speed when the player hits something
    */
   private reversePunch() {
-    const currentFrameIndex = this.playerAnimation.getCurrentFrameIndex()
+    if (!this.currentClip) return
 
-    if (currentFrameIndex === 1) this.playerAnimation.setCurrentFrameIndex(5)
+    const currentFrame = this.animationPlayer.getFrame()
+    if (currentFrame.tag !== 'extend') return
 
-    if (currentFrameIndex === 2) this.playerAnimation.setCurrentFrameIndex(4)
+    const currentIndex = this.currentClip.frames.findIndex((frame) => frame === currentFrame)
+    if (currentIndex === -1) return
 
-    if (currentFrameIndex === 1 || currentFrameIndex === 2 || currentFrameIndex === 3) {
-      this.playerAnimation.setFastForward()
+    const matchingRetractIndex = this.currentClip.frames.findIndex(
+      (frame, index) =>
+        index > currentIndex && frame.tag === 'retract' && frame.sprite === currentFrame.sprite,
+    )
+
+    if (matchingRetractIndex !== -1) {
+      const retractClip: AnimationClip = {
+        ...this.currentClip,
+        frames: this.currentClip.frames.slice(matchingRetractIndex),
+      }
+      this.animationPlayer.play(retractClip)
+      this.currentClip = retractClip
     }
+
+    this.setAnimationSpeedMultiplier(2)
   }
 
   /**
@@ -233,7 +277,7 @@ export class Player {
    * this is a shitty way of testing this, but it works
    */
   private isHittingEnemy = () =>
-    this.playerAnimation.isFastForwarding() ||
+    this.isFastForwarding ||
     Overseer.getEnemy(this).getState() === 'hitFromTop' ||
     Overseer.getEnemy(this).getState() === 'hitFromBottom'
 
@@ -253,7 +297,7 @@ export class Player {
 
     // Check if the player is hitting the enemy's glove first
     if (this.isHittingEnemyGlove()) {
-      this.reversePunch()
+      this.emitHitBlocked()
 
       SoundPlayer.playGloveHit()
 
@@ -325,20 +369,18 @@ export class Player {
    * Punch the enemy (or at least try...)
    */
   protected punch() {
-    if (this.state !== 'idle' || this.playerAnimation.isPlayingAnimation()) return
+    if (this.state !== 'idle') return
 
-    if (!this.isCurrentAnimationPlaying(faceRightTopPunch, faceLeftTopPunch)) {
-      if (this.isAboveEnemy()) {
-        this.state = 'punchingBottom'
-        this.playerAnimation.setAnimation(
-          this.isFacingRight() ? faceRightBottomPunch : faceLeftBottomPunch,
-        )
-        return
-      }
-
+    if (this.isAboveEnemy()) {
+      this.state = 'punchingBottom'
+      this.stateMachine.onEvent('PunchRequested', { punch: 'bottom' })
+    } else {
       this.state = 'punchingTop'
-      this.playerAnimation.setAnimation(this.isFacingRight() ? faceRightTopPunch : faceLeftTopPunch)
+      this.stateMachine.onEvent('PunchRequested', { punch: 'top' })
     }
+
+    this.resetAnimationSpeed()
+    this.syncClipFromStateMachine(true)
   }
 
   /**
@@ -355,8 +397,7 @@ export class Player {
    * Get the bounding box of the player's top glove
    */
   public getTopGloveBoundingBox() {
-    const xOffset =
-      this.playerAnimation.getAnimation()[this.playerAnimation.getCurrentFrameIndex()].gloveXOffset
+    const xOffset = this.animationPlayer.getFrame().gloveXOffset
 
     return {
       left: this.x + xOffset,
@@ -370,8 +411,7 @@ export class Player {
    * Get the bounding box of the player's bottom glove
    */
   public getBottomGloveBoundingBox() {
-    const xOffset =
-      this.playerAnimation.getAnimation()[this.playerAnimation.getCurrentFrameIndex()].gloveXOffset
+    const xOffset = this.animationPlayer.getFrame().gloveXOffset
 
     return {
       left: this.x + xOffset,
@@ -430,6 +470,18 @@ export class Player {
    */
   public setState(state: PlayerState) {
     this.state = state
+
+    if (state === 'hitFromTop') {
+      this.stateMachine.onEvent('HitTakenTop')
+      this.setAnimationSpeedMultiplier(2)
+      this.syncClipFromStateMachine(true)
+    }
+
+    if (state === 'hitFromBottom') {
+      this.stateMachine.onEvent('HitTakenBottom')
+      this.setAnimationSpeedMultiplier(2)
+      this.syncClipFromStateMachine(true)
+    }
   }
 
   /**
@@ -464,6 +516,6 @@ export class Player {
     this.updateFacingDirection()
     this.updateIsHitting()
     this.updateHitState(dt)
-    this.playerAnimation.playAnimation(dt)
+    this.updateAnimation(dt)
   }
 }
