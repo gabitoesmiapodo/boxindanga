@@ -64,7 +64,6 @@ export class InputManager {
     if (state.down) {
       state.down = false
       state.justReleased = true
-      state.justPressed = false
     }
   }
 

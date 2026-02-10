@@ -25,6 +25,15 @@ input.handleKeyUp('KeyW')
 assert(!input.isDown('moveUp'), 'moveUp should be up after keyup')
 assert(input.justReleased('moveUp'), 'moveUp should be justReleased after keyup')
 
+// fast tap should keep justPressed until flush
+const tapInput = new InputManager()
+tapInput.handleKeyDown('KeyW')
+tapInput.handleKeyUp('KeyW')
+assert(tapInput.justPressed('moveUp'), 'moveUp justPressed should remain true until flush')
+assert(tapInput.justReleased('moveUp'), 'moveUp should be justReleased after keyup')
+tapInput.flush()
+assert(!tapInput.justPressed('moveUp'), 'moveUp justPressed should clear after flush')
+
 // default punch mapping
 const punchInput = new InputManager()
 punchInput.handleKeyDown('KeyP')
