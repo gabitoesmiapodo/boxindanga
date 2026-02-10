@@ -24,3 +24,25 @@ assert(!input.justPressed('moveUp'), 'moveUp justPressed should clear after flus
 input.handleKeyUp('KeyW')
 assert(!input.isDown('moveUp'), 'moveUp should be up after keyup')
 assert(input.justReleased('moveUp'), 'moveUp should be justReleased after keyup')
+
+// default punch mapping
+const punchInput = new InputManager()
+punchInput.handleKeyDown('KeyP')
+assert(punchInput.isDown('punch'), 'punch should be down after KeyP')
+
+// reset clears all states
+const resetInput = new InputManager()
+resetInput.handleKeyDown('KeyW')
+resetInput.handleKeyUp('KeyW')
+assert(resetInput.justReleased('moveUp'), 'moveUp should be justReleased before reset')
+resetInput.reset()
+assert(!resetInput.isDown('moveUp'), 'moveUp should be up after reset')
+assert(!resetInput.justPressed('moveUp'), 'moveUp justPressed should clear after reset')
+assert(!resetInput.justReleased('moveUp'), 'moveUp justReleased should clear after reset')
+
+// DOM handlers forward to key handlers
+const handlerInput = new InputManager()
+handlerInput.onKeyDown({ code: 'KeyW' } as KeyboardEvent)
+assert(handlerInput.isDown('moveUp'), 'moveUp should be down after onKeyDown')
+handlerInput.onKeyUp({ code: 'KeyW' } as KeyboardEvent)
+assert(handlerInput.justReleased('moveUp'), 'moveUp should be justReleased after onKeyUp')

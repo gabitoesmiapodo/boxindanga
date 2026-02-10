@@ -1,4 +1,4 @@
-export type InputAction = 'moveUp' | 'moveDown' | 'moveLeft' | 'moveRight' | 'pause'
+export type InputAction = 'moveUp' | 'moveDown' | 'moveLeft' | 'moveRight' | 'punch'
 
 export type KeyMapping = Record<string, InputAction>
 
@@ -13,7 +13,7 @@ const defaultMapping: KeyMapping = {
   KeyA: 'moveLeft',
   KeyS: 'moveDown',
   KeyD: 'moveRight',
-  KeyP: 'pause'
+  KeyP: 'punch'
 }
 
 const defaultActions: InputAction[] = [
@@ -21,7 +21,7 @@ const defaultActions: InputAction[] = [
   'moveDown',
   'moveLeft',
   'moveRight',
-  'pause'
+  'punch'
 ]
 
 const createActionState = (): ActionState => ({
@@ -66,9 +66,26 @@ export class InputManager {
     }
   }
 
+  onKeyDown(event: KeyboardEvent) {
+    this.handleKeyDown(event.code)
+  }
+
+  onKeyUp(event: KeyboardEvent) {
+    this.handleKeyUp(event.code)
+  }
+
   flush() {
     for (const action of defaultActions) {
       const state = this.states[action]
+      state.justPressed = false
+      state.justReleased = false
+    }
+  }
+
+  reset() {
+    for (const action of defaultActions) {
+      const state = this.states[action]
+      state.down = false
       state.justPressed = false
       state.justReleased = false
     }
