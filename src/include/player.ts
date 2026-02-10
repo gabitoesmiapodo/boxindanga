@@ -134,7 +134,7 @@ export class Player {
         : this.getBottomGloveBoundingBox()
     const enemyHeadBoundingBox = Overseer.getEnemy(this).getHeadBoundingBox()
 
-    return isColliding(playerGloveBoundingBox, enemyHeadBoundingBox)
+    return isColliding(playerGloveBoundingBox, enemyHeadBoundingBox, true)
   }
 
   /**
@@ -154,7 +154,7 @@ export class Player {
     ]
 
     return enemyGlovesBoundingBoxes.some((enemyGlove) =>
-      isColliding(playerGloveBoundingBox, enemyGlove),
+      isColliding(playerGloveBoundingBox, enemyGlove, true),
     )
   }
 

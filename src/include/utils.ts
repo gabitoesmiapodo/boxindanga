@@ -54,8 +54,11 @@ export function isColliding(
     top: number
     bottom: number
   },
+  inclusive = false,
 ) {
-  return a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
+  return inclusive
+    ? a.right >= b.left && a.left <= b.right && a.bottom >= b.top && a.top <= b.bottom
+    : a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
 }
 
 function write(text: string, color: string, x: number, y: number) {
