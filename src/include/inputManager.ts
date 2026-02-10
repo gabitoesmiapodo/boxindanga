@@ -40,6 +40,8 @@ export class InputManager {
       acc[action] = createActionState()
       return acc
     }, {} as Record<InputAction, ActionState>)
+    this.onKeyDown = this.onKeyDown.bind(this)
+    this.onKeyUp = this.onKeyUp.bind(this)
   }
 
   handleKeyDown(code: string) {

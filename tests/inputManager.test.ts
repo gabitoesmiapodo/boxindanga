@@ -46,3 +46,12 @@ handlerInput.onKeyDown({ code: 'KeyW' } as KeyboardEvent)
 assert(handlerInput.isDown('moveUp'), 'moveUp should be down after onKeyDown')
 handlerInput.onKeyUp({ code: 'KeyW' } as KeyboardEvent)
 assert(handlerInput.justReleased('moveUp'), 'moveUp should be justReleased after onKeyUp')
+
+// DOM handlers should work when used as callbacks
+const callbackInput = new InputManager()
+const keyDownHandler = callbackInput.onKeyDown
+const keyUpHandler = callbackInput.onKeyUp
+keyDownHandler({ code: 'KeyW' } as KeyboardEvent)
+assert(callbackInput.isDown('moveUp'), 'moveUp should be down after onKeyDown callback')
+keyUpHandler({ code: 'KeyW' } as KeyboardEvent)
+assert(callbackInput.justReleased('moveUp'), 'moveUp should be justReleased after onKeyUp callback')
