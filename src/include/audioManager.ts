@@ -1,6 +1,6 @@
 import { audioEvents } from './audioEvents'
 
-type AudioBackend = {
+interface AudioBackend {
   playGloveHit: () => void
   playHeadHit: () => void
   playEndOfRoundBell: () => void
