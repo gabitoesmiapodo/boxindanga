@@ -1,5 +1,6 @@
 import { Canvas } from './include/canvas'
 import { playerOneColor, playerTwoColor, textColor } from './include/config'
+import { InputManager } from './include/inputManager'
 import { logo } from './include/logo'
 import { Overseer } from './include/overseer'
 import { PlayerOne } from './include/playerOne'
@@ -12,6 +13,14 @@ import { crtFilter, drawScore, drawSprite, drawTime } from './include/utils'
 new Overseer()
 new Canvas()
 new SoundPlayer()
+
+export const inputManager = new InputManager()
+document.addEventListener('keydown', inputManager.onKeyDown)
+document.addEventListener('keyup', inputManager.onKeyUp)
+window.addEventListener('blur', () => inputManager.reset())
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') inputManager.reset()
+})
 
 /**
  * Draws both players' scores
