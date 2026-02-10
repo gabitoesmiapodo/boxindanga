@@ -1,10 +1,10 @@
 import { frame01Left, frame01Right } from './frames'
-import type { AnimationClip } from './animationTypes'
+import type { AnimationClip, AnimationClipId } from './animationTypes'
 
 const idleFrameDuration = 0.015
 
-export const animationClips: AnimationClip[] = [
-  {
+export const animationClips: Partial<Record<AnimationClipId, AnimationClip>> = {
+  idleRight: {
     id: 'idleRight',
     loop: true,
     frames: [
@@ -15,7 +15,7 @@ export const animationClips: AnimationClip[] = [
       },
     ],
   },
-  {
+  idleLeft: {
     id: 'idleLeft',
     loop: true,
     frames: [
@@ -26,4 +26,4 @@ export const animationClips: AnimationClip[] = [
       },
     ],
   },
-]
+}
