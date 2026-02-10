@@ -20,7 +20,7 @@ Whoever gets to 99 points first or has the most points when the time runs out wi
 ## Game
 
 - ESC: Reset
-- F2: Start
+- P: Start
 - F3: Toggle CRT filter on / off
 
 ## A little history

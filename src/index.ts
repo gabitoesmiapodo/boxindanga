@@ -124,8 +124,8 @@ const main = () => {
       Overseer.gameState = 'finished'
     }
 
-    // F1: start / pause
-    if (e.key === 'F2' && Overseer.gameState === 'finished') {
+    // P: start
+    if (e.code === 'KeyP' && Overseer.gameState === 'finished') {
       init(playerOne, playerTwo)
       startGame()
 
@@ -136,7 +136,7 @@ const main = () => {
       }
     }
 
-    // F2: toggle CRT filter
+    // F3: toggle CRT filter
     if (e.key === 'F3') {
       applyCRTFilter = !applyCRTFilter
     }
