@@ -39,6 +39,14 @@ export class Player {
   protected color = '#649335' // set in the constructor according to player type
   protected state: PlayerState = 'idle'
 
+  public get renderX() {
+    return Math.trunc(this.x)
+  }
+
+  public get renderY() {
+    return Math.trunc(this.y)
+  }
+
   public readonly playerType: PlayerType
 
   constructor(playerType: PlayerType) {
@@ -96,7 +104,7 @@ export class Player {
     }
 
     const frame = this.animationPlayer.getFrame()
-    drawSprite(frame.sprite, this.color, this.x, this.y)
+    drawSprite(frame.sprite, this.color, this.renderX, this.renderY)
   }
 
   /**
@@ -105,16 +113,16 @@ export class Player {
   private getMainBoundingBox = () =>
     this.isFacingRight()
       ? {
-          left: this.x,
-          right: this.x + this.width,
-          top: this.y,
-          bottom: this.y + this.height,
+          left: this.renderX,
+          right: this.renderX + this.width,
+          top: this.renderY,
+          bottom: this.renderY + this.height,
         }
       : {
-          left: this.x + this.fullWidth - this.width,
-          right: this.x + this.fullWidth,
-          top: this.y,
-          bottom: this.y + this.height,
+          left: this.renderX + this.fullWidth - this.width,
+          right: this.renderX + this.fullWidth,
+          top: this.renderY,
+          bottom: this.renderY + this.height,
         }
 
   /**
@@ -161,12 +169,12 @@ export class Player {
   /**
    * Calculate the horizontal displacement of the player
    */
-  private calculateHorizontalDisplacement = (dt: number, speed: number) => Math.trunc(speed * dt)
+  private calculateHorizontalDisplacement = (dt: number, speed: number) => speed * dt
 
   /**
    * Calculate the vertical displacement of the player
    */
-  private calculateVerticalDisplacement = (dt: number, speed: number) => Math.trunc(speed * dt)
+  private calculateVerticalDisplacement = (dt: number, speed: number) => speed * dt
 
   /**
    * Check if the player is colliding with the left of the ring
@@ -401,10 +409,10 @@ export class Player {
     const xOffset = this.animationPlayer.getFrame().gloveXOffset
 
     return {
-      left: this.x + xOffset,
-      right: this.x + xOffset + this.gloveWidth,
-      top: this.y,
-      bottom: this.y + this.gloveHeight,
+      left: this.renderX + xOffset,
+      right: this.renderX + xOffset + this.gloveWidth,
+      top: this.renderY,
+      bottom: this.renderY + this.gloveHeight,
     }
   }
 
@@ -415,10 +423,10 @@ export class Player {
     const xOffset = this.animationPlayer.getFrame().gloveXOffset
 
     return {
-      left: this.x + xOffset,
-      right: this.x + xOffset + this.gloveWidth,
-      top: this.y + this.height - this.gloveHeight,
-      bottom: this.y + this.height,
+      left: this.renderX + xOffset,
+      right: this.renderX + xOffset + this.gloveWidth,
+      top: this.renderY + this.height - this.gloveHeight,
+      bottom: this.renderY + this.height,
     }
   }
 
@@ -426,20 +434,20 @@ export class Player {
    * Get the bounding box of the player's head
    */
   public getHeadBoundingBox() {
-    const top: number = this.y + 40
+    const top: number = this.renderY + 40
     const bottom: number = top + this.headHeight
     const horizontalDisplacement: number = 9
 
     return this.isFacingRight()
       ? {
-          left: this.x + horizontalDisplacement,
-          right: this.x + horizontalDisplacement + this.headWidth,
+          left: this.renderX + horizontalDisplacement,
+          right: this.renderX + horizontalDisplacement + this.headWidth,
           top: top,
           bottom: bottom,
         }
       : {
-          left: this.x + this.fullWidth - horizontalDisplacement - this.headWidth,
-          right: this.x + this.fullWidth - horizontalDisplacement,
+          left: this.renderX + this.fullWidth - horizontalDisplacement - this.headWidth,
+          right: this.renderX + this.fullWidth - horizontalDisplacement,
           top: top,
           bottom: bottom,
         }
@@ -450,7 +458,7 @@ export class Player {
    * used to decide whether the player should hit
    * with the top or bottom glove
    */
-  public getYCenter = () => Math.trunc(this.y + this.height / 2)
+  public getYCenter = () => this.renderY + this.height / 2
 
   /**
    * Get the center of the player along the X axis,
@@ -498,12 +506,12 @@ export class Player {
   /**
    * Get the player's x position
    */
-  public getX = () => this.x
+  public getX = () => this.renderX
 
   /**
    * Get the player's y position
    */
-  public getY = () => this.y
+  public getY = () => this.renderY
 
   /**
    * Get the player's score
