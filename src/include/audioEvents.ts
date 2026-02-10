@@ -1,4 +1,4 @@
-type AudioEventHandler = () => void
+export type AudioEventHandler = () => void
 
 class AudioEvents {
   private handlers = new Map<string, Set<AudioEventHandler>>()
