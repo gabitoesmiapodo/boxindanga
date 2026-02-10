@@ -22,17 +22,15 @@ export class PlayerOne extends Player {
   private handleMovement(dt: number) {
     if (this.state === 'hitFromBottom' || this.state === 'hitFromTop') return
 
-    const originalPosition = { x: this.x, y: this.y }
+    let dx = 0
+    let dy = 0
 
-    if (this.input.isDown('moveUp')) this.moveUp(dt)
-    if (this.input.isDown('moveDown')) this.moveDown(dt)
-    if (this.input.isDown('moveLeft')) this.moveLeft(dt)
-    if (this.input.isDown('moveRight')) this.moveRight(dt)
+    if (this.input.isDown('moveUp')) dy -= this.getVerticalDisplacement(dt)
+    if (this.input.isDown('moveDown')) dy += this.getVerticalDisplacement(dt)
+    if (this.input.isDown('moveLeft')) dx -= this.getHorizontalDisplacement(dt)
+    if (this.input.isDown('moveRight')) dx += this.getHorizontalDisplacement(dt)
 
-    if (this.isBodyCollidingWithEnemy()) {
-      this.x = originalPosition.x
-      this.y = originalPosition.y
-    }
+    this.moveWithBodyCollision(dx, dy)
   }
 
   /**

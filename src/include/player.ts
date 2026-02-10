@@ -169,12 +169,14 @@ export class Player {
   /**
    * Calculate the horizontal displacement of the player
    */
-  private calculateHorizontalDisplacement = (dt: number, speed: number) => speed * dt
+  protected getHorizontalDisplacement = (dt: number, speed: number = this.playerSpeedX) =>
+    speed * dt
 
   /**
    * Calculate the vertical displacement of the player
    */
-  private calculateVerticalDisplacement = (dt: number, speed: number) => speed * dt
+  protected getVerticalDisplacement = (dt: number, speed: number = this.playerSpeedY) =>
+    speed * dt
 
   /**
    * Clamp the player's position so their body bounding box stays within the ring
@@ -339,7 +341,7 @@ export class Player {
    * Move the player up
    */
   protected moveUp(dt: number, speed: number = this.playerSpeedY) {
-    this.y -= this.calculateVerticalDisplacement(dt, speed)
+    this.y -= this.getVerticalDisplacement(dt, speed)
     this.clampToRing()
   }
 
@@ -347,7 +349,7 @@ export class Player {
    * Move the player down
    */
   protected moveDown(dt: number, speed: number = this.playerSpeedY) {
-    this.y += this.calculateVerticalDisplacement(dt, speed)
+    this.y += this.getVerticalDisplacement(dt, speed)
     this.clampToRing()
   }
 
@@ -355,7 +357,7 @@ export class Player {
    * Move the player left
    */
   protected moveLeft(dt: number, speed: number = this.playerSpeedX) {
-    this.x -= this.calculateHorizontalDisplacement(dt, speed)
+    this.x -= this.getHorizontalDisplacement(dt, speed)
     this.clampToRing()
   }
 
@@ -363,7 +365,7 @@ export class Player {
    * Move the player right
    */
   protected moveRight(dt: number, speed: number = this.playerSpeedX) {
-    this.x += this.calculateHorizontalDisplacement(dt, speed)
+    this.x += this.getHorizontalDisplacement(dt, speed)
     this.clampToRing()
   }
 
@@ -393,6 +395,33 @@ export class Player {
     const enemyBoundingBox = Overseer.getEnemy(this).getMainBoundingBox()
 
     return isColliding(playerBoundingBox, enemyBoundingBox)
+  }
+
+  /**
+   * Move with axis-separated body collision resolution.
+   * Moves on X, resolves overlap, then moves on Y, resolves overlap.
+   * This allows sliding along the opponent instead of freezing in place.
+   */
+  protected moveWithBodyCollision(dx: number, dy: number) {
+    // Move X
+    if (dx !== 0) {
+      const prevX = this.x
+      this.x += dx
+      this.clampToRing()
+      if (this.isBodyCollidingWithEnemy()) {
+        this.x = prevX
+      }
+    }
+
+    // Move Y
+    if (dy !== 0) {
+      const prevY = this.y
+      this.y += dy
+      this.clampToRing()
+      if (this.isBodyCollidingWithEnemy()) {
+        this.y = prevY
+      }
+    }
   }
 
   /**
