@@ -177,32 +177,23 @@ export class Player {
   private calculateVerticalDisplacement = (dt: number, speed: number) => speed * dt
 
   /**
-   * Check if the player is colliding with the left of the ring
+   * Clamp the player's position so their body bounding box stays within the ring
    */
-  private isCollidingWithRingLeft = (dt: number, speed: number) =>
-    this.getMainBoundingBox().left - this.calculateHorizontalDisplacement(dt, speed) <
-    ringInnerBounds.left
+  private clampToRing() {
+    const bb = this.getMainBoundingBox()
 
-  /**
-   * Check if the player is colliding with the right of the ring
-   */
-  private isCollidingWithRingRight = (dt: number, speed: number) =>
-    this.getMainBoundingBox().right + this.calculateHorizontalDisplacement(dt, speed) >
-    ringInnerBounds.right
+    if (bb.left < ringInnerBounds.left) {
+      this.x += ringInnerBounds.left - bb.left
+    } else if (bb.right > ringInnerBounds.right) {
+      this.x -= bb.right - ringInnerBounds.right
+    }
 
-  /**
-   * Check if the player is colliding with the top of the ring
-   */
-  private isCollidingWithRingTop = (dt: number, speed: number) =>
-    this.getMainBoundingBox().top - this.calculateVerticalDisplacement(dt, speed) <
-    ringInnerBounds.top
-
-  /**
-   * Check if the player is colliding with the bottom of the ring
-   */
-  private isCollidingWithRingBottom = (dt: number, speed: number) =>
-    this.getMainBoundingBox().bottom + this.calculateVerticalDisplacement(dt, speed) >
-    ringInnerBounds.bottom
+    if (bb.top < ringInnerBounds.top) {
+      this.y += ringInnerBounds.top - bb.top
+    } else if (bb.bottom > ringInnerBounds.bottom) {
+      this.y -= bb.bottom - ringInnerBounds.bottom
+    }
+  }
 
   /**
    * Update the player's facing direction according to the enemy's position
@@ -220,6 +211,7 @@ export class Player {
     ) {
       this.facingDirection = 'left'
       this.x = this.x - this.width - offset
+      this.clampToRing()
       this.stateMachine.setFacing('left')
       this.resetAnimationSpeed()
       this.syncClipFromStateMachine(true)
@@ -231,6 +223,7 @@ export class Player {
     ) {
       this.facingDirection = 'right'
       this.x = this.x + this.width + offset
+      this.clampToRing()
       this.stateMachine.setFacing('right')
       this.resetAnimationSpeed()
       this.syncClipFromStateMachine(true)
@@ -346,32 +339,32 @@ export class Player {
    * Move the player up
    */
   protected moveUp(dt: number, speed: number = this.playerSpeedY) {
-    if (!this.isCollidingWithRingTop(dt, speed))
-      this.y -= this.calculateVerticalDisplacement(dt, speed)
+    this.y -= this.calculateVerticalDisplacement(dt, speed)
+    this.clampToRing()
   }
 
   /**
    * Move the player down
    */
   protected moveDown(dt: number, speed: number = this.playerSpeedY) {
-    if (!this.isCollidingWithRingBottom(dt, speed))
-      this.y += this.calculateVerticalDisplacement(dt, speed)
+    this.y += this.calculateVerticalDisplacement(dt, speed)
+    this.clampToRing()
   }
 
   /**
    * Move the player left
    */
   protected moveLeft(dt: number, speed: number = this.playerSpeedX) {
-    if (!this.isCollidingWithRingLeft(dt, speed))
-      this.x -= this.calculateHorizontalDisplacement(dt, speed)
+    this.x -= this.calculateHorizontalDisplacement(dt, speed)
+    this.clampToRing()
   }
 
   /**
    * Move the player right
    */
   protected moveRight(dt: number, speed: number = this.playerSpeedX) {
-    if (!this.isCollidingWithRingRight(dt, speed))
-      this.x += this.calculateHorizontalDisplacement(dt, speed)
+    this.x += this.calculateHorizontalDisplacement(dt, speed)
+    this.clampToRing()
   }
 
   /**
