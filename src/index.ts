@@ -1,6 +1,6 @@
 import { Canvas } from './include/canvas'
 import { playerOneColor, playerTwoColor, textColor } from './include/config'
-import { InputManager } from './include/inputManager'
+import { inputManager } from './include/inputManagerInstance'
 import { logo } from './include/logo'
 import { Overseer } from './include/overseer'
 import { PlayerOne } from './include/playerOne'
@@ -14,7 +14,6 @@ new Overseer()
 new Canvas()
 new SoundPlayer()
 
-export const inputManager = new InputManager()
 document.addEventListener('keydown', inputManager.onKeyDown)
 document.addEventListener('keyup', inputManager.onKeyUp)
 window.addEventListener('blur', () => inputManager.reset())
