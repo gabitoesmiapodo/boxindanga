@@ -15,7 +15,7 @@ import { crtFilter, drawScore, drawSprite, drawTime } from './include/utils'
 new Overseer()
 new Canvas()
 new SoundPlayer()
-new AudioManager(SoundPlayer, () => SoundPlayer.initialized).init()
+new AudioManager(SoundPlayer, () => SoundPlayer.initialized && Overseer.gameState !== 'demo').init()
 
 document.addEventListener('keydown', inputManager.onKeyDown)
 document.addEventListener('keyup', inputManager.onKeyUp)
@@ -76,6 +76,7 @@ const main = () => {
   let last: number | undefined
   let applyCRTFilter = true
   let idleTimeMs = 0
+  let isDemoContext = false
 
   Overseer.init(playerOne, playerTwo)
   init()
@@ -98,6 +99,7 @@ const main = () => {
     Overseer.init(demoP1, demoP2)
     init()
     Overseer.gameState = 'demo'
+    isDemoContext = true
     last = undefined
     remainingTime = roundTime
   }
@@ -110,6 +112,7 @@ const main = () => {
     init()
     remainingTime = roundTime
     Overseer.gameState = 'finished'
+    isDemoContext = false
     idleTimeMs = 0
   }
 
@@ -143,7 +146,8 @@ const main = () => {
 
     if (Overseer.gameState === 'demo') {
       if (isKO(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore()) || remainingTime <= 0) {
-        exitDemo()
+        Overseer.gameState = 'finished'
+        idleTimeMs = 0
       }
     }
 
@@ -163,6 +167,12 @@ const main = () => {
       return
     }
 
+    // Any key during demo results restores real players
+    if (isDemoContext) {
+      exitDemo()
+      return
+    }
+
     // Reset idle timer on any keypress
     idleTimeMs = 0
 
@@ -173,15 +183,22 @@ const main = () => {
       Overseer.gameState = 'finished'
     }
 
-    // P: start
-    if (e.code === 'KeyP' && Overseer.gameState === 'finished') {
-      init()
-      startGame()
+    // Enter: start / pause
+    if (e.key === 'Enter') {
+      if (Overseer.gameState === 'finished') {
+        init()
+        startGame()
 
-      // AudioContext: Initialize only once (must be done
-      // after user interaction, that's why I put this here)
-      if (!SoundPlayer.initialized) {
-        SoundPlayer.tiaInit()
+        // AudioContext: Initialize only once (must be done
+        // after user interaction, that's why I put this here)
+        if (!SoundPlayer.initialized) {
+          SoundPlayer.tiaInit()
+        }
+      } else if (Overseer.gameState === 'playing') {
+        Overseer.gameState = 'paused'
+      } else if (Overseer.gameState === 'paused') {
+        Overseer.gameState = 'playing'
+        last = undefined
       }
     }
 
