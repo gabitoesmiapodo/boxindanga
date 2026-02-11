@@ -4,6 +4,7 @@ import { Canvas } from './include/canvas'
 import { DEMO_INACTIVITY_TIMEOUT_MS, P1_CONFIG, P2_CONFIG, textColor } from './include/config'
 import { inputManager } from './include/inputManagerInstance'
 import { logo } from './include/logo'
+import { loadGameOptions, setCRTFilter } from './include/optionsStorage'
 import { Overseer } from './include/overseer'
 import { PlayerCPU } from './include/playerCPU'
 import { PlayerOne } from './include/playerOne'
@@ -89,6 +90,26 @@ const main = () => {
   let isDemoContext = false
   let gameStateBeforeMenu = Overseer.gameState
 
+  const crtFilterInputs = Array.from(
+    document.querySelectorAll<HTMLInputElement>('input[name="crtFilter"]'),
+  )
+
+  const syncCRTFilterInputs = (enabled: boolean) => {
+    for (const input of crtFilterInputs) {
+      input.checked = input.value === (enabled ? 'on' : 'off')
+    }
+  }
+
+  const persistCRTFilter = (enabled: boolean) => {
+    const options = setCRTFilter(window.localStorage, enabled)
+    applyCRTFilter = options.crtFilter
+    syncCRTFilterInputs(options.crtFilter)
+  }
+
+  const options = loadGameOptions(window.localStorage)
+  applyCRTFilter = options.crtFilter
+  syncCRTFilterInputs(options.crtFilter)
+
   Overseer.init(playerOne, playerTwo)
   init()
 
@@ -162,6 +183,13 @@ const main = () => {
       closeOptions()
     }
   })
+
+  for (const input of crtFilterInputs) {
+    input.addEventListener('change', () => {
+      if (!input.checked) return
+      persistCRTFilter(input.value === 'on')
+    })
+  }
 
   /**
    * Main game loop
@@ -278,11 +306,6 @@ const main = () => {
         Overseer.gameState = 'playing'
         last = undefined
       }
-    }
-
-    // F3: toggle CRT filter
-    if (e.key === 'F3') {
-      applyCRTFilter = !applyCRTFilter
     }
   })
 }
