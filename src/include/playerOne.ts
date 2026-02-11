@@ -30,7 +30,7 @@ export class PlayerOne extends Player {
   }
 
   /**
-   * Reset states
+   * Reset states (widens visibility from protected to public)
    */
   public reset() {
     super.reset()
