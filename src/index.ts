@@ -1,6 +1,7 @@
 import { AudioManager } from './include/audioManager'
 import { Canvas } from './include/canvas'
 import { P1_CONFIG, P2_CONFIG } from './include/config'
+import type { Difficulty } from './include/config'
 import { getCRTRuntimeState } from './include/crtRuntimeOptions'
 import { Game } from './include/game'
 import { GameLoop } from './include/gameLoop'
@@ -12,6 +13,7 @@ import {
   setCRTFilter,
   setCRTFilterType,
   setCRTGlitch,
+  setDifficulty,
 } from './include/optionsStorage'
 import type { GameState } from './include/player'
 import { PlayerCPU } from './include/playerCPU'
@@ -57,6 +59,9 @@ const main = () => {
     document.querySelectorAll<HTMLInputElement>('input[name="crtGlitch"]'),
   )
   const crtChildOptions = document.getElementById('crtChildOptions')
+  const difficultyInputs = Array.from(
+    document.querySelectorAll<HTMLInputElement>('input[name="difficulty"]'),
+  )
 
   let currentOptions: GameOptions = loadGameOptions(window.localStorage)
 
@@ -70,6 +75,7 @@ const main = () => {
     syncRadioGroup(crtFilterInputs, options.crtFilter ? 'on' : 'off')
     syncRadioGroup(crtGlitchInputs, options.crtGlitch ? 'on' : 'off')
     syncRadioGroup(crtFilterTypeInputs, options.crtFilterType)
+    syncRadioGroup(difficultyInputs, options.difficulty)
   }
 
   const syncCRTRuntimeState = (options: GameOptions) => {
@@ -92,6 +98,7 @@ const main = () => {
   }
 
   applyOptions(currentOptions)
+  game.setDifficulty(currentOptions.difficulty)
 
   const openOptions = () => {
     if (!optionsDialog || optionsDialog.open) return
@@ -146,6 +153,15 @@ const main = () => {
     input.addEventListener('change', () => {
       if (!input.checked) return
       applyOptions(setCRTFilterType(window.localStorage, input.value as CRTFilterType))
+    })
+  }
+
+  for (const input of difficultyInputs) {
+    input.addEventListener('change', () => {
+      if (!input.checked) return
+      const options = setDifficulty(window.localStorage, input.value as Difficulty)
+      applyOptions(options)
+      game.setDifficulty(options.difficulty)
     })
   }
 

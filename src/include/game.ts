@@ -1,6 +1,14 @@
 import { audioEvents } from './audioEvents'
 import type { Canvas } from './canvas'
-import { DEMO_INACTIVITY_TIMEOUT_MS, P1_CONFIG, P2_CONFIG, textColor } from './config'
+import {
+  DEMO_INACTIVITY_TIMEOUT_MS,
+  DIFFICULTY_PRESETS,
+  type Difficulty,
+  type DifficultyConfig,
+  P1_CONFIG,
+  P2_CONFIG,
+  textColor,
+} from './config'
 import { logo } from './logo'
 import type { GameContext, GameState } from './player'
 import type { Player } from './player'
@@ -14,27 +22,28 @@ export class Game implements GameContext {
   private currentPlayerOne: Player
   private currentPlayerTwo: Player
   private readonly realPlayerOne: PlayerOne
-  private readonly realPlayerTwo: PlayerCPU
+  private realPlayerTwo: PlayerCPU
 
   private _gameState: GameState = 'finished'
   private remainingTime: number
   private readonly roundTime = 120000
   private idleTimeMs = 0
   private _inDemoContext = false
-  private demoPlayerOne: PlayerCPU | null = null
-  private demoPlayerTwo: PlayerCPU | null = null
+  private currentDifficulty: DifficultyConfig
 
   constructor(
     private readonly canvas: Canvas,
     playerOne: PlayerOne,
     playerTwo: PlayerCPU,
     private readonly soundPlayer: typeof SoundPlayerClass,
+    initialDifficulty: DifficultyConfig = DIFFICULTY_PRESETS.normal,
   ) {
     this.realPlayerOne = playerOne
     this.realPlayerTwo = playerTwo
     this.currentPlayerOne = playerOne
     this.currentPlayerTwo = playerTwo
     this.remainingTime = this.roundTime
+    this.currentDifficulty = initialDifficulty
 
     this.linkPlayers(this.currentPlayerOne, this.currentPlayerTwo)
     this.init()
@@ -95,12 +104,27 @@ export class Game implements GameContext {
     this._gameState = previousState
   }
 
+  setDifficulty(difficulty: Difficulty) {
+    this.currentDifficulty = DIFFICULTY_PRESETS[difficulty]
+    this.realPlayerTwo = new PlayerCPU(P2_CONFIG, this.currentDifficulty)
+    if (!this._inDemoContext) {
+      this.currentPlayerTwo = this.realPlayerTwo
+      this.linkPlayers(this.currentPlayerOne, this.currentPlayerTwo)
+      this.init()
+    }
+  }
+
+  private randomDifficulty(): DifficultyConfig {
+    const keys: Difficulty[] = ['easy', 'normal', 'hard']
+    return DIFFICULTY_PRESETS[keys[Math.floor(Math.random() * keys.length)]]
+  }
+
   startDemo() {
-    if (!this.demoPlayerOne) this.demoPlayerOne = new PlayerCPU(P1_CONFIG)
-    if (!this.demoPlayerTwo) this.demoPlayerTwo = new PlayerCPU(P2_CONFIG)
-    this.currentPlayerOne = this.demoPlayerOne
-    this.currentPlayerTwo = this.demoPlayerTwo
-    this.linkPlayers(this.demoPlayerOne, this.demoPlayerTwo)
+    const demoPlayerOne = new PlayerCPU(P1_CONFIG, this.randomDifficulty())
+    const demoPlayerTwo = new PlayerCPU(P2_CONFIG, this.randomDifficulty())
+    this.currentPlayerOne = demoPlayerOne
+    this.currentPlayerTwo = demoPlayerTwo
+    this.linkPlayers(demoPlayerOne, demoPlayerTwo)
     this.init()
     this._gameState = 'demo'
     this._inDemoContext = true
