@@ -135,8 +135,8 @@ function drawVignette(ctx: CanvasRenderingContext2D) {
   ctx.fillRect(0, 0, width, height)
 }
 
-export function crtFilter(ctx: CanvasRenderingContext2D) {
-  drawCRTGlitch(Canvas.ctx)
+export function crtFilter(ctx: CanvasRenderingContext2D, applyGlitch = true) {
+  if (applyGlitch) drawCRTGlitch(Canvas.ctx)
   drawScanlines(Canvas.ctx)
   drawVignette(Canvas.ctx)
 }

@@ -161,6 +161,11 @@
       #options label {
         cursor: pointer;
       }
+
+      #options .option-group-disabled {
+        opacity: 0.7;
+        pointer-events: none;
+      }
     </style>
   </head>
 
@@ -234,7 +239,7 @@
                   type="radio"
                   value="off"
                 /> off</label>
-              <ul>
+              <ul id="crtChildOptions">
                 <li><strong>CRT filter type:</strong>
                   <label><input
                       checked

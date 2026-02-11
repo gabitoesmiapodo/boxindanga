@@ -2,9 +2,17 @@ import { audioEvents } from './include/audioEvents'
 import { AudioManager } from './include/audioManager'
 import { Canvas } from './include/canvas'
 import { DEMO_INACTIVITY_TIMEOUT_MS, P1_CONFIG, P2_CONFIG, textColor } from './include/config'
+import { getCRTRuntimeState } from './include/crtRuntimeOptions'
 import { inputManager } from './include/inputManagerInstance'
 import { logo } from './include/logo'
-import { loadGameOptions, setCRTFilter } from './include/optionsStorage'
+import {
+  type CRTFilterType,
+  type GameOptions,
+  loadGameOptions,
+  setCRTFilter,
+  setCRTFilterType,
+  setCRTGlitch,
+} from './include/optionsStorage'
 import { Overseer } from './include/overseer'
 import { PlayerCPU } from './include/playerCPU'
 import { PlayerOne } from './include/playerOne'
@@ -86,6 +94,7 @@ const main = () => {
   let remainingTime = roundTime
   let last: number | undefined
   let applyCRTFilter = true
+  let applyCRTGlitch = true
   let idleTimeMs = 0
   let isDemoContext = false
   let gameStateBeforeMenu = Overseer.gameState
@@ -93,22 +102,48 @@ const main = () => {
   const crtFilterInputs = Array.from(
     document.querySelectorAll<HTMLInputElement>('input[name="crtFilter"]'),
   )
+  const crtFilterTypeInputs = Array.from(
+    document.querySelectorAll<HTMLInputElement>('input[name="crtFilterType"]'),
+  )
+  const crtGlitchInputs = Array.from(
+    document.querySelectorAll<HTMLInputElement>('input[name="crtGlitch"]'),
+  )
+  const crtChildOptions = document.getElementById('crtChildOptions')
 
-  const syncCRTFilterInputs = (enabled: boolean) => {
-    for (const input of crtFilterInputs) {
-      input.checked = input.value === (enabled ? 'on' : 'off')
+  let currentOptions: GameOptions = loadGameOptions(window.localStorage)
+
+  const syncRadioGroup = (inputs: HTMLInputElement[], expectedValue: string) => {
+    for (const input of inputs) {
+      input.checked = input.value === expectedValue
     }
   }
 
-  const persistCRTFilter = (enabled: boolean) => {
-    const options = setCRTFilter(window.localStorage, enabled)
-    applyCRTFilter = options.crtFilter
-    syncCRTFilterInputs(options.crtFilter)
+  const syncOptionsUI = (options: GameOptions) => {
+    syncRadioGroup(crtFilterInputs, options.crtFilter ? 'on' : 'off')
+    syncRadioGroup(crtGlitchInputs, options.crtGlitch ? 'on' : 'off')
+    syncRadioGroup(crtFilterTypeInputs, options.crtFilterType)
   }
 
-  const options = loadGameOptions(window.localStorage)
-  applyCRTFilter = options.crtFilter
-  syncCRTFilterInputs(options.crtFilter)
+  const syncCRTRuntimeState = (options: GameOptions) => {
+    const state = getCRTRuntimeState(options)
+
+    applyCRTFilter = state.applyCRTFilter
+    applyCRTGlitch = state.applyCRTGlitch
+
+    crtChildOptions?.classList.toggle('option-group-disabled', state.disableChildControls)
+
+    for (const input of [...crtFilterTypeInputs, ...crtGlitchInputs]) {
+      input.disabled = state.disableChildControls
+    }
+  }
+
+  const applyOptions = (options: GameOptions) => {
+    currentOptions = options
+    syncOptionsUI(options)
+    syncCRTRuntimeState(options)
+  }
+
+  applyOptions(currentOptions)
 
   Overseer.init(playerOne, playerTwo)
   init()
@@ -187,7 +222,21 @@ const main = () => {
   for (const input of crtFilterInputs) {
     input.addEventListener('change', () => {
       if (!input.checked) return
-      persistCRTFilter(input.value === 'on')
+      applyOptions(setCRTFilter(window.localStorage, input.value === 'on'))
+    })
+  }
+
+  for (const input of crtGlitchInputs) {
+    input.addEventListener('change', () => {
+      if (!input.checked) return
+      applyOptions(setCRTGlitch(window.localStorage, input.value === 'on'))
+    })
+  }
+
+  for (const input of crtFilterTypeInputs) {
+    input.addEventListener('change', () => {
+      if (!input.checked) return
+      applyOptions(setCRTFilterType(window.localStorage, input.value as CRTFilterType))
     })
   }
 
@@ -203,7 +252,7 @@ const main = () => {
     }
     const frameDt = Overseer.gameState === 'paused' || Overseer.gameState === 'menu' ? 0 : dt
     updateScreen(frameDt, remainingTime)
-    if (applyCRTFilter) crtFilter(Canvas.ctx)
+    if (applyCRTFilter) crtFilter(Canvas.ctx, applyCRTGlitch)
 
     if (Overseer.gameState === 'playing') {
       if (

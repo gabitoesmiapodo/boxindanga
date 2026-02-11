@@ -1,11 +1,17 @@
 export const OPTIONS_STORAGE_KEY = 'ari-boxing-options'
 
+export type CRTFilterType = '1' | '2' | '3'
+
 export type GameOptions = {
   crtFilter: boolean
+  crtGlitch: boolean
+  crtFilterType: CRTFilterType
 }
 
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   crtFilter: true,
+  crtGlitch: true,
+  crtFilterType: '1',
 }
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>
@@ -20,6 +26,15 @@ const parseStoredOptions = (raw: string | null): Partial<GameOptions> | null => 
     const options: Partial<GameOptions> = {}
     if (typeof (parsed as { crtFilter?: unknown }).crtFilter === 'boolean') {
       options.crtFilter = (parsed as { crtFilter: boolean }).crtFilter
+    }
+    if (typeof (parsed as { crtGlitch?: unknown }).crtGlitch === 'boolean') {
+      options.crtGlitch = (parsed as { crtGlitch: boolean }).crtGlitch
+    }
+    if (typeof (parsed as { crtFilterType?: unknown }).crtFilterType === 'string') {
+      const value = (parsed as { crtFilterType: string }).crtFilterType
+      if (value === '1' || value === '2' || value === '3') {
+        options.crtFilterType = value
+      }
     }
 
     return options
@@ -43,6 +58,26 @@ export const setCRTFilter = (storage: StorageLike, enabled: boolean): GameOption
   const options = {
     ...loadGameOptions(storage),
     crtFilter: enabled,
+  }
+
+  storage.setItem(OPTIONS_STORAGE_KEY, JSON.stringify(options))
+  return options
+}
+
+export const setCRTGlitch = (storage: StorageLike, enabled: boolean): GameOptions => {
+  const options = {
+    ...loadGameOptions(storage),
+    crtGlitch: enabled,
+  }
+
+  storage.setItem(OPTIONS_STORAGE_KEY, JSON.stringify(options))
+  return options
+}
+
+export const setCRTFilterType = (storage: StorageLike, type: CRTFilterType): GameOptions => {
+  const options = {
+    ...loadGameOptions(storage),
+    crtFilterType: type,
   }
 
   storage.setItem(OPTIONS_STORAGE_KEY, JSON.stringify(options))

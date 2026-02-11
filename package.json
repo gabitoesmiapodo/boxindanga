@@ -11,7 +11,7 @@
     "test:animation": "esbuild tests/animationTypes.test.ts tests/animationPlayer.test.ts tests/animationStateMachine.test.ts tests/animationClips.test.ts --bundle --platform=node --outdir=dist-tests && node dist-tests/animationTypes.test.js && node dist-tests/animationPlayer.test.js && node dist-tests/animationStateMachine.test.js && node dist-tests/animationClips.test.js",
     "test:input": "esbuild tests/inputManager.test.ts tests/inputManagerLifecycle.test.ts tests/playerOneInput.test.ts --bundle --platform=node --outdir=dist-tests && node dist-tests/inputManager.test.js && node dist-tests/inputManagerLifecycle.test.js && node dist-tests/playerOneInput.test.js",
     "test:audio": "esbuild tests/audioEvents.test.ts tests/audioManager.test.ts tests/audioIntegration.test.ts --bundle --platform=node --outdir=dist-tests && node dist-tests/audioEvents.test.js && node dist-tests/audioManager.test.js && node dist-tests/audioIntegration.test.js",
-    "test:options": "esbuild tests/optionsStorage.test.ts --bundle --platform=node --outfile=dist-tests/optionsStorage.test.js && node dist-tests/optionsStorage.test.js"
+    "test:options": "esbuild tests/optionsStorage.test.ts tests/crtRuntimeOptions.test.ts --bundle --platform=node --outdir=dist-tests && node dist-tests/optionsStorage.test.js && node dist-tests/crtRuntimeOptions.test.js"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
