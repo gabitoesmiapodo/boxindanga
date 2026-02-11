@@ -2,10 +2,10 @@ import { animationClips } from './animationClips'
 import { AnimationPlayer } from './animationPlayer'
 import { AnimationStateMachine } from './animationStateMachine'
 import type { AnimationClip, AnimationClipId } from './animationTypes'
+import { audioEvents } from './audioEvents'
 import type { PlayerConfig } from './config'
 import { Overseer } from './overseer'
 import { ringInnerBounds } from './ring'
-import { audioEvents } from './audioEvents'
 import { drawSprite, isColliding } from './utils'
 
 export type PlayerType = 'playerOne' | 'playerTwo'
@@ -18,7 +18,7 @@ export class Player {
   private currentClipId: AnimationClipId | null = null
   private currentClip: AnimationClip | null = null
   private animationSpeedMultiplier = 1
-  private isFastForwarding = false
+  public isFastForwarding = false
   private facingDirection: Direction = 'right' // direction is sorted out in the first update
   private score = 0
 
@@ -177,14 +177,12 @@ export class Player {
   /**
    * Calculate the horizontal displacement of the player
    */
-  public getHorizontalDisplacement = (dt: number, speed: number = this.playerSpeedX) =>
-    speed * dt
+  public getHorizontalDisplacement = (dt: number, speed: number = this.playerSpeedX) => speed * dt
 
   /**
    * Calculate the vertical displacement of the player
    */
-  public getVerticalDisplacement = (dt: number, speed: number = this.playerSpeedY) =>
-    speed * dt
+  public getVerticalDisplacement = (dt: number, speed: number = this.playerSpeedY) => speed * dt
 
   /**
    * Clamp the player's position so their body bounding box stays within the ring
@@ -288,10 +286,15 @@ export class Player {
    * Check if the player is already hitting the enemy
    * this is a shitty way of testing this, but it works
    */
-  private isHittingEnemy = () =>
-    this.isFastForwarding ||
-    Overseer.getEnemy(this).getState() === 'hitFromTop' ||
-    Overseer.getEnemy(this).getState() === 'hitFromBottom'
+  private isHittingEnemy = () => {
+    const enemy = Overseer.getEnemy(this)
+    return (
+      this.isFastForwarding ||
+      enemy.isFastForwarding ||
+      enemy.getState() === 'hitFromTop' ||
+      enemy.getState() === 'hitFromBottom'
+    )
+  }
 
   /**
    * Increase the score
