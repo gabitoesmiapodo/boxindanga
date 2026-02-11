@@ -1,5 +1,5 @@
 import { Canvas } from './include/canvas'
-import { playerOneColor, playerTwoColor, textColor } from './include/config'
+import { P1_CONFIG, P2_CONFIG, textColor } from './include/config'
 import { inputManager } from './include/inputManagerInstance'
 import { logo } from './include/logo'
 import { Overseer } from './include/overseer'
@@ -28,8 +28,8 @@ document.addEventListener('visibilitychange', () => {
  * Draws both players' scores
  */
 const drawScores = (playerOneScore: number, playerTwoScore: number) => {
-  drawScore(playerOneScore, playerOneColor, 137)
-  drawScore(playerTwoScore, playerTwoColor, 420)
+  drawScore(playerOneScore, P1_CONFIG.color, 137)
+  drawScore(playerTwoScore, P2_CONFIG.color, 420)
 }
 
 /**
