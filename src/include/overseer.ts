@@ -1,6 +1,6 @@
 import type { Player } from './player'
 
-type GameStates = 'playing' | 'finished'
+type GameStates = 'playing' | 'finished' | 'demo'
 
 // biome-ignore lint/complexity/noStaticOnlyClass: Fuck you
 export class Overseer {

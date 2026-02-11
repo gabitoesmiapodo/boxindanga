@@ -25,9 +25,5 @@ export const P2_CONFIG: PlayerConfig = {
 
 export const DEMO_INACTIVITY_TIMEOUT_MS = 15000
 
-// Keep legacy exports for playerOne.ts and playerTwo.ts (removed in Tasks 3 & 5)
-export const playerOneColor = P1_CONFIG.color
-export const playerTwoColor = P2_CONFIG.color
-
 export const textColor = '#0d3200'
 export const pixelSize = 1

@@ -3,8 +3,9 @@ import { P1_CONFIG, P2_CONFIG, textColor } from './include/config'
 import { inputManager } from './include/inputManagerInstance'
 import { logo } from './include/logo'
 import { Overseer } from './include/overseer'
+import type { Player } from './include/player'
+import { PlayerCPU } from './include/playerCPU'
 import { PlayerOne } from './include/playerOne'
-import { PlayerTwo } from './include/playerTwo'
 import { drawRing } from './include/ring'
 import { audioEvents } from './include/audioEvents'
 import { AudioManager } from './include/audioManager'
@@ -35,7 +36,7 @@ const drawScores = (playerOneScore: number, playerTwoScore: number) => {
 /**
  * Clears canvas, draws ring
  */
-const updateScreen = (playerOne: PlayerOne, playerTwo: PlayerTwo, dt: number, time = 120000) => {
+const updateScreen = (playerOne: Player, playerTwo: Player, dt: number, time = 120000) => {
   Canvas.ctx.clearRect(0, 0, Canvas.canvas.width, Canvas.canvas.height)
 
   drawRing()
@@ -57,7 +58,7 @@ const isKO = (playerOneScore: number, playerTwoScore: number) =>
 /**
  * Init function
  */
-const init = (playerOne: PlayerOne, playerTwo: PlayerTwo) => {
+const init = (playerOne: Player, playerTwo: Player) => {
   playerOne.reset()
   playerTwo.reset()
 
@@ -71,7 +72,7 @@ const init = (playerOne: PlayerOne, playerTwo: PlayerTwo) => {
  */
 const main = () => {
   const playerOne = new PlayerOne(P1_CONFIG, inputManager)
-  const playerTwo = new PlayerTwo(P2_CONFIG)
+  const playerTwo = new PlayerCPU(P2_CONFIG)
   const roundTime = 120000 // 2 minutes
 
   let remainingTime = roundTime

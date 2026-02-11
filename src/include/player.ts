@@ -62,7 +62,7 @@ export class Player {
     this.syncClipFromStateMachine(true)
   }
 
-  protected reset() {
+  public reset() {
     this.x = this.initialConfig.x
     this.y = this.initialConfig.y
     this.color = this.initialConfig.color
