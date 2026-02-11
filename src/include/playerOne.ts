@@ -1,18 +1,14 @@
-import { playerOneColor } from './config'
+import type { PlayerConfig } from './config'
 import type { InputManager } from './inputManager'
 import { Overseer } from './overseer'
 import { Player } from './player'
-import { ringInnerBounds } from './ring'
 
 export class PlayerOne extends Player {
   private input: InputManager
 
-  constructor(playerType: 'playerOne', input: InputManager) {
-    super(playerType)
+  constructor(config: PlayerConfig, input: InputManager) {
+    super(config)
 
-    this.x = ringInnerBounds.left
-    this.y = ringInnerBounds.top
-    this.color = playerOneColor
     this.input = input
   }
 
@@ -38,9 +34,6 @@ export class PlayerOne extends Player {
    */
   public reset() {
     super.reset()
-
-    this.x = ringInnerBounds.left
-    this.y = ringInnerBounds.top
   }
 
   /**

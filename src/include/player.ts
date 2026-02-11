@@ -2,6 +2,7 @@ import { animationClips } from './animationClips'
 import { AnimationPlayer } from './animationPlayer'
 import { AnimationStateMachine } from './animationStateMachine'
 import type { AnimationClip, AnimationClipId } from './animationTypes'
+import type { PlayerConfig } from './config'
 import { Overseer } from './overseer'
 import { ringInnerBounds } from './ring'
 import { audioEvents } from './audioEvents'
@@ -34,10 +35,12 @@ export class Player {
   private readonly gloveHeight = 25
   private readonly gloveWidth = 36
 
-  protected x = 0 // set in the constructor according to player type
-  protected y = 0 // set in the constructor according to player type
-  protected color = '#649335' // set in the constructor according to player type
-  protected state: PlayerState = 'idle'
+  protected x: number
+  protected y: number
+  protected color: string
+  public state: PlayerState = 'idle'
+
+  protected readonly initialConfig: PlayerConfig
 
   public get renderX() {
     return Math.trunc(this.x)
@@ -49,15 +52,20 @@ export class Player {
 
   public readonly playerType: PlayerType
 
-  constructor(playerType: PlayerType) {
-    this.playerType = playerType
+  constructor(config: PlayerConfig) {
+    this.playerType = config.playerType
+    this.x = config.x
+    this.y = config.y
+    this.color = config.color
+    this.initialConfig = config
     this.stateMachine.setFacing('right')
     this.syncClipFromStateMachine(true)
   }
 
   protected reset() {
-    this.x = 0
-    this.y = 0
+    this.x = this.initialConfig.x
+    this.y = this.initialConfig.y
+    this.color = this.initialConfig.color
     this.score = 0
     this.state = 'idle'
     this.facingDirection = 'right'
@@ -169,13 +177,13 @@ export class Player {
   /**
    * Calculate the horizontal displacement of the player
    */
-  protected getHorizontalDisplacement = (dt: number, speed: number = this.playerSpeedX) =>
+  public getHorizontalDisplacement = (dt: number, speed: number = this.playerSpeedX) =>
     speed * dt
 
   /**
    * Calculate the vertical displacement of the player
    */
-  protected getVerticalDisplacement = (dt: number, speed: number = this.playerSpeedY) =>
+  public getVerticalDisplacement = (dt: number, speed: number = this.playerSpeedY) =>
     speed * dt
 
   /**
@@ -323,24 +331,24 @@ export class Player {
   /**
    * Check if the player is above the enemy
    */
-  protected isAboveEnemy = () => this.getYCenter() < Overseer.getEnemy(this).getYCenter()
+  public isAboveEnemy = () => this.getYCenter() < Overseer.getEnemy(this).getYCenter()
 
   /**
    * Get the X distance to the enemy
    */
-  protected getXDistanceToEnemy = () =>
+  public getXDistanceToEnemy = () =>
     Math.abs(this.getXCenter() - Overseer.getEnemy(this).getXCenter())
 
   /**
    * Get the distance to the enemy
    */
-  protected getYDistanceToEnemy = () =>
+  public getYDistanceToEnemy = () =>
     Math.abs(this.getYCenter() - Overseer.getEnemy(this).getYCenter())
 
   /**
    * Move the player up
    */
-  protected moveUp(dt: number, speed: number = this.playerSpeedY) {
+  public moveUp(dt: number, speed: number = this.playerSpeedY) {
     this.y -= this.getVerticalDisplacement(dt, speed)
     this.clampToRing()
   }
@@ -348,7 +356,7 @@ export class Player {
   /**
    * Move the player down
    */
-  protected moveDown(dt: number, speed: number = this.playerSpeedY) {
+  public moveDown(dt: number, speed: number = this.playerSpeedY) {
     this.y += this.getVerticalDisplacement(dt, speed)
     this.clampToRing()
   }
@@ -356,7 +364,7 @@ export class Player {
   /**
    * Move the player left
    */
-  protected moveLeft(dt: number, speed: number = this.playerSpeedX) {
+  public moveLeft(dt: number, speed: number = this.playerSpeedX) {
     this.x -= this.getHorizontalDisplacement(dt, speed)
     this.clampToRing()
   }
@@ -364,7 +372,7 @@ export class Player {
   /**
    * Move the player right
    */
-  protected moveRight(dt: number, speed: number = this.playerSpeedX) {
+  public moveRight(dt: number, speed: number = this.playerSpeedX) {
     this.x += this.getHorizontalDisplacement(dt, speed)
     this.clampToRing()
   }
@@ -372,7 +380,7 @@ export class Player {
   /**
    * Punch the enemy (or at least try...)
    */
-  protected punch() {
+  public punch() {
     if (this.state !== 'idle') return
 
     if (this.isAboveEnemy()) {
@@ -390,7 +398,7 @@ export class Player {
   /**
    * Check if the player's body is colliding with the enemy
    */
-  protected isBodyCollidingWithEnemy() {
+  public isBodyCollidingWithEnemy() {
     const playerBoundingBox = this.getMainBoundingBox()
     const enemyBoundingBox = Overseer.getEnemy(this).getMainBoundingBox()
 
@@ -402,7 +410,7 @@ export class Player {
    * Moves on X, resolves overlap, then moves on Y, resolves overlap.
    * This allows sliding along the opponent instead of freezing in place.
    */
-  protected moveWithBodyCollision(dx: number, dy: number) {
+  public moveWithBodyCollision(dx: number, dy: number) {
     // Move X
     if (dx !== 0) {
       const prevX = this.x

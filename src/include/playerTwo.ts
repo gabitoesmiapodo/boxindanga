@@ -1,12 +1,7 @@
-import { playerTwoColor } from './config'
 import { Overseer } from './overseer'
-import { Player, type PlayerType } from './player'
-import { ringInnerBounds } from './ring'
+import { Player } from './player'
 
 export class PlayerTwo extends Player {
-  private readonly initialX = ringInnerBounds.right - (134 - 58) // 134 (player.fullWidth) - 58 (player.width) === 76, this one is confusing because playerTwo is rotated when drawn for the first time
-  private readonly initialY = ringInnerBounds.bottom - 110 // 110 === player.height
-
   private readonly maximumXPunchingRange = 125
   private readonly minimumYPunchingRange = 25
   private readonly maximumYPunchingRange = 50
@@ -19,27 +14,11 @@ export class PlayerTwo extends Player {
   private chosenYDirection: 'top' | 'bottom' | 'none' = 'none'
   private isTired = false
 
-  constructor(playerType: PlayerType) {
-    super(playerType)
-
-    this.initCoordinates()
-    this.color = playerTwoColor
-  }
-
-  /**
-   * Initialize the coordinates of the player.
-   */
-  private initCoordinates() {
-    this.x = this.initialX
-    this.y = this.initialY
-  }
-
   /**
    * Reset the player to its initial state.
    */
   public reset() {
     super.reset()
-    this.initCoordinates()
     this.isTired = false
   }
 
