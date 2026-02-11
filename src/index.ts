@@ -143,8 +143,7 @@ const main = () => {
 
     if (Overseer.gameState === 'demo') {
       if (isKO(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore()) || remainingTime <= 0) {
-        Overseer.gameState = 'finished'
-        idleTimeMs = 0
+        exitDemo()
       }
     }
 

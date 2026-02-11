@@ -4,7 +4,7 @@ import { Overseer } from './overseer'
 import { Player } from './player'
 
 export class PlayerCPU extends Player {
-  private brain: CPUBrain
+  private readonly brain: CPUBrain
 
   constructor(config: PlayerConfig) {
     super(config)

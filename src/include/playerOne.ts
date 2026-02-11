@@ -30,13 +30,6 @@ export class PlayerOne extends Player {
   }
 
   /**
-   * Reset states
-   */
-  public reset() {
-    super.reset()
-  }
-
-  /**
    * Update the player state
    */
   public update(dt: number) {
