@@ -1,3 +1,5 @@
+import { audioEvents } from './include/audioEvents'
+import { AudioManager } from './include/audioManager'
 import { Canvas } from './include/canvas'
 import { DEMO_INACTIVITY_TIMEOUT_MS, P1_CONFIG, P2_CONFIG, textColor } from './include/config'
 import { inputManager } from './include/inputManagerInstance'
@@ -6,8 +8,6 @@ import { Overseer } from './include/overseer'
 import { PlayerCPU } from './include/playerCPU'
 import { PlayerOne } from './include/playerOne'
 import { drawRing } from './include/ring'
-import { audioEvents } from './include/audioEvents'
-import { AudioManager } from './include/audioManager'
 import { SoundPlayer } from './include/soundPlayer'
 import { computeFrameDeltaMs } from './include/timing'
 import { crtFilter, drawScore, drawSprite, drawTime } from './include/utils'
@@ -17,8 +17,16 @@ new Canvas()
 new SoundPlayer()
 new AudioManager(SoundPlayer, () => SoundPlayer.initialized && Overseer.gameState !== 'demo').init()
 
-document.addEventListener('keydown', inputManager.onKeyDown)
-document.addEventListener('keyup', inputManager.onKeyUp)
+document.addEventListener('keydown', (event) => {
+  if (Overseer.gameState !== 'menu') {
+    inputManager.onKeyDown(event)
+  }
+})
+document.addEventListener('keyup', (event) => {
+  if (Overseer.gameState !== 'menu') {
+    inputManager.onKeyUp(event)
+  }
+})
 window.addEventListener('blur', () => inputManager.reset())
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') inputManager.reset()
@@ -68,6 +76,8 @@ const init = () => {
  * Main function
  */
 const main = () => {
+  const optionsDialog = document.getElementById('options') as HTMLDialogElement | null
+
   const playerOne = new PlayerOne(P1_CONFIG, inputManager)
   const playerTwo = new PlayerCPU(P2_CONFIG)
   const roundTime = 120000 // 2 minutes
@@ -77,6 +87,7 @@ const main = () => {
   let applyCRTFilter = true
   let idleTimeMs = 0
   let isDemoContext = false
+  let gameStateBeforeMenu = Overseer.gameState
 
   Overseer.init(playerOne, playerTwo)
   init()
@@ -116,6 +127,42 @@ const main = () => {
     idleTimeMs = 0
   }
 
+  const openOptions = () => {
+    if (!optionsDialog || optionsDialog.open) return
+
+    gameStateBeforeMenu = Overseer.gameState
+    optionsDialog.showModal()
+    Overseer.gameState = 'menu'
+    inputManager.reset()
+  }
+
+  const closeOptions = () => {
+    if (!optionsDialog || !optionsDialog.open) return
+
+    optionsDialog.close()
+    Overseer.gameState = gameStateBeforeMenu
+    if (Overseer.gameState === 'playing') {
+      last = undefined
+    }
+  }
+
+  optionsDialog?.addEventListener('cancel', (event) => {
+    event.preventDefault()
+  })
+
+  optionsDialog?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  })
+
+  optionsDialog?.addEventListener('click', (event) => {
+    if (event.target === optionsDialog) {
+      closeOptions()
+    }
+  })
+
   /**
    * Main game loop
    */
@@ -126,11 +173,15 @@ const main = () => {
     if (Overseer.gameState === 'playing' || Overseer.gameState === 'demo') {
       remainingTime = Math.max(0, remainingTime - deltaMs)
     }
-    updateScreen(dt, remainingTime)
+    const frameDt = Overseer.gameState === 'paused' || Overseer.gameState === 'menu' ? 0 : dt
+    updateScreen(frameDt, remainingTime)
     if (applyCRTFilter) crtFilter(Canvas.ctx)
 
     if (Overseer.gameState === 'playing') {
-      if (isKO(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore()) || remainingTime <= 0) {
+      if (
+        isKO(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore()) ||
+        remainingTime <= 0
+      ) {
         audioEvents.emit('audio:roundEnd')
         Overseer.gameState = 'finished'
       }
@@ -145,7 +196,10 @@ const main = () => {
     }
 
     if (Overseer.gameState === 'demo') {
-      if (isKO(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore()) || remainingTime <= 0) {
+      if (
+        isKO(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore()) ||
+        remainingTime <= 0
+      ) {
         Overseer.gameState = 'finished'
         idleTimeMs = 0
       }
@@ -161,6 +215,22 @@ const main = () => {
    * Key event listeners
    */
   document.addEventListener('keydown', (e) => {
+    // F1: show / hide options menu
+    if (e.key === 'F1') {
+      e.preventDefault()
+
+      if (Overseer.gameState === 'menu') {
+        closeOptions()
+      } else {
+        if (Overseer.gameState === 'demo' || isDemoContext) {
+          exitDemo()
+        }
+        openOptions()
+      }
+
+      return
+    }
+
     // Any key exits demo mode
     if (Overseer.gameState === 'demo') {
       exitDemo()
@@ -170,6 +240,14 @@ const main = () => {
     // Any key during demo results restores real players
     if (isDemoContext) {
       exitDemo()
+      return
+    }
+
+    if (Overseer.gameState === 'menu') {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        e.stopPropagation()
+      }
       return
     }
 

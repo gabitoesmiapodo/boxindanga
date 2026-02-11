@@ -63,6 +63,7 @@
         align-items: center;
         background-color: #000;
         display: flex;
+        font-family: 'Courier New', Courier, monospace;
         height: 100vh;
         justify-content: center;
         margin: 0;
@@ -79,7 +80,6 @@
 
       .info {
         color: #fff;
-        font-family: 'Courier New', Courier, monospace;
         font-size: 12px;
         left: 10px;
         line-height: 1.4;
@@ -106,16 +106,67 @@
         height: 100%;
         width: 100%;
       }
+
+      #options::backdrop {
+        background: rgba(0, 0, 0, 0.8);
+      }
+
+      #options {
+        background-color: #000;
+        color: #fff;
+        border: 10px solid #be8733;
+        font-size: 15px;
+        line-height: 1.5;
+        min-width: 400px;
+        max-width: 100%;
+      }
+
+      #options .contents {
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
+        width: 100%;
+      }
+
+      #options h1 {
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      #options h2 {
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      #options section {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+      }
+
+      #options ul {
+        margin: 0;
+        padding: 0 0 0 24px;
+      }
+
+      #options ul ul {
+        margin: 0;
+        padding: 0 0 0 12px;
+      }
+
+      #options label {
+        cursor: pointer;
+      }
     </style>
   </head>
 
   <body>
     <div class="info">
-      <strong>ESC:</strong> reset<br />
-      <strong>ENTER:</strong> start / pause<br />
-      <strong>P:</strong> punch<br />
-      <strong>WASD:</strong> move<br />
-      <strong>F3:</strong> toggle CRT filter<br />
+      <strong>F1:</strong> toggle help / options<br />
     </div>
     <a
       class="repoLink"
@@ -133,6 +184,94 @@
         />
       </svg></a>
     <canvas id="mainCanvas">You shouldn't see this</canvas>
+    <dialog id="options">
+      <div class="contents">
+        <section>
+          <h1>help</h1>
+          <ul>
+            <li><strong>ESC:</strong> game reset</li>
+            <li><strong>F1:</strong> show / hide this dialog</li>
+            <li><strong>F2 / ENTER:</strong> start / pause</li>
+          </ul>
+        </section>
+        <section>
+          <h2>controls</h2>
+          <ul>
+            <li><strong>P:</strong> punch</li>
+            <li><strong>WASD:</strong> move</li>
+          </ul>
+        </section>
+        <section>
+          <h2>options</h2>
+          <ul>
+            <li><strong>difficulty:</strong>
+              <label><input
+                  name="difficulty"
+                  type="radio"
+                  value="easy"
+                /> easy </label>
+              <label><input
+                  checked
+                  name="difficulty"
+                  type="radio"
+                  value="normal"
+                /> normal</label>
+              <label><input
+                  name="difficulty"
+                  type="radio"
+                  value="hard"
+                /> hard</label>
+            </li>
+            <li><strong>CRT filter:</strong>
+              <label><input
+                  checked
+                  name="crtFilter"
+                  type="radio"
+                  value="on"
+                /> on</label>
+              <label><input
+                  name="crtFilter"
+                  type="radio"
+                  value="off"
+                /> off</label>
+              <ul>
+                <li><strong>CRT filter type:</strong>
+                  <label><input
+                      checked
+                      name="crtFilterType"
+                      type="radio"
+                      value="1"
+                    /> 1</label>
+                  <label><input
+                      name="crtFilterType"
+                      type="radio"
+                      value="2"
+                    /> 2</label>
+                  <label><input
+                      name="crtFilterType"
+                      type="radio"
+                      value="3"
+                    /> 3</label>
+                </li>
+                <li><strong>CRT glitch:</strong>
+                  <label><input
+                      checked
+                      name="crtGlitch"
+                      type="radio"
+                      value="on"
+                    /> on</label>
+                  <label><input
+                      name="crtGlitch"
+                      type="radio"
+                      value="off"
+                    /> off</label>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </dialog>
     <script
       type="module"
       src="index.js"
