@@ -1,5 +1,3 @@
-import { Canvas } from './canvas'
-
 export const ringProperties = {
   height: 330,
   horizontalLineWidth: 14,
@@ -19,7 +17,7 @@ export const ringInnerBounds = {
   top: ringProperties.y + ringProperties.ringPaddingVertical,
 }
 
-export const drawRing = () => {
+export const drawRing = (ctx: CanvasRenderingContext2D) => {
   const horizontalLineXStart = ringProperties.x
   const horizontalLineXEnd = ringProperties.x + ringProperties.width
   const horizontalTopLineY = ringProperties.y - ringProperties.horizontalLineWidth / 2
@@ -32,40 +30,40 @@ export const drawRing = () => {
   const verticalRightLineX =
     ringProperties.x + ringProperties.width + ringProperties.verticalLineWidth / 2
 
-  Canvas.ctx.strokeStyle = ringProperties.ringColor
+  ctx.strokeStyle = ringProperties.ringColor
 
   // Draw the horizontal lines
-  Canvas.ctx.lineWidth = ringProperties.horizontalLineWidth
+  ctx.lineWidth = ringProperties.horizontalLineWidth
 
   // Top line
-  Canvas.ctx.beginPath()
-  Canvas.ctx.moveTo(horizontalLineXStart, horizontalTopLineY)
-  Canvas.ctx.lineTo(horizontalLineXEnd, horizontalTopLineY)
-  Canvas.ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(horizontalLineXStart, horizontalTopLineY)
+  ctx.lineTo(horizontalLineXEnd, horizontalTopLineY)
+  ctx.stroke()
 
   // bottom line
-  Canvas.ctx.beginPath()
-  Canvas.ctx.moveTo(horizontalLineXStart, horizontalBottomLineY)
-  Canvas.ctx.lineTo(horizontalLineXEnd, horizontalBottomLineY)
-  Canvas.ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(horizontalLineXStart, horizontalBottomLineY)
+  ctx.lineTo(horizontalLineXEnd, horizontalBottomLineY)
+  ctx.stroke()
 
   // Draw the vertical lines
-  Canvas.ctx.lineWidth = ringProperties.verticalLineWidth
+  ctx.lineWidth = ringProperties.verticalLineWidth
 
   // Left line
-  Canvas.ctx.beginPath()
-  Canvas.ctx.moveTo(verticalLeftLineX, verticalLineYStart)
-  Canvas.ctx.lineTo(verticalLeftLineX, verticalLineYEnd)
-  Canvas.ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(verticalLeftLineX, verticalLineYStart)
+  ctx.lineTo(verticalLeftLineX, verticalLineYEnd)
+  ctx.stroke()
 
   // Right line
-  Canvas.ctx.beginPath()
-  Canvas.ctx.moveTo(verticalRightLineX, verticalLineYStart)
-  Canvas.ctx.lineTo(verticalRightLineX, verticalLineYEnd)
-  Canvas.ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(verticalRightLineX, verticalLineYStart)
+  ctx.lineTo(verticalRightLineX, verticalLineYEnd)
+  ctx.stroke()
 
   // Draw the corners
-  Canvas.ctx.fillStyle = ringProperties.ringColor
+  ctx.fillStyle = ringProperties.ringColor
 
   const cornerWidth = 36
   const cornerHeight = 25
@@ -75,11 +73,11 @@ export const drawRing = () => {
   const bottomCornerY = verticalLineYEnd
 
   // left top
-  Canvas.ctx.fillRect(leftCornerX, topCornerY, cornerWidth, cornerHeight)
+  ctx.fillRect(leftCornerX, topCornerY, cornerWidth, cornerHeight)
   // left bottom
-  Canvas.ctx.fillRect(leftCornerX, bottomCornerY, cornerWidth, cornerHeight)
+  ctx.fillRect(leftCornerX, bottomCornerY, cornerWidth, cornerHeight)
   // right top
-  Canvas.ctx.fillRect(rightCornerX, topCornerY, cornerWidth, cornerHeight)
+  ctx.fillRect(rightCornerX, topCornerY, cornerWidth, cornerHeight)
   // right bottom
-  Canvas.ctx.fillRect(rightCornerX, bottomCornerY, cornerWidth, cornerHeight)
+  ctx.fillRect(rightCornerX, bottomCornerY, cornerWidth, cornerHeight)
 }

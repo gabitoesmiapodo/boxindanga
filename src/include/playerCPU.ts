@@ -1,6 +1,5 @@
 import type { PlayerConfig } from './config'
 import { CPUBrain } from './cpuBrain'
-import { Overseer } from './overseer'
 import { Player } from './player'
 
 export class PlayerCPU extends Player {
@@ -17,7 +16,7 @@ export class PlayerCPU extends Player {
   }
 
   public update(dt: number) {
-    if (Overseer.gameState === 'playing' || Overseer.gameState === 'demo') {
+    if (this.gameContext?.gameState === 'playing' || this.gameContext?.gameState === 'demo') {
       this.brain.think(dt)
     }
     super.update(dt)

@@ -1,6 +1,5 @@
 import type { PlayerConfig } from './config'
 import type { InputManager } from './inputManager'
-import { Overseer } from './overseer'
 import { Player } from './player'
 
 export class PlayerOne extends Player {
@@ -8,13 +7,9 @@ export class PlayerOne extends Player {
 
   constructor(config: PlayerConfig, input: InputManager) {
     super(config)
-
     this.input = input
   }
 
-  /**
-   * Handle player's movement
-   */
   private handleMovement(dt: number) {
     if (this.state === 'hitFromBottom' || this.state === 'hitFromTop') return
 
@@ -29,11 +24,8 @@ export class PlayerOne extends Player {
     this.moveWithBodyCollision(dx, dy)
   }
 
-  /**
-   * Update the player state
-   */
   public update(dt: number) {
-    if (Overseer.gameState === 'playing') {
+    if (this.gameContext?.gameState === 'playing') {
       if (this.input.justPressed('punch')) {
         this.punch()
       }

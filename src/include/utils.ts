@@ -1,4 +1,3 @@
-import { Canvas } from './canvas'
 import { characterMap } from './characters'
 import { pixelSize, textColor } from './config'
 
@@ -23,6 +22,7 @@ export function decompressRLE(data: string) {
 }
 
 export function drawSprite(
+  ctx: CanvasRenderingContext2D,
   sprite: string,
   color: string,
   x: number,
@@ -30,12 +30,12 @@ export function drawSprite(
   pixelWidth: number = pixelSize,
   pixelHeight: number = pixelSize,
 ) {
-  Canvas.ctx.fillStyle = color
+  ctx.fillStyle = color
 
   sprite.split('\n').forEach((line, row) => {
     line.split('').forEach((char, column) => {
       if (char === 'X') {
-        Canvas.ctx.fillRect(x + column * pixelWidth, y + row * pixelHeight, pixelWidth, pixelHeight)
+        ctx.fillRect(x + column * pixelWidth, y + row * pixelHeight, pixelWidth, pixelHeight)
       }
     })
   })
@@ -61,32 +61,29 @@ export function isColliding(
     : a.right > b.left && a.left < b.right && a.bottom > b.top && a.top < b.bottom
 }
 
-function write(text: string, color: string, x: number, y: number) {
-  const number = Number.parseInt(text)
-
+function write(ctx: CanvasRenderingContext2D, text: string, color: string, x: number, y: number) {
   text.split('').forEach((char, index) => {
     const spacing = 32
     const offset = text.length === 1 ? spacing : index === 0 ? 0 : spacing
 
-    // 4.3 and 2.3 looks kind of bad (canvas glitches), but 4 / 2 looks too small IMO
-    drawSprite(characterMap[char], color, x + offset, y, 4.3, 2.3)
+    drawSprite(ctx, characterMap[char], color, x + offset, y, 4.3, 2.3)
   })
 }
 
-export function drawScore(score: number, color: string, x: number) {
-  write(score < 99 ? score.toString() : 'ko', color, x, 11)
+export function drawScore(ctx: CanvasRenderingContext2D, score: number, color: string, x: number) {
+  write(ctx, score < 99 ? score.toString() : 'ko', color, x, 11)
 }
 
-export function drawTime(time: number) {
+export function drawTime(ctx: CanvasRenderingContext2D, time: number) {
   const minutes = Math.floor(time / 60000).toString()
   const seconds = Math.floor((time % 60000) / 1000)
     .toString()
     .padStart(2, '0')
   const y = 39
 
-  write(minutes, textColor, 204, y)
-  write(':', textColor, 241, y)
-  write(seconds, textColor, 313, y)
+  write(ctx, minutes, textColor, 204, y)
+  write(ctx, ':', textColor, 241, y)
+  write(ctx, seconds, textColor, 313, y)
 }
 
 function drawScanlines(ctx: CanvasRenderingContext2D) {
@@ -136,7 +133,7 @@ function drawVignette(ctx: CanvasRenderingContext2D) {
 }
 
 export function crtFilter(ctx: CanvasRenderingContext2D, applyGlitch = true) {
-  if (applyGlitch) drawCRTGlitch(Canvas.ctx)
-  drawScanlines(Canvas.ctx)
-  drawVignette(Canvas.ctx)
+  if (applyGlitch) drawCRTGlitch(ctx)
+  drawScanlines(ctx)
+  drawVignette(ctx)
 }
