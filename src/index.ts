@@ -1,9 +1,8 @@
 import { Canvas } from './include/canvas'
-import { P1_CONFIG, P2_CONFIG, textColor } from './include/config'
+import { DEMO_INACTIVITY_TIMEOUT_MS, P1_CONFIG, P2_CONFIG, textColor } from './include/config'
 import { inputManager } from './include/inputManagerInstance'
 import { logo } from './include/logo'
 import { Overseer } from './include/overseer'
-import type { Player } from './include/player'
 import { PlayerCPU } from './include/playerCPU'
 import { PlayerOne } from './include/playerOne'
 import { drawRing } from './include/ring'
@@ -36,15 +35,15 @@ const drawScores = (playerOneScore: number, playerTwoScore: number) => {
 /**
  * Clears canvas, draws ring
  */
-const updateScreen = (playerOne: Player, playerTwo: Player, dt: number, time = 120000) => {
+const updateScreen = (dt: number, time = 120000) => {
   Canvas.ctx.clearRect(0, 0, Canvas.canvas.width, Canvas.canvas.height)
 
   drawRing()
 
-  playerTwo.update(dt)
-  playerOne.update(dt)
+  Overseer.playerTwo.update(dt)
+  Overseer.playerOne.update(dt)
 
-  drawScores(playerOne.getScore(), playerTwo.getScore())
+  drawScores(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore())
   drawTime(time)
   drawSprite(logo, textColor, 222, 445, 3.3, 1.5)
 }
@@ -58,13 +57,11 @@ const isKO = (playerOneScore: number, playerTwoScore: number) =>
 /**
  * Init function
  */
-const init = (playerOne: Player, playerTwo: Player) => {
-  playerOne.reset()
-  playerTwo.reset()
+const init = () => {
+  Overseer.playerOne.reset()
+  Overseer.playerTwo.reset()
 
-  updateScreen(playerOne, playerTwo, 0)
-
-  return { playerOne, playerTwo }
+  updateScreen(0)
 }
 
 /**
@@ -78,9 +75,10 @@ const main = () => {
   let remainingTime = roundTime
   let last: number | undefined
   let applyCRTFilter = true
+  let idleTimeMs = 0
 
   Overseer.init(playerOne, playerTwo)
-  init(playerOne, playerTwo)
+  init()
 
   /**
    * Starts the game
@@ -92,22 +90,61 @@ const main = () => {
   }
 
   /**
+   * Starts demo mode with two CPU players
+   */
+  const startDemo = () => {
+    const demoP1 = new PlayerCPU(P1_CONFIG)
+    const demoP2 = new PlayerCPU(P2_CONFIG)
+    Overseer.init(demoP1, demoP2)
+    init()
+    Overseer.gameState = 'demo'
+    last = undefined
+    remainingTime = roundTime
+  }
+
+  /**
+   * Exits demo mode and restores real players
+   */
+  const exitDemo = () => {
+    Overseer.init(playerOne, playerTwo)
+    init()
+    remainingTime = roundTime
+    Overseer.gameState = 'finished'
+    idleTimeMs = 0
+  }
+
+  /**
    * Main game loop
    */
   const gameLoop = (now: number) => {
     const { deltaMs, lastTime } = computeFrameDeltaMs(last, now, 100)
     last = lastTime
     const dt = deltaMs / 1000
-    if (Overseer.gameState === 'playing') {
+    if (Overseer.gameState === 'playing' || Overseer.gameState === 'demo') {
       remainingTime = Math.max(0, remainingTime - deltaMs)
     }
-    updateScreen(playerOne, playerTwo, dt, remainingTime)
+    updateScreen(dt, remainingTime)
     if (applyCRTFilter) crtFilter(Canvas.ctx)
 
     if (Overseer.gameState === 'playing') {
-      if (isKO(playerOne.getScore(), playerTwo.getScore()) || remainingTime <= 0) {
+      if (isKO(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore()) || remainingTime <= 0) {
         audioEvents.emit('audio:roundEnd')
         Overseer.gameState = 'finished'
+      }
+    }
+
+    if (Overseer.gameState === 'finished') {
+      idleTimeMs += deltaMs
+      if (idleTimeMs >= DEMO_INACTIVITY_TIMEOUT_MS) {
+        idleTimeMs = 0
+        startDemo()
+      }
+    }
+
+    if (Overseer.gameState === 'demo') {
+      if (isKO(Overseer.playerOne.getScore(), Overseer.playerTwo.getScore()) || remainingTime <= 0) {
+        Overseer.gameState = 'finished'
+        idleTimeMs = 0
       }
     }
 
@@ -121,16 +158,25 @@ const main = () => {
    * Key event listeners
    */
   document.addEventListener('keydown', (e) => {
+    // Any key exits demo mode
+    if (Overseer.gameState === 'demo') {
+      exitDemo()
+      return
+    }
+
+    // Reset idle timer on any keypress
+    idleTimeMs = 0
+
     // ESCAPE: reset
     if (e.key === 'Escape') {
-      init(playerOne, playerTwo)
+      init()
       remainingTime = roundTime
       Overseer.gameState = 'finished'
     }
 
     // P: start
     if (e.code === 'KeyP' && Overseer.gameState === 'finished') {
-      init(playerOne, playerTwo)
+      init()
       startGame()
 
       // AudioContext: Initialize only once (must be done
