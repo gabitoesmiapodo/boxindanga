@@ -6,6 +6,7 @@ import {
   setCRTFilter,
   setCRTFilterType,
   setCRTGlitch,
+  setDifficulty,
 } from '../src/include/optionsStorage'
 
 const assert = (condition: boolean, message: string) => {
@@ -76,7 +77,12 @@ class MemoryStorage {
   assert(options.crtFilter === false, 'setCRTFilter should update crtFilter')
   assert(
     storage.getItem(OPTIONS_STORAGE_KEY) ===
-      JSON.stringify({ crtFilter: false, crtGlitch: true, crtFilterType: '1' }),
+      JSON.stringify({
+        crtFilter: false,
+        crtGlitch: true,
+        crtFilterType: '1',
+        difficulty: 'normal',
+      }),
     'setCRTFilter should persist value immediately',
   )
 }
@@ -90,7 +96,12 @@ class MemoryStorage {
   assert(options.crtGlitch === false, 'setCRTGlitch should update crtGlitch')
   assert(
     storage.getItem(OPTIONS_STORAGE_KEY) ===
-      JSON.stringify({ crtFilter: true, crtGlitch: false, crtFilterType: '1' }),
+      JSON.stringify({
+        crtFilter: true,
+        crtGlitch: false,
+        crtFilterType: '1',
+        difficulty: 'normal',
+      }),
     'setCRTGlitch should persist value immediately',
   )
 }
@@ -104,7 +115,58 @@ class MemoryStorage {
   assert(options.crtFilterType === '2', 'setCRTFilterType should update crtFilterType')
   assert(
     storage.getItem(OPTIONS_STORAGE_KEY) ===
-      JSON.stringify({ crtFilter: true, crtGlitch: true, crtFilterType: '2' }),
+      JSON.stringify({
+        crtFilter: true,
+        crtGlitch: true,
+        crtFilterType: '2',
+        difficulty: 'normal',
+      }),
     'setCRTFilterType should persist value immediately',
   )
+}
+
+// Test: default difficulty is 'normal'
+{
+  const storage = new MemoryStorage()
+  const options = loadGameOptions(storage)
+  assert(options.difficulty === 'normal', 'first run should default difficulty to normal')
+}
+
+// Test: stored difficulty is loaded
+{
+  const storage = new MemoryStorage()
+  storage.setItem(
+    OPTIONS_STORAGE_KEY,
+    JSON.stringify({ crtFilter: true, crtGlitch: true, crtFilterType: '1', difficulty: 'easy' }),
+  )
+  const options = loadGameOptions(storage)
+  assert(options.difficulty === 'easy', 'stored difficulty value should be loaded')
+}
+
+// Test: invalid difficulty falls back to default
+{
+  const storage = new MemoryStorage()
+  storage.setItem(
+    OPTIONS_STORAGE_KEY,
+    JSON.stringify({
+      crtFilter: true,
+      crtGlitch: true,
+      crtFilterType: '1',
+      difficulty: 'impossible',
+    }),
+  )
+  const options = loadGameOptions(storage)
+  assert(options.difficulty === 'normal', 'invalid difficulty should fall back to default')
+}
+
+// Test: setDifficulty persists
+{
+  const storage = new MemoryStorage()
+  loadGameOptions(storage)
+
+  const options = setDifficulty(storage, 'hard')
+
+  assert(options.difficulty === 'hard', 'setDifficulty should update difficulty')
+  const stored = JSON.parse(storage.getItem(OPTIONS_STORAGE_KEY) as string)
+  assert(stored.difficulty === 'hard', 'setDifficulty should persist value immediately')
 }

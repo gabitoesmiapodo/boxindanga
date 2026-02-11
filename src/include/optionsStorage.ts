@@ -1,3 +1,5 @@
+import type { Difficulty } from './config'
+
 export const OPTIONS_STORAGE_KEY = 'ari-boxing-options'
 
 export type CRTFilterType = '1' | '2' | '3'
@@ -6,12 +8,14 @@ export type GameOptions = {
   crtFilter: boolean
   crtGlitch: boolean
   crtFilterType: CRTFilterType
+  difficulty: Difficulty
 }
 
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   crtFilter: true,
   crtGlitch: true,
   crtFilterType: '1',
+  difficulty: 'normal',
 }
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>
@@ -34,6 +38,12 @@ const parseStoredOptions = (raw: string | null): Partial<GameOptions> | null => 
       const value = (parsed as { crtFilterType: string }).crtFilterType
       if (value === '1' || value === '2' || value === '3') {
         options.crtFilterType = value
+      }
+    }
+    if (typeof (parsed as { difficulty?: unknown }).difficulty === 'string') {
+      const value = (parsed as { difficulty: string }).difficulty
+      if (value === 'easy' || value === 'normal' || value === 'hard') {
+        options.difficulty = value
       }
     }
 
@@ -78,6 +88,16 @@ export const setCRTFilterType = (storage: StorageLike, type: CRTFilterType): Gam
   const options = {
     ...loadGameOptions(storage),
     crtFilterType: type,
+  }
+
+  storage.setItem(OPTIONS_STORAGE_KEY, JSON.stringify(options))
+  return options
+}
+
+export const setDifficulty = (storage: StorageLike, difficulty: Difficulty): GameOptions => {
+  const options = {
+    ...loadGameOptions(storage),
+    difficulty,
   }
 
   storage.setItem(OPTIONS_STORAGE_KEY, JSON.stringify(options))
