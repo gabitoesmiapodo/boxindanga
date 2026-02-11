@@ -1,5 +1,6 @@
-import type { PlayerType } from './player'
 import { ringInnerBounds } from './ring'
+
+export type PlayerType = 'playerOne' | 'playerTwo'
 
 export type PlayerConfig = {
   playerType: PlayerType

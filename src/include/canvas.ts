@@ -1,26 +1,26 @@
 export class Canvas {
-  static canvas: HTMLCanvasElement
-  static ctx: CanvasRenderingContext2D
+  readonly canvas: HTMLCanvasElement
+  readonly ctx: CanvasRenderingContext2D
 
-  constructor() {
-    Canvas.canvas = document.getElementById('mainCanvas') as HTMLCanvasElement
+  constructor(canvasId: string) {
+    this.canvas = document.getElementById(canvasId) as HTMLCanvasElement
 
-    if (!Canvas.canvas) {
-      throw new Error('Canvas id not found')
+    if (!this.canvas) {
+      throw new Error(`Canvas id "${canvasId}" not found`)
     }
 
-    Canvas.canvas.width = 640
-    Canvas.canvas.height = 480
-    Canvas.canvas.style.background = '#649335'
+    this.canvas.width = 640
+    this.canvas.height = 480
+    this.canvas.style.background = '#649335'
 
-    Canvas.ctx = Canvas.canvas.getContext('2d', {
+    this.ctx = this.canvas.getContext('2d', {
       willReadFrequently: true,
     }) as CanvasRenderingContext2D
 
-    if (!Canvas.ctx) {
+    if (!this.ctx) {
       throw new Error('2d context not supported')
     }
 
-    Canvas.ctx.imageSmoothingEnabled = false
+    this.ctx.imageSmoothingEnabled = false
   }
 }

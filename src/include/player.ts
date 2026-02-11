@@ -3,12 +3,15 @@ import { AnimationPlayer } from './animationPlayer'
 import { AnimationStateMachine } from './animationStateMachine'
 import type { AnimationClip, AnimationClipId } from './animationTypes'
 import { audioEvents } from './audioEvents'
-import type { PlayerConfig } from './config'
-import { Overseer } from './overseer'
+import type { PlayerConfig, PlayerType } from './config'
 import { ringInnerBounds } from './ring'
 import { drawSprite, isColliding } from './utils'
 
-export type PlayerType = 'playerOne' | 'playerTwo'
+export type GameState = 'playing' | 'finished' | 'demo' | 'paused' | 'menu'
+
+export interface GameContext {
+  readonly gameState: GameState
+}
 type Direction = 'left' | 'right'
 type PlayerState = 'punchingTop' | 'punchingBottom' | 'hitFromTop' | 'hitFromBottom' | 'idle'
 
@@ -21,6 +24,8 @@ export class Player {
   public isFastForwarding = false
   private facingDirection: Direction = 'right' // direction is sorted out in the first update
   private score = 0
+  private opponent: Player | null = null
+  protected gameContext: GameContext | null = null
 
   private readonly height = 110
   private readonly fullWidth = 134 // width when the arm is extended
@@ -75,6 +80,19 @@ export class Player {
     this.syncClipFromStateMachine(true)
   }
 
+  public setOpponent(opponent: Player) {
+    this.opponent = opponent
+  }
+
+  public setGameContext(gameContext: GameContext) {
+    this.gameContext = gameContext
+  }
+
+  private getOpponent(): Player {
+    if (!this.opponent) throw new Error('Opponent not set. Call setOpponent() before update().')
+    return this.opponent
+  }
+
   private syncClipFromStateMachine(force = false) {
     const clipId = this.stateMachine.getClipId()
     if (!force && this.currentClipId === clipId) return
@@ -110,9 +128,11 @@ export class Player {
       this.resetAnimationSpeed()
       this.syncClipFromStateMachine(true)
     }
+  }
 
+  public draw(ctx: CanvasRenderingContext2D) {
     const frame = this.animationPlayer.getFrame()
-    drawSprite(frame.sprite, this.color, this.renderX, this.renderY)
+    drawSprite(ctx, frame.sprite, this.color, this.renderX, this.renderY)
   }
 
   /**
@@ -148,7 +168,7 @@ export class Player {
       this.state === 'punchingTop'
         ? this.getTopGloveBoundingBox()
         : this.getBottomGloveBoundingBox()
-    const enemyHeadBoundingBox = Overseer.getEnemy(this).getHeadBoundingBox()
+    const enemyHeadBoundingBox = this.getOpponent().getHeadBoundingBox()
 
     return isColliding(playerGloveBoundingBox, enemyHeadBoundingBox, true)
   }
@@ -165,8 +185,8 @@ export class Player {
         : this.getBottomGloveBoundingBox()
 
     const enemyGlovesBoundingBoxes = [
-      Overseer.getEnemy(this).getTopGloveBoundingBox(),
-      Overseer.getEnemy(this).getBottomGloveBoundingBox(),
+      this.getOpponent().getTopGloveBoundingBox(),
+      this.getOpponent().getBottomGloveBoundingBox(),
     ]
 
     return enemyGlovesBoundingBoxes.some((enemyGlove) =>
@@ -213,8 +233,7 @@ export class Player {
     const offset = 8
 
     if (
-      this.getMainBoundingBox().right + offset >
-        Overseer.getEnemy(this).getMainBoundingBox().right &&
+      this.getMainBoundingBox().right + offset > this.getOpponent().getMainBoundingBox().right &&
       this.isFacingRight()
     ) {
       this.facingDirection = 'left'
@@ -226,7 +245,7 @@ export class Player {
     }
 
     if (
-      this.getMainBoundingBox().left - offset < Overseer.getEnemy(this).getMainBoundingBox().left &&
+      this.getMainBoundingBox().left - offset < this.getOpponent().getMainBoundingBox().left &&
       !this.isFacingRight()
     ) {
       this.facingDirection = 'right'
@@ -287,7 +306,7 @@ export class Player {
    * this is a shitty way of testing this, but it works
    */
   private isHittingEnemy = () => {
-    const enemy = Overseer.getEnemy(this)
+    const enemy = this.getOpponent()
     return (
       this.isFastForwarding ||
       enemy.isFastForwarding ||
@@ -323,9 +342,7 @@ export class Player {
       this.reversePunch()
       this.increaseScore()
 
-      Overseer.getEnemy(this).setState(
-        this.state === 'punchingTop' ? 'hitFromTop' : 'hitFromBottom',
-      )
+      this.getOpponent().setState(this.state === 'punchingTop' ? 'hitFromTop' : 'hitFromBottom')
 
       audioEvents.emit('audio:headHit')
     }
@@ -334,19 +351,17 @@ export class Player {
   /**
    * Check if the player is above the enemy
    */
-  public isAboveEnemy = () => this.getYCenter() < Overseer.getEnemy(this).getYCenter()
+  public isAboveEnemy = () => this.getYCenter() < this.getOpponent().getYCenter()
 
   /**
    * Get the X distance to the enemy
    */
-  public getXDistanceToEnemy = () =>
-    Math.abs(this.getXCenter() - Overseer.getEnemy(this).getXCenter())
+  public getXDistanceToEnemy = () => Math.abs(this.getXCenter() - this.getOpponent().getXCenter())
 
   /**
    * Get the distance to the enemy
    */
-  public getYDistanceToEnemy = () =>
-    Math.abs(this.getYCenter() - Overseer.getEnemy(this).getYCenter())
+  public getYDistanceToEnemy = () => Math.abs(this.getYCenter() - this.getOpponent().getYCenter())
 
   /**
    * Move the player up
@@ -403,7 +418,7 @@ export class Player {
    */
   public isBodyCollidingWithEnemy() {
     const playerBoundingBox = this.getMainBoundingBox()
-    const enemyBoundingBox = Overseer.getEnemy(this).getMainBoundingBox()
+    const enemyBoundingBox = this.getOpponent().getMainBoundingBox()
 
     return isColliding(playerBoundingBox, enemyBoundingBox)
   }
