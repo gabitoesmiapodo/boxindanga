@@ -1,13 +1,14 @@
-import type { PlayerConfig } from './config'
+import { DIFFICULTY_PRESETS, type DifficultyConfig, type PlayerConfig } from './config'
 import { CPUBrain } from './cpuBrain'
 import { Player } from './player'
 
 export class PlayerCPU extends Player {
   private readonly brain: CPUBrain
 
-  constructor(config: PlayerConfig) {
+  constructor(config: PlayerConfig, difficulty: DifficultyConfig = DIFFICULTY_PRESETS.hard) {
     super(config)
-    this.brain = new CPUBrain(this)
+    this.closeRangeNerfChance = difficulty.closeRangeNerfChance
+    this.brain = new CPUBrain(this, difficulty)
   }
 
   public reset() {

@@ -26,6 +26,7 @@ export class Player {
   private score = 0
   private opponent: Player | null = null
   protected gameContext: GameContext | null = null
+  public closeRangeNerfChance = 0
 
   private readonly height = 110
   private readonly fullWidth = 134 // width when the arm is extended
@@ -319,7 +320,12 @@ export class Player {
    * Increase the score
    */
   private increaseScore() {
-    this.score += this.getXDistanceToEnemy() <= 80 ? 2 : 1
+    const isClose = this.getXDistanceToEnemy() <= 80
+    if (isClose && this.closeRangeNerfChance > 0 && Math.random() < this.closeRangeNerfChance) {
+      this.score += 1
+    } else {
+      this.score += isClose ? 2 : 1
+    }
   }
 
   /**

@@ -1,10 +1,13 @@
+import type { DifficultyConfig } from './config'
 import type { Player } from './player'
 
 export class CPUBrain {
   private readonly maximumXPunchingRange = 125
   private readonly minimumYPunchingRange = 25
   private readonly maximumYPunchingRange = 50
-  private readonly tiredThreshold = 25
+  private get tiredThreshold() {
+    return this.difficulty.tiredThreshold
+  }
 
   private movementXChunk = 0
   private movementYChunk = 0
@@ -13,7 +16,10 @@ export class CPUBrain {
   private chosenYDirection: 'top' | 'bottom' | 'none' = 'none'
   private isTired = false
 
-  constructor(private readonly player: Player) {}
+  constructor(
+    private readonly player: Player,
+    private readonly difficulty: DifficultyConfig,
+  ) {}
 
   /**
    * Reset all AI state.
@@ -207,7 +213,8 @@ export class CPUBrain {
   /**
    * Think what to do
    */
-  public think(dt: number) {
+  public think(rawDt: number) {
+    const dt = rawDt * this.difficulty.speedMultiplier
     this.moveAwayXIfHit(dt)
     this.moveAwayYIfHit(dt)
 
@@ -226,7 +233,7 @@ export class CPUBrain {
 
     // Punch
     // could be 0.4 or more if it needs to be more aggressive
-    if (this.isInPunchingRange() && Math.random() < 0.33) {
+    if (this.isInPunchingRange() && Math.random() < this.difficulty.punchChance) {
       this.player.punch()
     }
   }
