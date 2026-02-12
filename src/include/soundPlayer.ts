@@ -1,68 +1,42 @@
 import { TIASound } from '../lib/TIASound'
 
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
-export class SoundPlayer {
-  static readonly tia = new TIASound()
-  static initialized = false
+const tia = new TIASound()
 
-  /**
-   * Initialize the TIA sound instance
-   */
-  static async tiaInit() {
-    await SoundPlayer.tia.init()
-    SoundPlayer.initialized = true
-  }
+export let initialized = false
 
-  /**
-   * Play the sound when the round ends
-   */
-  static playEndOfRoundBell() {
-    let count = 0
+/**
+ * Initialize the TIA sound instance
+ */
+export async function tiaInit() {
+  await tia.init()
+  initialized = true
+}
 
-    const playBell = () => {
-      SoundPlayer.tia.setChannel0(9, 12, 12)
-      setTimeout(() => {
-        SoundPlayer.tia.setChannel0(0, 0, 0)
-      }, 280)
-    }
+/**
+ * Play the sound when the round ends
+ */
+export function playEndOfRoundBell() {
+  tia.playSequence(0, [
+    { AUDF: 9, AUDC: 12, AUDV: 12, duration: 280 },
+    { AUDF: 0, AUDC: 0, AUDV: 0, duration: 60 },
+    { AUDF: 9, AUDC: 12, AUDV: 12, duration: 280 },
+  ])
+}
 
-    playBell()
+/**
+ * Play the sound when the player hits the enemy's gloves
+ */
+export function playGloveHit() {
+  tia.setChannel0(31, 3, 10, 18)
+}
 
-    const id = setInterval(() => {
-      count++
-
-      playBell()
-      if (count === 1) {
-        clearInterval(id)
-      }
-    }, 340)
-  }
-
-  /**
-   * Play the sound when the player hits the enemy's gloves
-   */
-  static playGloveHit() {
-    SoundPlayer.tia.setChannel0(31, 3, 10)
-    setTimeout(() => {
-      SoundPlayer.tia.setChannel0(0, 0, 0)
-    }, 18)
-  }
-
-  /**
-   * Play the sound when the player hits the enemy's gloves
-   * It's made by the combination of a high and low sound
-   */
-  static playHeadHit() {
-    // Sound 1: smash
-    SoundPlayer.tia.setChannel0(9, 8, 2)
-    setTimeout(() => {
-      SoundPlayer.tia.setChannel0(0, 0, 0)
-    }, 180)
-
-    // Sound 2: glove
-    SoundPlayer.tia.setChannel1(12, 3, 31)
-    setTimeout(() => {
-      SoundPlayer.tia.setChannel1(0, 0, 0)
-    }, 18)
-  }
+/**
+ * Play the sound when the player hits the enemy's head
+ * It's made by the combination of a high and low sound
+ */
+export function playHeadHit() {
+  // Sound 1: smash (channel 0)
+  tia.setChannel0(9, 8, 2, 180)
+  // Sound 2: glove thud (channel 1)
+  tia.setChannel1(12, 3, 31, 18)
 }

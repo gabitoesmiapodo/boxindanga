@@ -15,8 +15,12 @@ import type { Player } from './player'
 import { PlayerCPU } from './playerCPU'
 import type { PlayerOne } from './playerOne'
 import { drawRing } from './ring'
-import type { SoundPlayer as SoundPlayerClass } from './soundPlayer'
 import { type CRTFilterOptions, crtFilter, drawScore, drawSprite, drawTime } from './utils'
+
+interface SoundPlayerModule {
+  initialized: boolean
+  tiaInit: () => Promise<void>
+}
 
 export class Game implements GameContext {
   private currentPlayerOne: Player
@@ -35,7 +39,7 @@ export class Game implements GameContext {
     private readonly canvas: Canvas,
     playerOne: PlayerOne,
     playerTwo: PlayerCPU,
-    private readonly soundPlayer: typeof SoundPlayerClass,
+    private readonly soundPlayer: SoundPlayerModule,
     initialDifficulty: DifficultyConfig = DIFFICULTY_PRESETS.normal,
   ) {
     this.realPlayerOne = playerOne

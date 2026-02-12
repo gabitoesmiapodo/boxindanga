@@ -20,15 +20,17 @@ import {
 import type { GameState } from './include/player'
 import { PlayerCPU } from './include/playerCPU'
 import { PlayerOne } from './include/playerOne'
-import { SoundPlayer } from './include/soundPlayer'
+import * as soundPlayer from './include/soundPlayer'
 import type { CRTFilterOptions } from './include/utils'
 
-new SoundPlayer()
 const canvas = new Canvas('mainCanvas')
 const playerOne = new PlayerOne(P1_CONFIG, inputManager)
 const playerTwo = new PlayerCPU(P2_CONFIG)
-const game = new Game(canvas, playerOne, playerTwo, SoundPlayer)
-new AudioManager(SoundPlayer, () => SoundPlayer.initialized && game.gameState !== 'demo').init()
+const game = new Game(canvas, playerOne, playerTwo, soundPlayer)
+new AudioManager(
+  soundPlayer,
+  () => soundPlayer.initialized && game.gameState !== 'demo' && !game.inDemoContext,
+).init()
 
 document.addEventListener('keydown', (event) => {
   if (game.gameState !== 'menu') {
