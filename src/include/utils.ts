@@ -128,13 +128,13 @@ function drawVignette(ctx: CanvasRenderingContext2D) {
   const gradient = ctx.createRadialGradient(
     width / 2,
     height / 2,
-    width * 0.5,
+    width * 0.45,
     width / 2,
     height / 2,
     width * 1,
   )
   gradient.addColorStop(0, 'rgba(0,0,0,0)')
-  gradient.addColorStop(1, 'rgba(0,0,0,0.5)')
+  gradient.addColorStop(1, 'rgba(0,0,0,0.6)')
 
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, width, height)
@@ -151,18 +151,21 @@ function drawPhosphorGrid(ctx: CanvasRenderingContext2D) {
       const subPixel = x % 3
 
       // Dim the two channels that don't match this sub-pixel column
+      // Tweak dimming factor to taste (0.7 = heavy, 0.9 = subtle)
+      const dim = 0.8
+
       if (subPixel === 0) {
         // Red sub-pixel: dim green and blue
-        data[i + 1] = (data[i + 1] * 0.7) | 0
-        data[i + 2] = (data[i + 2] * 0.7) | 0
+        data[i + 1] = (data[i + 1] * dim) | 0
+        data[i + 2] = (data[i + 2] * dim) | 0
       } else if (subPixel === 1) {
         // Green sub-pixel: dim red and blue
-        data[i] = (data[i] * 0.7) | 0
-        data[i + 2] = (data[i + 2] * 0.7) | 0
+        data[i] = (data[i] * dim) | 0
+        data[i + 2] = (data[i + 2] * dim) | 0
       } else {
         // Blue sub-pixel: dim red and green
-        data[i] = (data[i] * 0.7) | 0
-        data[i + 1] = (data[i + 1] * 0.7) | 0
+        data[i] = (data[i] * dim) | 0
+        data[i + 1] = (data[i + 1] * dim) | 0
       }
     }
   }
@@ -212,7 +215,8 @@ function drawBarrelDistortion(ctx: CanvasRenderingContext2D) {
 
   const cx = width / 2
   const cy = height / 2
-  const k = 0.15 // barrel distortion strength
+  // Barrel distortion strength — tweak this to taste (0.02 = subtle, 0.1 = strong)
+  const k = 0.015
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
