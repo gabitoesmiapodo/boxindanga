@@ -228,6 +228,55 @@ const main = () => {
       return
     }
 
+    // F2: cycle difficulty (easy -> normal -> hard -> easy)
+    if (e.key === 'F2') {
+      e.preventDefault()
+      const difficulties: Difficulty[] = ['easy', 'normal', 'hard']
+      const next =
+        difficulties[(difficulties.indexOf(currentOptions.difficulty) + 1) % difficulties.length]
+      const options = setDifficulty(window.localStorage, next)
+      applyOptions(options)
+      game.setDifficulty(options.difficulty)
+      return
+    }
+
+    // F3: toggle CRT filter on/off
+    if (e.key === 'F3') {
+      e.preventDefault()
+      applyOptions(setCRTFilter(window.localStorage, !currentOptions.crtFilter))
+      return
+    }
+
+    // F4: cycle CRT filter type (1 -> 2 -> 3 -> 1)
+    if (e.key === 'F4') {
+      e.preventDefault()
+      const types: CRTFilterType[] = ['1', '2', '3']
+      const next = types[(types.indexOf(currentOptions.crtFilterType) + 1) % types.length]
+      applyOptions(setCRTFilterType(window.localStorage, next))
+      return
+    }
+
+    // F6: toggle vignette on/off
+    if (e.key === 'F6') {
+      e.preventDefault()
+      applyOptions(setCRTGlitch(window.localStorage, !currentOptions.crtGlitch))
+      return
+    }
+
+    // F6: toggle vignette on/off
+    if (e.key === 'F6') {
+      e.preventDefault()
+      applyOptions(setCRTVignette(window.localStorage, !currentOptions.crtVignette))
+      return
+    }
+
+    // F7: toggle curvature on/off
+    if (e.key === 'F7') {
+      e.preventDefault()
+      applyOptions(setCRTCurvature(window.localStorage, !currentOptions.crtCurvature))
+      return
+    }
+
     // Any key exits demo mode
     if (game.gameState === 'demo') {
       game.exitDemo()
