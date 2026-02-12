@@ -1,8 +1,11 @@
-import type { GameOptions } from './optionsStorage'
+import type { CRTFilterType, GameOptions } from './optionsStorage'
 
 export type CRTRuntimeState = {
   applyCRTFilter: boolean
   applyCRTGlitch: boolean
+  applyCRTVignette: boolean
+  applyCRTCurvature: boolean
+  crtFilterType: CRTFilterType
   disableChildControls: boolean
 }
 
@@ -12,6 +15,9 @@ export const getCRTRuntimeState = (options: GameOptions): CRTRuntimeState => {
   return {
     applyCRTFilter,
     applyCRTGlitch: applyCRTFilter && options.crtGlitch,
+    applyCRTVignette: applyCRTFilter && options.crtVignette,
+    applyCRTCurvature: applyCRTFilter && options.crtCurvature,
+    crtFilterType: options.crtFilterType,
     disableChildControls: !applyCRTFilter,
   }
 }
