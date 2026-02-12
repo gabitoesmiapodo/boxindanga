@@ -216,7 +216,7 @@ function drawBarrelDistortion(ctx: CanvasRenderingContext2D) {
   const cx = width / 2
   const cy = height / 2
   // Barrel distortion strength — tweak this to taste (0.02 = subtle, 0.1 = strong)
-  const k = 0.015
+  const k = 0.02
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -267,8 +267,11 @@ function drawBarrelDistortion(ctx: CanvasRenderingContext2D) {
           srcData[i01 + 3] * w01 +
           srcData[i11 + 3] * w11
       } else {
-        // Outside source bounds: black
-        dstData[di + 3] = 255
+        // Outside source bounds: keep original pixel (no black border)
+        dstData[di] = srcData[di]
+        dstData[di + 1] = srcData[di + 1]
+        dstData[di + 2] = srcData[di + 2]
+        dstData[di + 3] = srcData[di + 3]
       }
     }
   }
