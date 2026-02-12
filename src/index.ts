@@ -106,6 +106,7 @@ const main = () => {
     }
 
     crtChildOptions?.classList.toggle('option-group-disabled', state.disableChildControls)
+    canvas.canvas.parentElement?.classList.toggle('crt-curvature', state.applyCRTCurvature)
 
     for (const input of [
       ...crtFilterTypeInputs,
@@ -256,8 +257,8 @@ const main = () => {
       return
     }
 
-    // F6: toggle vignette on/off
-    if (e.key === 'F6') {
+    // F5: toggle vignette on/off
+    if (e.key === 'F5') {
       e.preventDefault()
       applyOptions(setCRTGlitch(window.localStorage, !currentOptions.crtGlitch))
       return

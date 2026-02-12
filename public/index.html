@@ -78,6 +78,16 @@
         width: 100vw;
       }
 
+      #canvasWrapper {
+        display: inline-block;
+        line-height: 0;
+      }
+
+      #canvasWrapper.crt-curvature {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
       .info {
         color: #fff;
         font-size: 12px;
@@ -188,7 +198,7 @@
           fill="#fff"
         />
       </svg></a>
-    <canvas id="mainCanvas">You shouldn't see this</canvas>
+    <div id="canvasWrapper"><canvas id="mainCanvas">You shouldn't see this</canvas></div>
     <dialog id="options">
       <div class="contents">
         <section>

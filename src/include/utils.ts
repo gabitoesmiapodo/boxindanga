@@ -233,15 +233,39 @@ function drawBarrelDistortion(ctx: CanvasRenderingContext2D) {
       const di = (y * width + x) * 4
 
       if (srcX >= 0 && srcX < width - 1 && srcY >= 0 && srcY < height - 1) {
-        // Nearest-neighbor sampling (fast, fine for small distortion)
-        const sx = (srcX + 0.5) | 0
-        const sy = (srcY + 0.5) | 0
-        const si = (sy * width + sx) * 4
+        // Bilinear interpolation for smooth pixel sampling
+        const x0 = srcX | 0
+        const y0 = srcY | 0
+        const fx = srcX - x0
+        const fy = srcY - y0
 
-        dstData[di] = srcData[si]
-        dstData[di + 1] = srcData[si + 1]
-        dstData[di + 2] = srcData[si + 2]
-        dstData[di + 3] = srcData[si + 3]
+        const i00 = (y0 * width + x0) * 4
+        const i10 = i00 + 4
+        const i01 = i00 + width * 4
+        const i11 = i01 + 4
+
+        const w00 = (1 - fx) * (1 - fy)
+        const w10 = fx * (1 - fy)
+        const w01 = (1 - fx) * fy
+        const w11 = fx * fy
+
+        dstData[di] =
+          srcData[i00] * w00 + srcData[i10] * w10 + srcData[i01] * w01 + srcData[i11] * w11
+        dstData[di + 1] =
+          srcData[i00 + 1] * w00 +
+          srcData[i10 + 1] * w10 +
+          srcData[i01 + 1] * w01 +
+          srcData[i11 + 1] * w11
+        dstData[di + 2] =
+          srcData[i00 + 2] * w00 +
+          srcData[i10 + 2] * w10 +
+          srcData[i01 + 2] * w01 +
+          srcData[i11 + 2] * w11
+        dstData[di + 3] =
+          srcData[i00 + 3] * w00 +
+          srcData[i10 + 3] * w10 +
+          srcData[i01 + 3] * w01 +
+          srcData[i11 + 3] * w11
       } else {
         // Outside source bounds: black
         dstData[di + 3] = 255
