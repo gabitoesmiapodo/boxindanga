@@ -16,7 +16,7 @@ import { PlayerCPU } from './playerCPU'
 import type { PlayerOne } from './playerOne'
 import { drawRing } from './ring'
 import type { SoundPlayer as SoundPlayerClass } from './soundPlayer'
-import { crtFilter, drawScore, drawSprite, drawTime } from './utils'
+import { type CRTFilterOptions, crtFilter, drawScore, drawSprite, drawTime } from './utils'
 
 export class Game implements GameContext {
   private currentPlayerOne: Player
@@ -204,8 +204,8 @@ export class Game implements GameContext {
     drawSprite(ctx, logo, textColor, 222, 445, 3.3, 1.5)
   }
 
-  applyCRTFilter(applyGlitch: boolean) {
-    crtFilter(this.canvas.ctx, applyGlitch)
+  applyCRTFilter(options: CRTFilterOptions) {
+    crtFilter(this.canvas.ctx, options)
   }
 
   resetIdleTimer() {

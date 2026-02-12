@@ -10,15 +10,18 @@ import {
   type CRTFilterType,
   type GameOptions,
   loadGameOptions,
+  setCRTCurvature,
   setCRTFilter,
   setCRTFilterType,
   setCRTGlitch,
+  setCRTVignette,
   setDifficulty,
 } from './include/optionsStorage'
 import type { GameState } from './include/player'
 import { PlayerCPU } from './include/playerCPU'
 import { PlayerOne } from './include/playerOne'
 import { SoundPlayer } from './include/soundPlayer'
+import type { CRTFilterOptions } from './include/utils'
 
 new SoundPlayer()
 const canvas = new Canvas('mainCanvas')
@@ -46,7 +49,12 @@ const main = () => {
   const optionsDialog = document.getElementById('options') as HTMLDialogElement | null
 
   let applyCRTFilter = true
-  let applyCRTGlitch = true
+  let crtFilterOptions: CRTFilterOptions = {
+    type: '1',
+    glitch: true,
+    vignette: true,
+    curvature: true,
+  }
   let gameStateBeforeMenu: GameState = game.gameState
 
   const crtFilterInputs = Array.from(
@@ -57,6 +65,12 @@ const main = () => {
   )
   const crtGlitchInputs = Array.from(
     document.querySelectorAll<HTMLInputElement>('input[name="crtGlitch"]'),
+  )
+  const crtVignetteInputs = Array.from(
+    document.querySelectorAll<HTMLInputElement>('input[name="crtVignette"]'),
+  )
+  const crtCurvatureInputs = Array.from(
+    document.querySelectorAll<HTMLInputElement>('input[name="crtCurvature"]'),
   )
   const crtChildOptions = document.getElementById('crtChildOptions')
   const difficultyInputs = Array.from(
@@ -75,6 +89,8 @@ const main = () => {
     syncRadioGroup(crtFilterInputs, options.crtFilter ? 'on' : 'off')
     syncRadioGroup(crtGlitchInputs, options.crtGlitch ? 'on' : 'off')
     syncRadioGroup(crtFilterTypeInputs, options.crtFilterType)
+    syncRadioGroup(crtVignetteInputs, options.crtVignette ? 'on' : 'off')
+    syncRadioGroup(crtCurvatureInputs, options.crtCurvature ? 'on' : 'off')
     syncRadioGroup(difficultyInputs, options.difficulty)
   }
 
@@ -82,11 +98,21 @@ const main = () => {
     const state = getCRTRuntimeState(options)
 
     applyCRTFilter = state.applyCRTFilter
-    applyCRTGlitch = state.applyCRTGlitch
+    crtFilterOptions = {
+      type: state.crtFilterType,
+      glitch: state.applyCRTGlitch,
+      vignette: state.applyCRTVignette,
+      curvature: state.applyCRTCurvature,
+    }
 
     crtChildOptions?.classList.toggle('option-group-disabled', state.disableChildControls)
 
-    for (const input of [...crtFilterTypeInputs, ...crtGlitchInputs]) {
+    for (const input of [
+      ...crtFilterTypeInputs,
+      ...crtGlitchInputs,
+      ...crtVignetteInputs,
+      ...crtCurvatureInputs,
+    ]) {
       input.disabled = state.disableChildControls
     }
   }
@@ -156,6 +182,20 @@ const main = () => {
     })
   }
 
+  for (const input of crtVignetteInputs) {
+    input.addEventListener('change', () => {
+      if (!input.checked) return
+      applyOptions(setCRTVignette(window.localStorage, input.value === 'on'))
+    })
+  }
+
+  for (const input of crtCurvatureInputs) {
+    input.addEventListener('change', () => {
+      if (!input.checked) return
+      applyOptions(setCRTCurvature(window.localStorage, input.value === 'on'))
+    })
+  }
+
   for (const input of difficultyInputs) {
     input.addEventListener('change', () => {
       if (!input.checked) return
@@ -167,7 +207,7 @@ const main = () => {
 
   const gameLoop = new GameLoop((deltaMs) => {
     game.update(deltaMs)
-    if (applyCRTFilter) game.applyCRTFilter(applyCRTGlitch)
+    if (applyCRTFilter) game.applyCRTFilter(crtFilterOptions)
   })
 
   gameLoop.start()
