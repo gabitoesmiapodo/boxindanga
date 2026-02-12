@@ -8,6 +8,8 @@ export type GameOptions = {
   crtFilter: boolean
   crtGlitch: boolean
   crtFilterType: CRTFilterType
+  crtVignette: boolean
+  crtCurvature: boolean
   difficulty: Difficulty
 }
 
@@ -15,6 +17,8 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   crtFilter: true,
   crtGlitch: true,
   crtFilterType: '1',
+  crtVignette: true,
+  crtCurvature: true,
   difficulty: 'normal',
 }
 
@@ -39,6 +43,12 @@ const parseStoredOptions = (raw: string | null): Partial<GameOptions> | null => 
       if (value === '1' || value === '2' || value === '3') {
         options.crtFilterType = value
       }
+    }
+    if (typeof (parsed as { crtVignette?: unknown }).crtVignette === 'boolean') {
+      options.crtVignette = (parsed as { crtVignette: boolean }).crtVignette
+    }
+    if (typeof (parsed as { crtCurvature?: unknown }).crtCurvature === 'boolean') {
+      options.crtCurvature = (parsed as { crtCurvature: boolean }).crtCurvature
     }
     if (typeof (parsed as { difficulty?: unknown }).difficulty === 'string') {
       const value = (parsed as { difficulty: string }).difficulty
@@ -88,6 +98,26 @@ export const setCRTFilterType = (storage: StorageLike, type: CRTFilterType): Gam
   const options = {
     ...loadGameOptions(storage),
     crtFilterType: type,
+  }
+
+  storage.setItem(OPTIONS_STORAGE_KEY, JSON.stringify(options))
+  return options
+}
+
+export const setCRTVignette = (storage: StorageLike, enabled: boolean): GameOptions => {
+  const options = {
+    ...loadGameOptions(storage),
+    crtVignette: enabled,
+  }
+
+  storage.setItem(OPTIONS_STORAGE_KEY, JSON.stringify(options))
+  return options
+}
+
+export const setCRTCurvature = (storage: StorageLike, enabled: boolean): GameOptions => {
+  const options = {
+    ...loadGameOptions(storage),
+    crtCurvature: enabled,
   }
 
   storage.setItem(OPTIONS_STORAGE_KEY, JSON.stringify(options))
