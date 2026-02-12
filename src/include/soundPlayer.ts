@@ -5,7 +5,7 @@ const tia = new TIASound()
 export let initialized = false
 
 /**
- * Initialize the TIA sound instance
+ * Initialize TIA sound instance
  */
 export async function tiaInit() {
   await tia.init()
@@ -13,7 +13,7 @@ export async function tiaInit() {
 }
 
 /**
- * Play the sound when the round ends
+ * Sound for when the round ends
  */
 export function playEndOfRoundBell() {
   tia.playSequence(0, [
@@ -24,15 +24,15 @@ export function playEndOfRoundBell() {
 }
 
 /**
- * Play the sound when the player hits the enemy's gloves
+ * Sound when gloves collide
  */
 export function playGloveHit() {
   tia.setChannel0(31, 3, 10, 18)
 }
 
 /**
- * Play the sound when the player hits the enemy's head
- * It's made by the combination of a high and low sound
+ * Sound when the head is hit
+ * It's the combination of a high and low sound
  */
 export function playHeadHit() {
   // Sound 1: smash (channel 0)
