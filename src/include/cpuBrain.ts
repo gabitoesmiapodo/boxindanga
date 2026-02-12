@@ -232,7 +232,6 @@ export class CPUBrain {
     this.getOverMinimumXRange(dt)
 
     // Punch
-    // could be 0.4 or more if it needs to be more aggressive
     if (this.isInPunchingRange() && Math.random() < this.difficulty.punchChance) {
       this.player.punch()
     }
