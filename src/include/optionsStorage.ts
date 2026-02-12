@@ -15,7 +15,7 @@ export type GameOptions = {
 
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   crtFilter: true,
-  crtGlitch: true,
+  crtGlitch: false,
   crtFilterType: '1',
   crtVignette: true,
   crtCurvature: true,
