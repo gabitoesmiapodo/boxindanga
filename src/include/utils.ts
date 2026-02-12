@@ -216,7 +216,7 @@ function drawBarrelDistortion(ctx: CanvasRenderingContext2D) {
   const cx = width / 2
   const cy = height / 2
   // Barrel distortion strength — tweak this to taste (0.02 = subtle, 0.1 = strong)
-  const k = 0.02
+  const k = 0.022
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -296,8 +296,8 @@ function applyFilterType(ctx: CanvasRenderingContext2D, type: CRTFilterType) {
 }
 
 export function crtFilter(ctx: CanvasRenderingContext2D, options: CRTFilterOptions) {
-  if (options.curvature) drawBarrelDistortion(ctx)
-  if (options.glitch) drawCRTGlitch(ctx)
-  applyFilterType(ctx, options.type)
   if (options.vignette) drawVignette(ctx)
+  if (options.curvature) drawBarrelDistortion(ctx)
+  applyFilterType(ctx, options.type)
+  if (options.glitch) drawCRTGlitch(ctx)
 }
