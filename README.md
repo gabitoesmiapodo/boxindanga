@@ -2,34 +2,41 @@
 
 ![alt text](https://boxindanga.vercel.app/images/share/screenshot.png)
 
->**Boxindanga:** Rioplatense slang for an amateur or clumsy boxer, often used mockingly. It can also refer to someone who picks fights without much skill, or a rough-and-tumble person in general.
+>**Boxindanga:** Rioplatense slang for an amateur or clumsy boxer, often used mockingly. It can also refer to someone who picks fights without much skill.
 
-A clone (or close enough) of the classic Activision game Boxing (1980) for the [Atari 2600](https://en.wikipedia.org/wiki/Atari_2600) by Bob Whitehead, developed in Typescript.
+A clone / remake of the classic Activision game Boxing (1980) for the [Atari 2600](https://en.wikipedia.org/wiki/Atari_2600) by Bob Whitehead, developed in Typescript.
 
-I tried to make it as close to the original as possible, but... well, as I said: close enough.
+## Where to play:
 
-Go to [itch.io](https://gabitoesmiapodo.itch.io/boxindangajs) or [https://boxindanga.vercel.app/](https://boxindanga.vercel.app/) to play the game.
+- [itch.io](https://gabitoesmiapodo.itch.io/boxindangajs)
+- [https://boxindanga.vercel.app/](https://boxindanga.vercel.app/) to play the latest version (`main` branch).
+
+## Options
+
+- [F1] show / hide options dialog
+- [ESC] game reset
+- [ENTER] start / pause
+
+## Controls
+
+- [P] punch
+- [WASD] move
+
+## Rules
 
 Whoever gets to 99 points first or has the most points when the time runs out wins.
 
-## Player controls
-
-- WASD: Move
-- P: Punch
-
-## Game
-
-- ESC: Reset
-- P: Start
-- F3: Toggle CRT filter on / off
-
 ## A little history
 
-I never liked the Atari 2600 too much, but I remember enjoying Boxing and Enduro - both from Activision- so I always wanted to make a clone of one of those. I developed a clone of Boxing in Delphi in 2004 (also called Boxindanga), but I lost the source code... you can find the [Windows installer](https://legacy.remakeszone.com/juegos/juego.php?id=74&lng=spanish&seccion=remakes%20jugables) if you look [hard enough](https://acid-play.com/download/boxindanga), though.
+I never liked the Atari 2600 too much, but I remember enjoying Boxing and Enduro - both by Activision- so I always wanted to make my own version of one of those.
+
+I developed a clone of Boxing in Delphi in 2004 (also called Boxindanga), but I lost the source code (hey! I used to burn backup CDs back then, remember those?)... you can find the [Windows installer](https://legacy.remakeszone.com/juegos/juego.php?id=74&lng=spanish&seccion=remakes%20jugables) if you look [hard enough](https://acid-play.com/download/boxindanga), though.
 
 ## Running locally / Development
 
->**Note:** I implemented this in a few weeks, with zero planning or really thinking too much about what I had to do. I haven't touched anything related to game programming in maybe 20 years... The code is the spaghettiest of spaghetti code, so modify it at your own risk. I tried to make this as small as possible, so no graphics, no sounds, no nothing. Everything's in the code, as it would be in the original game (it's like 10x the original ROM's size, though...) Anyways, no Unity, no Godot, no Phaser, no nothing. Just plain old ~~JavaScript~~ Typescript and HTML.
+>**Note:** There's a first unpolished / buggy version of the game [here](https://github.com/gabitoesmiapodo/boxindanga/releases/tag/v1.0.0). The current version is a LLM assisted**(*)** refactoring of that code, plus quite a few bug fixes, improvements and some new features like difficulty options, different CRT filters, etc.
+
+**(*)** I know lots of people have issues about using LLMs (for coding or in general), but I knew there were some issues I'd never fix and features I'd never have the time to implement otherwise. Also I wanted to make some of this code reusable... It was that or let this die as it was.
 
 ### Clone the repository
 
@@ -41,7 +48,7 @@ git clone git@github.com:gabitoesmiapodo/boxindanga.git
 
 ```bash
 cd boxindanga
-pnpm install
+pnpm i
 ```
 
 ### Run the development server
@@ -58,8 +65,20 @@ It should run at `http://127.0.0.1:8080`
 pnpm build
 ```
 
-You can open the `public/index.html` file in your browser using [Liver Server](https://github.com/ritwickdey/vscode-live-server-plus-plus) or something similar to play the game.
+### Runing the game locally
 
+Run a local server from the `public` folder.
+
+```bash
+cd boxindanga
+
+# builds the game and puts the output in the `public` folder
+pnpm build
+
+npx serve public
+```
+
+Then open the URL printed in the terminal (probably `http://localhost:3000`) to play the game.
 
 ## Acknowledgements
 
