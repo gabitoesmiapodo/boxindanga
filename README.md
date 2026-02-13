@@ -34,9 +34,9 @@ I developed a clone of Boxing in Delphi in 2004 (also called Boxindanga), but I 
 
 ## Running locally / Development
 
->**Note:** There's a first unpolished / buggy version of the game [here](https://github.com/gabitoesmiapodo/boxindanga/releases/tag/v1.0.0). The current version is a LLM assisted**(*)** refactoring of that code, plus quite a few bug fixes, improvements and some new features like difficulty options, different CRT filters, etc.
+>**Note:** There's a first unpolished / buggy version of the game [here](https://github.com/gabitoesmiapodo/boxindanga/releases/tag/v1.0.0). The current version is a LLM assisted(*) refactoring of that code, plus quite a few bug fixes, improvements and some new features like difficulty options, different CRT filters, etc.
 
-**(*)** I know lots of people have issues about using LLMs (for coding or in general), but I knew there were some issues I'd never fix and features I'd never have the time to implement otherwise. Also I wanted to make some of this code reusable... It was that or let this die as it was.
+(*) I know lots of people have issues about using LLMs (for coding or in general), but I knew there were some issues I'd never fix and features I'd never have the time to implement otherwise. Also I wanted to make some of this code reusable... It was that or let this die as it was.
 
 ### Clone the repository
 
